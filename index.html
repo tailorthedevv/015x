@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>015x.dev Interactive Particles</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: monospace;
+            background-color: black;
+        }
+        .container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: black;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            touch-action: none; /* Prevents browser touch gestures like pull-to-refresh */
+        }
+        .info-text {
+            position: absolute;
+            bottom: 100px; /* Adjust as needed */
+            text-align: center;
+            z-index: 10;
+        }
+        .info-text p {
+            font-size: 0.75rem; /* text-xs */
+            color: #9ca3af; /* gray-400 */
+        }
+        .info-text a {
+            color: #d1d5db; /* gray-300 */
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .info-text a:hover {
+            color: #22d3ee; /* cyan-400 */
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 640px) { /* sm */
+            .info-text p {
+                font-size: 1rem; /* text-base */
+            }
+        }
+        @media (min-width: 768px) { /* md */
+            .info-text p {
+                font-size: 0.875rem; /* text-sm */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <canvas id="particleCanvas" aria-label="Interactive particle effect with '015x.dev' text"></canvas>
+        <div class="info-text">
+            <p>
+                Something AMAZING is coming soon...
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('particleCanvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            const mousePositionRef = { x: 0, y: 0 };
+            let isTouchingRef = false;
+            let isMobile = false;
+
+            const updateCanvasSize = () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                isMobile = window.innerWidth < 768;
+            };
+
+            updateCanvasSize();
+
+            let particles = [];
+            let textImageData = null;
+
+            function createTextImage() {
+                if (!ctx || !canvas) return;
+
+                ctx.font = isMobile ? 'bold 60px monospace' : 'bold 120px monospace';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = 'white';
+                ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas before drawing text
+                ctx.fillText('015x.dev', canvas.width / 2, canvas.height / 2);
+
+                textImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear again to prepare for particles
+            }
+
+            function createParticle() {
+                if (!ctx || !canvas || !textImageData) return null;
+
+                const data = textImageData.data;
+
+                for (let attempt = 0; attempt < 100; attempt++) {
+                    const x = Math.floor(Math.random() * canvas.width);
+                    const y = Math.floor(Math.random() * canvas.height);
+
+                    if (data[(y * canvas.width + x) * 4 + 3] > 128) { // Check alpha channel for text pixels
+                        return {
+                            x: x,
+                            y: y,
+                            baseX: x,
+                            baseY: y,
+                            size: Math.random() * 1 + 0.5,
+                            color: 'white',
+                            scatteredColor: '#00DCFF', // A single color for scattering
+                            life: Math.random() * 100 + 50
+                        };
+                    }
+                }
+                return null;
+            }
+
+            function createInitialParticles() {
+                const baseParticleCount = 7000;
+                const particleCount = Math.floor(baseParticleCount * Math.sqrt((canvas.width * canvas.height) / (1920 * 1080)));
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = createParticle();
+                    if (particle) particles.push(particle);
+                }
+            }
+
+            let animationFrameId;
+
+            function animate() {
+                if (!ctx || !canvas) return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'black';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const { x: mouseX, y: mouseY } = mousePositionRef;
+                const maxDistance = 100;
+
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    const dx = mouseX - p.x;
+                    const dy = mouseY - p.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < maxDistance && (isTouchingRef || !('ontouchstart' in window))) {
+                        const force = (maxDistance - distance) / maxDistance;
+                        const angle = Math.atan2(dy, dx);
+                        const moveX = Math.cos(angle) * force * 30;
+                        const moveY = Math.sin(angle) * force * 30;
+                        p.x = p.baseX - moveX;
+                        p.y = p.baseY - moveY;
+                        ctx.fillStyle = p.scatteredColor;
+                    } else {
+                        p.x += (p.baseX - p.x) * 0.1;
+                        p.y += (p.baseY - p.y) * 0.1;
+                        ctx.fillStyle = 'lime';
+                    }
+
+                    ctx.fillRect(p.x, p.y, p.size, p.size);
+
+                    p.life--;
+                    if (p.life <= 0) {
+                        const newParticle = createParticle();
+                        if (newParticle) {
+                            particles[i] = newParticle;
+                        } else {
+                            particles.splice(i, 1);
+                            i--;
+                        }
+                    }
+                }
+
+                const baseParticleCount = 20000;
+                const targetParticleCount = Math.floor(baseParticleCount * Math.sqrt((canvas.width * canvas.height) / (1920 * 1080)));
+                while (particles.length < targetParticleCount) {
+                    const newParticle = createParticle();
+                    if (newParticle) particles.push(newParticle);
+                }
+
+                animationFrameId = requestAnimationFrame(animate);
+            }
+
+            createTextImage();
+            createInitialParticles();
+            animate();
+
+            const handleResize = () => {
+                updateCanvasSize();
+                createTextImage();
+                particles = [];
+                createInitialParticles();
+            };
+
+            const handleMove = (x, y) => {
+                mousePositionRef.x = x;
+                mousePositionRef.y = y;
+            };
+
+            const handleMouseMove = (e) => {
+                handleMove(e.clientX, e.clientY);
+            };
+
+            const handleTouchMove = (e) => {
+                if (e.touches.length > 0) {
+                    e.preventDefault();
+                    handleMove(e.touches[0].clientX, e.touches[0].clientY);
+                }
+            };
+
+            const handleTouchStart = () => {
+                isTouchingRef = true;
+            };
+
+            const handleTouchEnd = () => {
+                isTouchingRef = false;
+                mousePositionRef.x = 0;
+                mousePositionRef.y = 0;
+            };
+
+            const handleMouseLeave = () => {
+                if (!('ontouchstart' in window)) {
+                    mousePositionRef.x = 0;
+                    mousePositionRef.y = 0;
+                }
+            };
+
+            window.addEventListener('resize', handleResize);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+            canvas.addEventListener('mouseleave', handleMouseLeave);
+            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchend', handleTouchEnd);
+
+            // Cleanup function (optional for single page, but good practice)
+            // window.addEventListener('beforeunload', () => {
+            //     window.removeEventListener('resize', handleResize);
+            //     canvas.removeEventListener('mousemove', handleMouseMove);
+            //     canvas.removeEventListener('touchmove', handleTouchMove);
+            //     canvas.removeEventListener('mouseleave', handleMouseLeave);
+            //     canvas.removeEventListener('touchstart', handleTouchStart);
+            //     canvas.removeEventListener('touchend', handleTouchEnd);
+            //     cancelAnimationFrame(animationFrameId);
+            // });
+        });
+    </script>
+</body>
+</html>
