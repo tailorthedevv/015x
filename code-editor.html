@@ -20,16 +20,12 @@
   <body class="bg-[#1e1e1e]">
     <div id="root"></div>
     <script type="module">
-// --- Start of inlined script ---
-
-// CDN Imports
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Editor from '@monaco-editor/react';
 
 const { useState, useEffect, useCallback, useMemo, useRef } = React;
 
-// --- From types.ts ---
 const FileType = {
   HTML: 'html',
   CSS: 'css',
@@ -43,11 +39,10 @@ const ItemType = {
 };
 
 
-// --- From constants.ts ---
 const SAMPLE_IMAGE_BASE64 = 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAEKADAAQAAAABAAAAEAAAAAA0VXHyAAAAC0lEQVQ4EWNgwA/8Z+BgaAAA58sA/30RLS4AAAAASUVORK5CYII=';
 
 const INITIAL_FILE_SYSTEM = {
-  'root': { id: 'root', name: 'VSCode Clone', parentId: null, type: ItemType.FOLDER, isOpen: true },
+  'root': { id: 'root', name: '015x.dev', parentId: null, type: ItemType.FOLDER, isOpen: true },
   'index.html': { 
     id: 'index.html', 
     name: 'index.html', 
@@ -139,9 +134,6 @@ function greet() {
     content: SAMPLE_IMAGE_BASE64
   }
 };
-
-
-// --- From hooks/useDebounce.ts ---
 function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -158,8 +150,6 @@ function useDebounce(value, delay) {
   return debouncedValue;
 }
 
-
-// --- From components/icons.tsx ---
 const FileIcon = ({ type, className = 'w-5 h-5' }) => {
   switch (type) {
     case FileType.HTML:
@@ -188,7 +178,6 @@ const EditIcon = ({ className = 'w-4 h-4', onClick }) => React.createElement("sv
 const DeleteIcon = ({ className = 'w-4 h-4', onClick }) => React.createElement("svg", { onClick: onClick, xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 20 20", fill: "currentColor", className: className }, React.createElement("path", { fillRule: "evenodd", d: "M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z", clipRule: "evenodd" }));
 
 
-// --- From components/ResizablePanel.tsx ---
 const ResizablePanel = ({ children, direction, initialSize = 50, minSize = 10, maxSize = 90, onResizeStart, onResizeEnd }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [size, setSize] = useState(initialSize);
@@ -244,8 +233,6 @@ const ResizablePanel = ({ children, direction, initialSize = 50, minSize = 10, m
   );
 };
 
-
-// --- From components/Editor.tsx ---
 const CodeEditor = ({ language, value, onChange }) => {
   const handleEditorChange = (value) => {
     onChange(value || '');
@@ -276,8 +263,6 @@ const CodeEditor = ({ language, value, onChange }) => {
   );
 };
 
-
-// --- From components/Preview.tsx ---
 const getPath = (itemId, fs) => {
     let path = '';
     let currentItem = fs[itemId];
@@ -374,8 +359,6 @@ const Preview = ({ fileSystem }) => {
   });
 };
 
-
-// --- From App.tsx ---
 const MenuBar = () => React.createElement("div", { className: "bg-[#3c3c3c] text-neutral-300 text-sm flex items-center px-4 h-8 select-none flex-shrink-0" },
     React.createElement("div", { className: "flex space-x-4" },
         React.createElement("span", null, "File"),
@@ -654,7 +637,7 @@ const StatusBar = () => React.createElement("div", { className: "bg-[#007acc] te
     React.createElement("div", { className: "flex items-center space-x-4" },
         React.createElement("span", null, "UTF-8"),
         React.createElement("span", null, "LF"),
-        React.createElement("span", null, "VSCode Clone")
+        React.createElement("span", null, "015x.dev")
     )
 );
 
@@ -774,8 +757,6 @@ const App = () => {
   );
 };
 
-
-// --- From index.tsx (The Render Call) ---
 const rootElement = document.getElementById('root');
 if (!rootElement) {
   throw new Error("Could not find root element to mount to");
@@ -786,7 +767,6 @@ root.render(
     React.createElement(App, null)
   )
 );
-// --- End of inlined script ---
     </script>
   </body>
 </html>
