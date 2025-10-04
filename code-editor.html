@@ -355,7 +355,7 @@ const Preview = ({ fileSystem }) => {
     srcDoc: srcDoc,
     title: "preview",
     sandbox: "allow-scripts allow-modals",
-    className: "w-full h-full bg-white"
+    className: "w-full h-full"
   });
 };
 
@@ -745,7 +745,7 @@ const App = () => {
                     onChange: newContent => handleFileContentChange(activeFile.id, newContent)
                 }) : React.createElement("div", { className: "flex items-center justify-center h-full text-neutral-500" }, "Select a file to begin editing")
               ),
-              React.createElement("div", { className: `h-full w-full bg-white ${isResizing ? 'pointer-events-none' : ''}` },
+              React.createElement("div", { className: `h-full w-full ${isResizing ? 'pointer-events-none' : ''}` },
                 React.createElement(Preview, { fileSystem: debouncedFileSystem })
               )
             )
