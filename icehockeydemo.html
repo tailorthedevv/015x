@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IRONCLAD GLACIERS [STANDALONE]</title>
+    <meta name="description" content="Official Home of the Ironclad Glaciers Hockey Club." />
+    
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ['Russo One', 'sans-serif'],
+              sport: ['Teko', 'sans-serif'],
+              tech: ['Rajdhani', 'sans-serif'],
+            },
+            colors: {
+              ice: {
+                base: '#020617', // Deep Navy/Black
+                surface: '#0F172A', // Navy Surface
+                accent: '#22D3EE', // Electric Cyan
+                white: '#F8FAFC', // Ice White
+                silver: '#94A3B8', // Metal
+                danger: '#EF4444', // Red Line
+                muted: '#334155'
+              }
+            },
+            animation: {
+              'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'slide-up': 'slideUp 0.5s ease-out forwards',
+              'marquee': 'marquee 25s linear infinite',
+            },
+            keyframes: {
+              marquee: {
+                '0%': { transform: 'translateX(0%)' },
+                '100%': { transform: 'translateX(-100%)' },
+              }
+            }
+          },
+        },
+      }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Russo+One&family=Teko:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <style>
+      body {
+        background-color: #020617;
+        color: #F8FAFC;
+        overflow-x: hidden;
+      }
+      ::selection {
+        background: #22D3EE;
+        color: #020617;
+      }
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #020617; }
+      ::-webkit-scrollbar-thumb { background: #334155; border-radius: 0px; }
+      .clip-diagonal { clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%); }
+    </style>
+
+    <!-- Babel for in-browser compilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Import Map -->
+    <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "lucide-react": "https://esm.sh/lucide-react@0.292.0"
+  }
+}
+</script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module" data-presets="react,typescript">
+      import React, { useState, useEffect } from 'react';
+      import { createRoot } from 'react-dom/client';
+      import { 
+        Snowflake, Ticket, TrendingUp, TrendingDown, Minus, Shield, Crosshair, Zap, User, 
+        ArrowDown, MapPin, Calendar, Trophy, Instagram, Twitter, Facebook
+      } from 'lucide-react';
+
+      // --- UTILS: SFX ---
+      let audioCtx = null;
+      const initAudio = () => {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      };
+
+      const playHoverSfx = () => {
+        const ctx = initAudio();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        osc.type = 'sawtooth';
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(200, ctx.currentTime);
+        filter.frequency.linearRampToValueAtTime(2000, ctx.currentTime + 0.1);
+
+        osc.frequency.setValueAtTime(100, ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(300, ctx.currentTime + 0.1);
+
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.1);
+      };
+
+      const playClickSfx = () => {
+        const ctx = initAudio();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const noise = ctx.createBufferSource();
+        const bufferSize = ctx.sampleRate * 0.1;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+        noise.buffer = buffer;
+
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(80, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+
+        osc.connect(gain);
+        noise.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.15);
+        noise.start();
+        noise.stop(ctx.currentTime + 0.15);
+      };
+
+      // --- COMPONENTS ---
+
+      // CustomCursor
+      const CustomCursor = () => {
+        const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+        const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+
+        useEffect(() => {
+          const handleMouseMove = (e) => {
+            setMousePos({ x: e.clientX, y: e.clientY });
+          };
+          window.addEventListener('mousemove', handleMouseMove);
+          return () => window.removeEventListener('mousemove', handleMouseMove);
+        }, []);
+
+        useEffect(() => {
+          let animationFrameId;
+          const animateCursor = () => {
+            setCursorPos((prev) => {
+              const dx = mousePos.x - prev.x;
+              const dy = mousePos.y - prev.y;
+              return {
+                x: prev.x + dx * 0.15,
+                y: prev.y + dy * 0.15,
+              };
+            });
+            animationFrameId = requestAnimationFrame(animateCursor);
+          };
+          animationFrameId = requestAnimationFrame(animateCursor);
+          return () => cancelAnimationFrame(animationFrameId);
+        }, [mousePos]);
+
+        return (
+          <div 
+            className="fixed pointer-events-none z-[100] hidden md:block mix-blend-screen"
+            style={{
+              left: `${cursorPos.x}px`,
+              top: `${cursorPos.y}px`,
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <div className="w-8 h-8 bg-black rounded-full border-2 border-ice-accent shadow-[0_0_15px_rgba(34,211,238,0.8)] flex items-center justify-center">
+               <div className="w-2 h-2 bg-ice-accent/50 rounded-full"></div>
+            </div>
+          </div>
+        );
+      };
+
+      // NavBar
+      const NavBar = () => {
+        const scrollTo = (id) => {
+          playClickSfx();
+          const element = document.getElementById(id);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        };
+
+        return (
+          <nav className="fixed top-0 left-0 w-full z-50 bg-ice-base/95 backdrop-blur-md border-b border-ice-muted/50">
+            <div className="max-w-[1600px] mx-auto px-4 md:px-8">
+              <div className="flex items-center justify-between h-20 md:h-24">
+                <div 
+                  onClick={() => scrollTo('index')} 
+                  onMouseEnter={playHoverSfx}
+                  className="flex items-center gap-4 group cursor-pointer"
+                >
+                  <div className="w-12 h-12 bg-ice-accent skew-x-[-12deg] flex items-center justify-center border-2 border-white transition-all duration-300 group-hover:bg-white group-hover:border-ice-accent shadow-[0_0_15px_rgba(34,211,238,0.5)]">
+                    <Snowflake className="text-ice-base group-hover:text-ice-accent w-6 h-6 transition-colors duration-300 skew-x-[12deg]" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-2xl md:text-3xl font-display italic tracking-tight text-white leading-none group-hover:text-ice-accent transition-colors">
+                      GLACIERS
+                    </span>
+                    <span className="text-xs font-sport font-bold tracking-[0.2em] text-ice-silver uppercase">
+                      EST. 1994 // NORTH DIVISION
+                    </span>
+                  </div>
+                </div>
+                <div className="hidden md:flex items-center gap-12 bg-ice-surface/50 px-8 py-2 rounded-sm skew-x-[-12deg] border border-ice-muted">
+                  {['Home', 'Stats', 'Roster', 'Tickets'].map((item) => (
+                    <button
+                      key={item}
+                      onClick={() => scrollTo(item.toLowerCase() === 'home' ? 'index' : item.toLowerCase())}
+                      onMouseEnter={playHoverSfx}
+                      className="skew-x-[12deg] relative text-ice-silver hover:text-ice-accent text-lg font-sport font-bold uppercase tracking-wider transition-colors duration-200 flex items-center gap-2 group"
+                    >
+                      {item}
+                      <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-ice-accent group-hover:w-full transition-all duration-300"></span>
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-6">
+                   <div className="hidden lg:flex items-center gap-2 font-tech font-bold text-ice-danger">
+                      <span className="w-2 h-2 bg-ice-danger rounded-full animate-pulse-fast"></span>
+                      <span className="text-sm tracking-widest uppercase">
+                        Live: 3rd Period 12:40
+                      </span>
+                   </div>
+                   <button 
+                     onClick={() => scrollTo('tickets')}
+                     onMouseEnter={playHoverSfx}
+                     className="group bg-ice-accent text-ice-base px-6 py-3 skew-x-[-12deg] border-2 border-transparent hover:bg-transparent hover:border-ice-accent hover:text-ice-accent transition-all duration-300"
+                   >
+                     <span className="flex items-center gap-2 text-sm md:text-base font-display uppercase tracking-wider skew-x-[12deg]">
+                       Get Tickets
+                       <Ticket className="w-4 h-4" />
+                     </span>
+                   </button>
+                </div>
+              </div>
+            </div>
+          </nav>
+        );
+      };
+
+      // StatsGrid
+      const StatsGrid = () => {
+        const [activeStat, setActiveStat] = useState(null);
+        const stats = [
+          { label: 'Points', value: '82', rank: '1st in Div', trend: 'up' },
+          { label: 'Goals For', value: '215', rank: '3rd in League', trend: 'up' },
+          { label: 'Power Play', value: '24.5%', rank: 'Top 5', trend: 'flat' },
+          { label: 'Penalty Kill', value: '89.2%', rank: 'League Best', trend: 'up' },
+        ];
+
+        const triggerInteraction = (idx) => {
+          playClickSfx();
+          setActiveStat(idx);
+          setTimeout(() => setActiveStat(null), 300);
+        };
+
+        return (
+          <div className="w-full relative py-8">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="h-8 w-2 bg-ice-accent skew-x-[-12deg]"></div>
+              <h3 className="text-2xl font-display uppercase tracking-wider text-white">Season Statistics</h3>
+              <div className="h-[1px] flex-1 bg-ice-muted"></div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {stats.map((stat, idx) => (
+                <div 
+                  key={stat.label} 
+                  onClick={() => triggerInteraction(idx)}
+                  onMouseEnter={playHoverSfx}
+                  className={`
+                      group relative bg-ice-surface border border-ice-muted p-6 overflow-hidden transition-all duration-300
+                      hover:border-ice-accent hover:shadow-[0_0_20px_rgba(34,211,238,0.1)]
+                      ${activeStat === idx ? 'bg-ice-accent/10 translate-x-1 -translate-y-1' : ''}
+                  `}
+                >
+                  <span className="absolute -right-4 -bottom-8 text-9xl font-sport font-bold text-white/5 select-none pointer-events-none group-hover:text-ice-accent/10 transition-colors">
+                      {idx + 1}
+                  </span>
+                  <div className="flex flex-col relative z-10">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="font-tech text-ice-silver uppercase tracking-widest text-sm font-bold">
+                        {stat.label}
+                      </span>
+                      {stat.trend === 'up' && <TrendingUp className="w-4 h-4 text-green-400" />}
+                      {stat.trend === 'down' && <TrendingDown className="w-4 h-4 text-ice-danger" />}
+                      {stat.trend === 'flat' && <Minus className="w-4 h-4 text-ice-silver" />}
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                       <h4 className="text-6xl font-sport font-bold text-white group-hover:text-ice-accent transition-colors leading-none">
+                          {stat.value}
+                       </h4>
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-white/10 flex items-center gap-2">
+                       <div className="w-1.5 h-1.5 bg-ice-accent rounded-sm"></div>
+                       <span className="text-sm font-tech font-medium text-ice-silver uppercase">
+                          {stat.rank}
+                       </span>
+                    </div>
+                  </div>
+                  <div className="absolute top-0 right-0 w-8 h-8 bg-ice-accent/20 clip-diagonal group-hover:bg-ice-accent transition-colors"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      };
+
+      // BlockDisplay (Roster)
+      const BlockDisplay = () => {
+        const [hoveredId, setHoveredId] = useState(null);
+        const roster = [
+          {
+            id: '97',
+            number: '97',
+            name: 'Connor McDavros',
+            position: 'Center',
+            stats: { gp: 45, goals: 32, assists: 50 },
+            imageGradient: 'from-blue-600 to-cyan-400'
+          },
+          {
+            id: '29',
+            number: '29',
+            name: 'Leon Draisait',
+            position: 'Winger',
+            stats: { gp: 44, goals: 28, assists: 35 },
+            imageGradient: 'from-indigo-600 to-purple-500'
+          },
+          {
+            id: '88',
+            number: '88',
+            name: 'David Pasta',
+            position: 'Winger',
+            stats: { gp: 45, goals: 40, assists: 22 },
+            imageGradient: 'from-ice-danger to-orange-500'
+          },
+          {
+            id: '31',
+            number: '31',
+            name: 'Carey Pricey',
+            position: 'Goalie',
+            stats: { gp: 30, goals: 0, assists: 2 },
+            imageGradient: 'from-slate-600 to-slate-400'
+          }
+        ];
+
+        return (
+          <div className="w-full relative">
+            <div className="flex flex-col md:flex-row items-end justify-between mb-12 border-b border-white/10 pb-6">
+              <div>
+                  <div className="text-sm font-tech text-ice-accent font-bold uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+                      <Zap className="w-4 h-4" /> Starting Lineup
+                  </div>
+                  <h2 className="text-4xl md:text-6xl font-display uppercase italic text-white leading-[0.9]">
+                      Active <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-ice-silver/50">Roster</span>
+                  </h2>
+              </div>
+              <div className="hidden md:block text-right">
+                   <div className="text-5xl font-sport font-bold text-ice-accent">2024-25</div>
+                   <div className="text-sm font-tech text-ice-silver uppercase tracking-widest">Official Squad</div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {roster.map((player) => (
+                <div 
+                  key={player.id}
+                  onMouseEnter={() => { playHoverSfx(); setHoveredId(player.id); }}
+                  onMouseLeave={() => setHoveredId(null)}
+                  className="group relative bg-ice-surface border border-ice-muted h-[400px] overflow-hidden skew-x-[-6deg] hover:border-ice-accent transition-colors duration-300"
+                >
+                  <div className={`absolute inset-0 bg-gradient-to-b ${player.imageGradient} opacity-20 group-hover:opacity-40 transition-opacity duration-500`}></div>
+                  <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30 mix-blend-overlay"></div>
+                  <div className="absolute top-4 right-4 text-8xl font-sport font-bold text-white/10 group-hover:text-white/20 transition-colors select-none">
+                      {player.number}
+                  </div>
+                  <div className="absolute bottom-0 w-full p-6 skew-x-[6deg] bg-gradient-to-t from-ice-base via-ice-base/90 to-transparent pt-20">
+                      <div className="flex items-center gap-2 mb-2">
+                          <span className="bg-ice-accent text-ice-base text-xs font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">
+                              {player.position}
+                          </span>
+                          {player.position === 'Goalie' ? <Shield className="w-3 h-3 text-ice-silver" /> : <Crosshair className="w-3 h-3 text-ice-silver" />}
+                      </div>
+                      <h3 className="text-3xl font-display uppercase italic text-white mb-4 leading-none group-hover:translate-x-2 transition-transform duration-300">
+                          {player.name}
+                      </h3>
+                      <div className="grid grid-cols-3 gap-2 border-t border-white/20 pt-4">
+                          <div className="flex flex-col">
+                              <span className="text-[10px] font-tech text-ice-silver uppercase">GP</span>
+                              <span className="text-xl font-sport font-bold text-white">{player.stats.gp}</span>
+                          </div>
+                          <div className="flex flex-col">
+                              <span className="text-[10px] font-tech text-ice-silver uppercase">G</span>
+                              <span className="text-xl font-sport font-bold text-ice-accent">{player.stats.goals}</span>
+                          </div>
+                          <div className="flex flex-col">
+                              <span className="text-[10px] font-tech text-ice-silver uppercase">A</span>
+                              <span className="text-xl font-sport font-bold text-white">{player.stats.assists}</span>
+                          </div>
+                      </div>
+                  </div>
+                  <div className={`absolute bottom-0 left-0 h-1 bg-ice-accent transition-all duration-300 ${hoveredId === player.id ? 'w-full' : 'w-0'}`}></div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-12 flex justify-center">
+               <button 
+                  onClick={playClickSfx}
+                  onMouseEnter={playHoverSfx}
+                  className="border border-ice-muted hover:border-ice-accent text-ice-silver hover:text-white px-8 py-3 font-tech uppercase tracking-[0.2em] text-sm transition-all duration-300"
+               >
+                  View Full Roster
+               </button>
+            </div>
+          </div>
+        );
+      };
+
+      // PixelPlayground (Tactic Board)
+      const PixelPlayground = () => {
+        const [grid, setGrid] = useState([]);
+        const cols = 30;
+        const rows = 12;
+
+        useEffect(() => {
+          setGrid(Array.from({ length: cols * rows }, () => 0));
+        }, []);
+
+        const handleInteraction = (index) => {
+          playHoverSfx();
+          const cell = document.getElementById(`ice-cell-${index}`);
+          if (cell) {
+              cell.style.backgroundColor = 'rgba(34, 211, 238, 0.4)'; 
+              cell.style.borderColor = 'rgba(255, 255, 255, 0.8)';
+              cell.style.transform = 'scale(0.9)';
+              setTimeout(() => {
+                  cell.style.backgroundColor = 'transparent';
+                  cell.style.borderColor = 'rgba(34, 211, 238, 0.1)';
+                  cell.style.transform = 'scale(1)';
+              }, 800);
+          }
+        };
+
+        return (
+          <div className="w-full bg-ice-surface border-y border-ice-muted py-8 relative overflow-hidden group">
+              <div className="absolute inset-0 pointer-events-none opacity-20">
+                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] border-4 border-red-500 rounded-full"></div>
+                   <div className="absolute top-0 bottom-0 left-1/2 w-2 bg-red-500 -translate-x-1/2"></div>
+                   <div className="absolute top-0 bottom-0 left-1/4 w-2 bg-blue-500"></div>
+                   <div className="absolute top-0 bottom-0 right-1/4 w-2 bg-blue-500"></div>
+              </div>
+              <div className="relative z-10 flex flex-col items-center">
+                  <div className="text-sm font-tech text-ice-accent uppercase tracking-[0.3em] mb-4 font-bold animate-pulse">
+                      Tactical Board Analysis
+                  </div>
+                  <div 
+                      className="grid gap-[2px]"
+                      style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+                  >
+                      {grid.map((_, i) => (
+                          <div 
+                              key={i}
+                              id={`ice-cell-${i}`}
+                              onMouseEnter={() => handleInteraction(i)}
+                              onClick={playClickSfx}
+                              className="w-2 h-2 md:w-4 md:h-4 border border-ice-accent/10 transition-all duration-500 cursor-crosshair"
+                          />
+                      ))}
+                  </div>
+              </div>
+          </div>
+        );
+      };
+
+      // App
+      const App = () => {
+        return (
+          <div className="min-h-screen font-sans selection:bg-ice-accent selection:text-ice-base overflow-x-hidden bg-ice-base text-ice-white">
+            <CustomCursor />
+            <NavBar />
+
+            <main className="pt-24 pb-12 px-4 md:px-8 max-w-[1600px] mx-auto space-y-24">
+              <section id="index" className="relative min-h-[80vh] flex flex-col justify-end pb-12 border-x border-ice-muted md:px-12 pt-12 scroll-mt-32 overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-ice-surface via-ice-base to-ice-base opacity-80 pointer-events-none"></div>
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 pointer-events-none"></div>
+                <div className="absolute top-20 left-0 right-0 text-center pointer-events-none select-none">
+                    <h1 className="text-[15vw] font-display uppercase italic text-white/5 leading-none">
+                      GLACIERS
+                    </h1>
+                </div>
+
+                <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-end">
+                   <div className="space-y-6">
+                       <div className="inline-flex items-center gap-2 bg-ice-accent/10 border border-ice-accent/30 px-4 py-1 skew-x-[-12deg]">
+                          <Trophy className="w-4 h-4 text-ice-accent skew-x-[12deg]" />
+                          <span className="text-ice-accent font-tech font-bold uppercase tracking-widest text-sm skew-x-[12deg]">North Division Champions</span>
+                       </div>
+                       <h1 className="text-6xl md:text-8xl font-display uppercase italic text-white leading-[0.85]">
+                         Defend <br/>
+                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-ice-accent to-white">The Ice</span>
+                       </h1>
+                       <p className="max-w-md text-ice-silver font-tech text-lg leading-relaxed border-l-2 border-ice-danger pl-4">
+                         Fast-paced, hard-hitting, and relentless. Join the Glaciers as we chase the Cup this 2025 season.
+                       </p>
+                       <div className="flex gap-4 pt-4">
+                          <button onMouseEnter={playHoverSfx} className="bg-white text-ice-base font-sport font-bold text-xl px-8 py-2 uppercase tracking-wider skew-x-[-12deg] hover:bg-ice-accent transition-colors">
+                              <span className="skew-x-[12deg] block">Full Schedule</span>
+                          </button>
+                          <button onMouseEnter={playHoverSfx} className="border border-white text-white font-sport font-bold text-xl px-8 py-2 uppercase tracking-wider skew-x-[-12deg] hover:bg-white/10 transition-colors">
+                              <span className="skew-x-[12deg] block">Highlights</span>
+                          </button>
+                       </div>
+                   </div>
+
+                   <div className="hidden md:flex flex-col items-end justify-end h-full pb-4">
+                       <div className="text-right">
+                          <div className="text-sm font-tech text-ice-silver uppercase tracking-widest mb-2">Next Match</div>
+                          <div className="text-4xl font-display uppercase italic mb-1">VS. THUNDERBIRDS</div>
+                          <div className="flex items-center justify-end gap-2 text-ice-accent font-bold font-sport text-xl">
+                              <Calendar className="w-5 h-5" />
+                              <span>OCT 24 @ 7:00 PM</span>
+                          </div>
+                          <div className="flex items-center justify-end gap-2 text-ice-silver text-sm font-tech mt-1">
+                              <MapPin className="w-4 h-4" />
+                              <span>FROSTBITE ARENA</span>
+                          </div>
+                       </div>
+                   </div>
+                </div>
+              </section>
+
+              <section id="stats" className="scroll-mt-24">
+                <StatsGrid />
+              </section>
+
+              <section>
+                <PixelPlayground />
+              </section>
+
+              <div className="relative bg-ice-accent text-ice-base py-3 overflow-hidden skew-y-[-2deg] border-y-4 border-white">
+                  <div className="flex whitespace-nowrap animate-marquee hover:[animation-play-state:paused] cursor-default">
+                      {Array.from({length: 8}).map((_, i) => (
+                          <div key={i} className="flex items-center mx-8 gap-4">
+                              <span className="text-3xl font-display italic uppercase">
+                                  GET YOUR TICKETS NOW
+                              </span>
+                              <div className="w-4 h-4 bg-ice-base rotate-45"></div>
+                              <span className="text-xl font-sport font-bold uppercase tracking-widest">
+                                   SEASON OPENER OCT 15
+                              </span>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+
+              <section id="roster" className="scroll-mt-24">
+                <BlockDisplay />
+              </section>
+
+              <section id="tickets" className="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t border-ice-muted pt-16">
+                   <div className="bg-ice-surface border border-ice-muted p-12 flex flex-col justify-center items-start relative overflow-hidden group">
+                       <div className="absolute inset-0 bg-ice-accent/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+                       <div className="relative z-10">
+                          <h3 className="text-5xl font-display uppercase italic mb-6">Season Tickets</h3>
+                          <p className="text-ice-silver font-tech text-lg mb-8 max-w-md">
+                              Secure your seat at Frostbite Arena. Includes exclusive access to player meet-and-greets and playoff priority.
+                          </p>
+                          <button onMouseEnter={playHoverSfx} className="flex items-center gap-3 bg-ice-danger text-white px-8 py-4 font-sport text-2xl font-bold uppercase tracking-wider hover:bg-red-600 transition-colors skew-x-[-12deg]">
+                              <span className="skew-x-[12deg]">Join The Club</span>
+                              <Ticket className="w-6 h-6 skew-x-[12deg]" />
+                          </button>
+                       </div>
+                   </div>
+
+                   <div className="bg-gradient-to-br from-ice-surface to-ice-base border border-ice-muted p-12 flex flex-col justify-center items-start relative">
+                       <h3 className="text-5xl font-display uppercase italic mb-6 text-white">Latest News</h3>
+                       <div className="flex flex-col gap-6 w-full">
+                           {[
+                              { title: 'Glaciers Acquire Star Winger', date: '2 HOURS AGO' },
+                              { title: 'Training Camp Day 1 Recap', date: 'YESTERDAY' },
+                              { title: 'Injury Report: Week 4', date: '2 DAYS AGO' }
+                           ].map((news, i) => (
+                               <div key={i} className="group flex justify-between items-center border-b border-white/10 pb-4 cursor-pointer hover:border-ice-accent transition-colors">
+                                   <span className="text-xl font-sport font-bold uppercase tracking-wide group-hover:text-ice-accent transition-colors">{news.title}</span>
+                                   <span className="text-xs font-tech text-ice-silver">{news.date}</span>
+                               </div>
+                           ))}
+                       </div>
+                   </div>
+              </section>
+
+              <footer className="border-t-4 border-ice-accent pt-16 pb-8">
+                  <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-12">
+                      <div className="flex flex-col items-center md:items-start">
+                          <h2 className="text-4xl font-display italic text-white mb-2">GLACIERS</h2>
+                          <span className="text-ice-silver font-tech uppercase tracking-widest text-sm">Frostbite Arena / 500 Ice Rink Blvd</span>
+                      </div>
+                      <div className="flex gap-6">
+                          {[Instagram, Twitter, Facebook].map((Icon, i) => (
+                              <div key={i} className="w-12 h-12 bg-ice-surface flex items-center justify-center border border-ice-muted hover:bg-ice-accent hover:text-ice-base hover:border-ice-accent transition-all duration-300 cursor-pointer skew-x-[-12deg]">
+                                  <Icon className="w-5 h-5 skew-x-[12deg]" />
+                              </div>
+                          ))}
+                      </div>
+                  </div>
+                  <div className="text-center text-ice-silver/40 font-tech text-xs uppercase tracking-widest">
+                      © 2025 Ironclad Glaciers Hockey Club. All Rights Reserved.
+                  </div>
+              </footer>
+
+            </main>
+          </div>
+        );
+      };
+
+      // MOUNT
+      const root = createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+</body>
+</html>
