@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LUMIÈRE / ROASTERY [STANDALONE]</title>
+    <meta name="description" content="Artisanal Coffee, House-made Pastries, and a moment of calm." />
+    
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              serif: ['Playfair Display', 'serif'],
+              sans: ['DM Sans', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            colors: {
+              cafe: {
+                cream: '#FDFBF7',
+                base: '#FAFAF5',
+                dark: '#2C1810',
+                brown: '#4A3B32',
+                gold: '#C19A6B',
+                sage: '#8F9779',
+                border: '#E5E0D8'
+              }
+            },
+            animation: {
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'spin-slow': 'spin 12s linear infinite',
+              'marquee': 'marquee 35s linear infinite',
+            },
+            keyframes: {
+              marquee: {
+                '0%': { transform: 'translateX(0%)' },
+                '100%': { transform: 'translateX(-100%)' },
+              }
+            }
+          },
+        },
+      }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400&family=DM+Sans:wght@300;400;500;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <style>
+      body {
+        background-color: #FDFBF7;
+        color: #4A3B32;
+        overflow-x: hidden;
+      }
+      ::selection {
+        background: #C19A6B;
+        color: #FFFFFF;
+      }
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: #FDFBF7; }
+      ::-webkit-scrollbar-thumb { background: #E5E0D8; border-radius: 3px; }
+    </style>
+
+    <!-- Babel for in-browser compilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Import Map -->
+    <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "lucide-react": "https://esm.sh/lucide-react@0.292.0"
+  }
+}
+</script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module" data-presets="react,typescript">
+      import React, { useState, useEffect, useRef } from 'react';
+      import { createRoot } from 'react-dom/client';
+      import { 
+        Coffee, Utensils, ArrowUpRight, ShoppingBag, Croissant, 
+        ArrowDown, MapPin, Clock, Instagram, Star
+      } from 'lucide-react';
+
+      // --- UTILS: SFX ---
+      let audioCtx = null;
+      const initAudio = () => {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      };
+
+      const playHoverSfx = () => {
+        const ctx = initAudio();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.05, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.1);
+      };
+
+      const playClickSfx = () => {
+        const ctx = initAudio();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(300, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.05, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.1);
+      };
+
+      // --- COMPONENTS ---
+
+      // CustomCursor
+      const CustomCursor = () => {
+        const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+        const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+
+        useEffect(() => {
+          const handleMouseMove = (e) => {
+            setMousePos({ x: e.clientX, y: e.clientY });
+          };
+          window.addEventListener('mousemove', handleMouseMove);
+          return () => window.removeEventListener('mousemove', handleMouseMove);
+        }, []);
+
+        useEffect(() => {
+          let animationFrameId;
+          const animateCursor = () => {
+            setCursorPos((prev) => {
+              const dx = mousePos.x - prev.x;
+              const dy = mousePos.y - prev.y;
+              return {
+                x: prev.x + dx * 0.1,
+                y: prev.y + dy * 0.1,
+              };
+            });
+            animationFrameId = requestAnimationFrame(animateCursor);
+          };
+          animationFrameId = requestAnimationFrame(animateCursor);
+          return () => cancelAnimationFrame(animationFrameId);
+        }, [mousePos]);
+
+        return (
+          <div 
+            className="fixed pointer-events-none z-[100] hidden md:block"
+            style={{
+              left: `${cursorPos.x}px`,
+              top: `${cursorPos.y}px`,
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <div className="w-4 h-4 rounded-full border border-cafe-brown bg-cafe-gold/20 backdrop-blur-sm"></div>
+          </div>
+        );
+      };
+
+      // NavBar
+      const NavBar = () => {
+        const scrollTo = (id) => {
+          playClickSfx();
+          const element = document.getElementById(id);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        };
+
+        return (
+          <nav className="fixed top-0 left-0 w-full z-50 bg-cafe-cream/90 backdrop-blur-md border-b border-cafe-border">
+            <div className="max-w-[1600px] mx-auto px-4 md:px-8">
+              <div className="flex items-center justify-between h-20 md:h-24">
+                <div 
+                  onClick={() => scrollTo('index')} 
+                  onMouseEnter={playHoverSfx}
+                  className="flex items-center gap-4 group cursor-pointer"
+                >
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-cafe-dark flex items-center justify-center rounded-full border border-cafe-dark transition-all duration-500 hover:bg-white hover:border-cafe-dark">
+                    <Coffee className="text-white group-hover:text-cafe-dark w-5 h-5 md:w-6 md:h-6 transition-colors duration-500" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xl md:text-2xl font-serif font-bold tracking-wide text-cafe-dark leading-none">
+                      LUMIÈRE
+                    </span>
+                    <span className="text-[10px] font-sans tracking-[0.3em] text-cafe-gold uppercase mt-1">
+                      Roastery & Kitchen
+                    </span>
+                  </div>
+                </div>
+                <div className="hidden md:flex items-center gap-12">
+                  {['Home', 'Story', 'Menu', 'Visit'].map((item) => (
+                    <button
+                      key={item}
+                      onClick={() => scrollTo(item.toLowerCase() === 'home' ? 'index' : item.toLowerCase())}
+                      onMouseEnter={playHoverSfx}
+                      className="relative text-cafe-brown/60 hover:text-cafe-dark text-xs font-medium font-sans uppercase tracking-[0.2em] transition-colors duration-300 flex items-center gap-2 group"
+                    >
+                      <span className="w-1 h-1 rounded-full bg-cafe-gold opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                      {item}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-4 md:gap-6">
+                   <div className="hidden sm:flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse-slow"></div>
+                      <span className="text-[10px] font-sans uppercase tracking-widest text-cafe-brown/70">
+                        Open until 8PM
+                      </span>
+                   </div>
+                   <button 
+                     onClick={() => scrollTo('visit')}
+                     onMouseEnter={playHoverSfx}
+                     className="group bg-cafe-dark text-cafe-cream px-5 py-3 transition-all duration-300 hover:bg-cafe-gold hover:text-white rounded-sm shadow-sm"
+                   >
+                     <span className="flex items-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-[0.15em]">
+                       Order Online
+                       <Utensils className="w-3 h-3 group-hover:rotate-12 transition-transform" />
+                     </span>
+                   </button>
+                </div>
+              </div>
+            </div>
+          </nav>
+        );
+      };
+
+      // StatsGrid
+      const StatsGrid = () => {
+        const [activeStat, setActiveStat] = useState(null);
+
+        const stats = [
+          { label: 'Sourcing', value: '100%', sub: 'Ethically Sourced Arabica' },
+          { label: 'Established', value: '2015', sub: 'Serving Since' },
+          { label: 'Capacity', value: '45+', sub: 'Indoor & Patio Seating' },
+          { label: 'Amenities', value: 'FAST', sub: 'Fiber WiFi & Power' },
+        ];
+
+        const triggerInteraction = (idx) => {
+          playClickSfx();
+          setActiveStat(idx);
+          setTimeout(() => setActiveStat(null), 800);
+        };
+
+        return (
+          <div className="w-full relative">
+            <div className="absolute -top-8 right-0 text-[10px] font-sans text-cafe-gold tracking-widest italic font-serif">
+              The Lumière Standard
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-l border-t border-cafe-border">
+              {stats.map((stat, idx) => (
+                <div 
+                  key={stat.label} 
+                  onClick={() => triggerInteraction(idx)}
+                  onMouseEnter={playHoverSfx}
+                  className="group bg-white border-r border-b border-cafe-border p-8 relative overflow-hidden hover:bg-cafe-base transition-colors duration-700 cursor-default select-none"
+                >
+                  <div className="flex flex-col h-full justify-between gap-10 relative z-10">
+                    <div className="flex justify-between items-start">
+                      <span className="text-[10px] font-sans text-cafe-brown/60 uppercase tracking-[0.2em] group-hover:text-cafe-dark transition-colors">
+                        {stat.label}
+                      </span>
+                      <span className="text-xl font-serif italic text-cafe-border group-hover:text-cafe-gold transition-colors duration-500">
+                          {idx + 1}
+                      </span>
+                    </div>
+                    <div>
+                      <h4 className={`
+                          text-4xl lg:text-5xl font-serif text-cafe-dark tracking-tight mb-3 transition-all duration-500
+                          ${activeStat === idx ? 'scale-105 text-cafe-gold' : ''}
+                      `}>
+                        {stat.value}
+                      </h4>
+                      <div className="flex items-center gap-3">
+                          <div className="h-[1px] w-6 bg-cafe-gold/50 group-hover:w-12 transition-all duration-500"></div>
+                          <p className="text-[10px] font-bold text-cafe-brown/80 uppercase tracking-widest">
+                          {stat.sub}
+                          </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      };
+
+      // BlockDisplay (Menu)
+      const BlockDisplay = () => {
+        const [accessState, setAccessState] = useState('idle');
+        const menuItems = [
+          {
+            id: '001',
+            name: 'Velvet Latte',
+            price: '$5.50',
+            category: 'Signature',
+            description: 'Double shot espresso, steamed oat milk, lavender syrup, dried petals.',
+            tags: ['Hot', 'Iced', 'Oat'],
+            imageType: 'coffee'
+          },
+          {
+            id: '002',
+            name: 'Almond Croissant',
+            price: '$4.75',
+            category: 'Pastry',
+            description: 'Buttery flaky pastry filled with almond frangipane and topped with toasted almonds.',
+            tags: ['Fresh', 'Vegetarian'],
+            imageType: 'pastry'
+          },
+          {
+            id: '003',
+            name: 'Kyoto Cold Brew',
+            price: '$6.00',
+            category: 'Coffee',
+            description: 'Slow-drip cold brew aged for 12 hours. Smooth, bold, and incredibly distinct.',
+            tags: ['Single Origin', 'Bold'],
+            imageType: 'coffee'
+          },
+          {
+            id: '004',
+            name: 'Matcha Cloud',
+            price: '$6.50',
+            category: 'Tea',
+            description: 'Ceremonial grade matcha whipped with vanilla cold foam over ice.',
+            tags: ['Antioxidant', 'Sweet'],
+            imageType: 'tea'
+          }
+        ];
+        const seasonals = Array.from({ length: 4 }, (_, i) => i + 1);
+
+        const handleDownloadMenu = () => {
+          playClickSfx();
+          if (accessState !== 'idle') return;
+          setAccessState('loading');
+          setTimeout(() => {
+            setAccessState('done');
+            setTimeout(() => setAccessState('idle'), 3000);
+          }, 2000);
+        };
+
+        return (
+          <div className="w-full relative">
+            <div className="flex flex-col md:flex-row items-end justify-between mb-12 border-b border-cafe-border pb-6">
+              <div>
+                  <div className="text-[10px] font-sans text-cafe-gold uppercase tracking-[0.3em] mb-3">
+                      Curated Selections
+                  </div>
+                  <h2 className="text-4xl md:text-6xl font-serif text-cafe-dark leading-[0.9]">
+                  Seasonal <br/> <span className="italic text-cafe-brown/60">Menu</span>
+                  </h2>
+              </div>
+              <div className="hidden md:flex flex-col items-end gap-2 text-right mt-8 md:mt-0">
+                   <div className="flex items-center gap-2 text-xs font-sans tracking-widest text-cafe-brown border border-cafe-border px-4 py-2 rounded-full">
+                      <Coffee className="w-3 h-3 text-cafe-gold" />
+                      <span>ROASTED FRESH DAILY</span>
+                   </div>
+                   <span className="text-[10px] font-sans text-cafe-brown/50 uppercase tracking-widest mt-1">Kitchen Closes @ 7:30PM</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {menuItems.map((item) => (
+                <div 
+                  key={item.id}
+                  onMouseEnter={playHoverSfx}
+                  className="group relative bg-white p-6 md:p-10 flex flex-col gap-6 border border-cafe-border hover:shadow-lg hover:border-cafe-gold/30 transition-all duration-500 rounded-sm"
+                >
+                  <div className="flex justify-between items-start">
+                      <div className="flex flex-col">
+                          <span className="text-[10px] font-sans text-cafe-gold mb-2 uppercase tracking-widest">{item.category}</span>
+                          <h3 className="text-2xl md:text-3xl font-serif text-cafe-dark group-hover:text-cafe-gold transition-colors">
+                              {item.name}
+                          </h3>
+                      </div>
+                      <div className="flex items-center justify-center w-12 h-12 rounded-full border border-cafe-border group-hover:bg-cafe-gold group-hover:border-cafe-gold transition-all duration-500">
+                          <span className="font-serif italic text-lg group-hover:text-white transition-colors">{item.price}</span>
+                      </div>
+                  </div>
+
+                  <div className="w-full aspect-[2/1] bg-cafe-base relative overflow-hidden rounded-sm group-hover:bg-cafe-cream transition-colors">
+                      {item.imageType === 'coffee' && (
+                          <div className="absolute inset-0 flex items-center justify-center opacity-10 group-hover:opacity-20 transition-opacity duration-700">
+                              <div className="w-32 h-32 rounded-full border-[20px] border-cafe-dark/20 scale-150"></div>
+                              <div className="absolute w-24 h-24 rounded-full border-[10px] border-cafe-gold/20 scale-125"></div>
+                          </div>
+                      )}
+                      {item.imageType === 'pastry' && (
+                          <div className="absolute inset-0 flex items-center justify-center opacity-10 group-hover:opacity-20 transition-opacity duration-700">
+                               <div className="w-full h-full bg-[radial-gradient(#C19A6B_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                          </div>
+                      )}
+                      {item.imageType === 'tea' && (
+                          <div className="absolute inset-0 bg-gradient-to-tr from-cafe-sage/10 to-transparent">
+                               <div className="absolute bottom-0 right-0 w-32 h-32 bg-cafe-sage/20 rounded-full blur-3xl"></div>
+                          </div>
+                      )}
+                       <div className="absolute inset-0 flex items-center justify-center">
+                          {item.imageType === 'coffee' && <Coffee className="w-12 h-12 text-cafe-brown/20 group-hover:text-cafe-brown/40 transition-colors" />}
+                          {item.imageType === 'pastry' && <Croissant className="w-12 h-12 text-cafe-gold/30 group-hover:text-cafe-gold/50 transition-colors" />}
+                          {item.imageType === 'tea' && <Utensils className="w-12 h-12 text-cafe-sage/30 group-hover:text-cafe-sage/50 transition-colors" />}
+                       </div>
+                  </div>
+
+                  <div className="pt-2">
+                      <p className="text-sm font-sans text-cafe-brown/80 leading-relaxed max-w-lg">
+                         {item.description}
+                      </p>
+                      <div className="flex flex-wrap gap-2 mt-4">
+                          {item.tags.map(tag => (
+                              <span key={tag} className="text-[10px] font-sans text-cafe-brown/50 border border-cafe-border px-3 py-1 uppercase rounded-full group-hover:border-cafe-gold/50 group-hover:text-cafe-brown transition-colors">
+                                  {tag}
+                              </span>
+                          ))}
+                      </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-16">
+                <h4 className="text-xs font-sans uppercase tracking-[0.2em] text-cafe-brown/60 mb-8 flex items-center gap-4 text-center justify-center md:justify-start">
+                   <span className="w-8 h-[1px] bg-cafe-gold"></span>
+                   Coming Soon
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {seasonals.map((i) => (
+                      <div 
+                          key={`seasonal-${i}`} 
+                          onMouseEnter={playHoverSfx}
+                          className="aspect-square bg-white border border-cafe-border p-6 flex flex-col justify-center items-center gap-4 hover:border-cafe-gold transition-all group cursor-default"
+                      >
+                          <div className="w-10 h-10 rounded-full bg-cafe-base flex items-center justify-center group-hover:bg-cafe-gold/10 transition-colors">
+                              <Coffee className="w-5 h-5 text-cafe-border group-hover:text-cafe-gold transition-colors" />
+                          </div>
+                          <span className="text-[10px] font-sans text-cafe-brown/40 uppercase tracking-widest text-center group-hover:text-cafe-brown transition-colors">
+                              Seasonal Blend 0{i}
+                          </span>
+                      </div>
+                  ))}
+                </div>
+                <div className="mt-12 flex justify-center">
+                   <button 
+                      onClick={handleDownloadMenu}
+                      onMouseEnter={playHoverSfx}
+                      className={`
+                          relative group overflow-hidden px-10 py-4 border border-cafe-gold/50 rounded-sm
+                          font-sans text-xs uppercase tracking-widest transition-all duration-500
+                          ${accessState === 'done' ? 'bg-cafe-gold text-white' : 'hover:bg-cafe-base text-cafe-dark'}
+                      `}
+                   >
+                      <div className="flex items-center gap-3 relative z-10">
+                          <ShoppingBag className={`w-4 h-4 ${accessState === 'loading' ? 'animate-bounce' : ''}`} />
+                          
+                          <span>
+                              {accessState === 'idle' && 'Download Full Menu PDF'}
+                              {accessState === 'loading' && 'Preparing File...'}
+                              {accessState === 'done' && 'Download Complete'}
+                          </span>
+                      </div>
+                   </button>
+                </div>
+            </div>
+          </div>
+        );
+      };
+
+      // PixelPlayground
+      const PixelPlayground = () => {
+        const [pixels, setPixels] = useState([]);
+        const cols = 20;
+        const rows = 4;
+
+        useEffect(() => {
+          setPixels(Array.from({ length: cols * rows }, (_, i) => 0));
+        }, []);
+
+        const handleInteraction = (index) => {
+          playHoverSfx();
+          const pixelElement = document.getElementById(`grain-${index}`);
+          if (pixelElement) {
+              pixelElement.style.backgroundColor = '#C19A6B';
+              pixelElement.style.transform = 'scale(1.5) rotate(45deg)';
+              pixelElement.style.transition = 'none';
+              setTimeout(() => {
+                  pixelElement.style.transition = 'all 1.5s ease-out';
+                  pixelElement.style.backgroundColor = 'transparent';
+                  pixelElement.style.transform = 'scale(1) rotate(0deg)';
+              }, 50);
+          }
+        };
+
+        return (
+          <div className="w-full border-y border-cafe-border bg-[#FAFAF5] py-12 flex flex-col items-center justify-center overflow-hidden">
+              <div className="text-[10px] font-sans text-cafe-brown/40 uppercase tracking-[0.3em] mb-6 font-serif italic">
+                  Interact
+              </div>
+              <div 
+                  className="grid gap-3 md:gap-4"
+                  style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+              >
+                  {pixels.map((_, i) => (
+                      <div 
+                          key={i}
+                          id={`grain-${i}`}
+                          onMouseEnter={() => handleInteraction(i)}
+                          className="w-2 h-2 md:w-3 md:h-3 rounded-full border border-cafe-gold/30 bg-transparent hover:border-cafe-gold transition-all duration-300"
+                      />
+                  ))}
+              </div>
+          </div>
+        );
+      };
+
+      // App
+      const App = () => {
+        return (
+          <div className="min-h-screen font-sans selection:bg-cafe-gold selection:text-white overflow-x-hidden transition-colors duration-300 bg-cafe-cream text-cafe-brown">
+            <CustomCursor />
+            <NavBar />
+
+            <main className="pt-24 pb-12 px-4 md:px-8 max-w-[1600px] mx-auto space-y-16 md:space-y-24">
+              <section id="index" className="relative min-h-[70vh] flex flex-col justify-between pb-8 border-x border-cafe-border md:px-12 pt-12 scroll-mt-32 bg-white">
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(193,154,107,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(193,154,107,0.05)_1px,transparent_1px)] bg-[size:60px_60px] pointer-events-none"></div>
+                <div className="flex justify-between items-start relative z-10 border-b border-cafe-border pb-6">
+                   <div className="flex flex-col gap-1">
+                      <span className="text-[10px] font-sans uppercase tracking-[0.3em] text-cafe-brown/50">Est. 2015</span>
+                      <span className="text-sm font-bold uppercase tracking-wider font-serif">San Francisco, CA</span>
+                   </div>
+                   <div className="flex flex-col gap-1 text-right">
+                      <span className="text-[10px] font-sans uppercase tracking-[0.3em] text-cafe-brown/50">Today's Roast</span>
+                      <div className="flex items-center justify-end gap-2">
+                          <span className="w-2 h-2 bg-cafe-gold rounded-full animate-pulse"></span>
+                          <span className="text-sm font-bold uppercase tracking-wider text-cafe-dark">Ethiopian Yirgacheffe</span>
+                      </div>
+                   </div>
+                </div>
+
+                <div className="relative z-10 mt-12 md:mt-0">
+                  <h1 className="text-[10vw] leading-[0.9] font-serif font-medium text-cafe-dark mix-blend-multiply">
+                    Sip. Savor. <br/>
+                    <span className="italic text-cafe-gold">Stay Awhile.</span>
+                  </h1>
+                  
+                  <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-12 mt-12 pl-2">
+                      <div className="max-w-xl space-y-6">
+                          <div className="h-[2px] w-24 mb-6 bg-cafe-gold"></div>
+                          <p className="text-lg md:text-xl font-sans text-cafe-brown/80 leading-relaxed font-light">
+                            A sanctuary for coffee lovers. We roast small batches daily to bring out the delicate notes of every bean. 
+                            <span className="text-cafe-dark font-medium block mt-2">Pair with our house-made pastries for the perfect morning ritual.</span>
+                          </p>
+                      </div>
+                      <div className="flex flex-col items-end gap-3">
+                          {['Single Origin Espresso', 'Artisanal Pastries', 'Organic Loose Leaf Tea'].map((item, i) => (
+                              <div key={i} className="flex items-center gap-4 group cursor-default" onMouseEnter={playHoverSfx}>
+                                   <div className="h-[1px] w-4 group-hover:w-12 transition-all duration-500 bg-cafe-gold"></div>
+                                   <span className="text-xs font-bold uppercase tracking-[0.15em] text-cafe-brown/60 transition-colors group-hover:text-cafe-dark">
+                                      {item}
+                                   </span>
+                              </div>
+                          ))}
+                      </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 border-t border-cafe-border pt-6 mt-12 relative z-10">
+                    <div className="hidden md:flex flex-col gap-1">
+                        <span className="text-[9px] font-sans text-cafe-brown/50 uppercase tracking-widest">Opening Hours</span>
+                        <span className="text-xs font-sans text-cafe-dark">07:00 AM - 08:00 PM</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                         <span className="text-[9px] font-sans text-cafe-brown/50 uppercase tracking-widest">Location</span>
+                         <span className="text-xs font-sans text-cafe-dark">402 Market St.</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                         <span className="text-[9px] font-sans text-cafe-brown/50 uppercase tracking-widest">Contact</span>
+                         <span className="text-xs font-sans text-cafe-dark">hello@lumiere.cafe</span>
+                    </div>
+                    <div className="flex justify-end items-end">
+                        <ArrowDown className="animate-bounce w-5 h-5 text-cafe-gold" />
+                    </div>
+                </div>
+              </section>
+
+              <section id="story" className="scroll-mt-24">
+                <StatsGrid />
+              </section>
+
+              <section>
+                <PixelPlayground />
+              </section>
+
+              <div className="relative border-y border-cafe-border bg-white py-4 overflow-hidden">
+                  <div className="flex whitespace-nowrap animate-marquee hover:[animation-play-state:paused] cursor-default">
+                      {Array.from({length: 8}).map((_, i) => (
+                          <div key={i} className="flex items-center mx-12 gap-6 opacity-80">
+                              <Star className="w-4 h-4 text-cafe-gold fill-cafe-gold" />
+                              <span className="text-lg font-serif italic text-cafe-dark">
+                                  Freshly Roasted Daily
+                              </span>
+                              <div className="w-2 h-2 rounded-full bg-cafe-brown/20"></div>
+                              <span className="text-sm font-sans font-bold uppercase tracking-[0.2em] text-cafe-brown/60">
+                                   Ethically Sourced
+                              </span>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+
+              <section id="menu" className="scroll-mt-24">
+                <BlockDisplay />
+              </section>
+
+              <section className="grid grid-cols-1 lg:grid-cols-12 gap-px border bg-cafe-border border-cafe-border">
+                   <div className="col-span-1 lg:col-span-8 p-12 md:p-16 relative overflow-hidden group bg-cafe-dark">
+                       <div className="relative z-10 text-cafe-cream">
+                          <h3 className="text-4xl md:text-6xl font-serif mb-8 leading-tight">
+                              Crafting the <br/> <span className="italic text-cafe-gold">Perfect Cup</span>
+                          </h3>
+                          <p className="font-sans text-sm md:text-base text-cafe-cream/80 leading-loose max-w-2xl font-light">
+                              We believe coffee is more than just caffeine—it's a ritual. Our beans are sourced directly from sustainable farms in Ethiopia, Colombia, and Costa Rica. 
+                              We roast in small batches right here in the shop to ensure every cup tells a story of its origin.
+                          </p>
+                       </div>
+                       <div className="absolute -right-12 -bottom-24 text-[16rem] font-serif italic text-white/5 select-none pointer-events-none">
+                           &
+                       </div>
+                   </div>
+
+                   <div className="col-span-1 lg:col-span-4 flex flex-col bg-[#F5F2EA]">
+                      <div className="flex-1 p-10 border-b border-cafe-border hover:bg-white transition-colors" onMouseEnter={playHoverSfx}>
+                          <MapPin className="w-8 h-8 mb-6 text-cafe-gold" />
+                          <h4 className="text-lg font-serif font-bold text-cafe-dark mb-2">The Space</h4>
+                          <p className="text-xs font-sans text-cafe-brown/70 leading-relaxed uppercase tracking-wide">
+                              Designed for focus and conversation. Minimalist aesthetic with warm wood tones and abundant natural light.
+                          </p>
+                      </div>
+                      <div className="flex-1 p-10 hover:bg-white transition-colors" onMouseEnter={playHoverSfx}>
+                          <Clock className="w-8 h-8 mb-6 text-cafe-gold" />
+                          <h4 className="text-lg font-serif font-bold text-cafe-dark mb-2">Morning Rituals</h4>
+                          <p className="text-xs font-sans text-cafe-brown/70 leading-relaxed uppercase tracking-wide">
+                              Join us for our signature tasting flights every Tuesday morning at 9 AM. Reservations recommended.
+                          </p>
+                      </div>
+                   </div>
+              </section>
+
+              <section id="visit" className="border-t border-cafe-border pt-16 pb-12">
+                <div className="grid md:grid-cols-2 gap-16">
+                  <div>
+                     <div className="inline-block px-4 py-2 text-[10px] font-bold uppercase tracking-widest mb-8 bg-cafe-gold text-white rounded-sm">
+                       Visit Us Today
+                     </div>
+                     <h2 className="text-5xl md:text-7xl font-serif text-cafe-dark mb-8 leading-[0.9]">
+                       Your Table <br/> <span className="italic text-cafe-brown/60">Is Waiting</span>
+                     </h2>
+                     <div className="flex flex-col gap-8">
+                         <p className="text-cafe-brown/80 font-sans text-base max-w-md leading-relaxed">
+                             Whether you need a quiet corner to work or a large table for brunch with friends, we have a spot for you.
+                         </p>
+                         <div className="flex flex-col gap-4 text-sm font-sans tracking-widest text-cafe-brown/60 mt-2">
+                           <a href="#" onMouseEnter={playHoverSfx} className="group flex items-center gap-4 transition-colors hover:text-cafe-dark">
+                              <span className="w-8 h-[1px] bg-cafe-border transition-all duration-300 group-hover:w-16 group-hover:bg-cafe-gold"></span>
+                              402 MARKET ST, SAN FRANCISCO
+                           </a>
+                           <a href="#" onMouseEnter={playHoverSfx} className="group flex items-center gap-4 transition-colors hover:text-cafe-dark">
+                              <span className="w-8 h-[1px] bg-cafe-border transition-all duration-300 group-hover:w-16 group-hover:bg-cafe-gold"></span>
+                              @LUMIERE.CAFE
+                           </a>
+                         </div>
+                     </div>
+                  </div>
+
+                  <div className="flex flex-col justify-end text-right relative min-h-[300px]">
+                     <div className="absolute top-0 right-0 w-48 h-48 border border-cafe-border rounded-full animate-spin-slow opacity-50"></div>
+                     <div className="absolute top-4 right-4 w-40 h-40 border border-dotted border-cafe-gold rounded-full animate-spin-slow opacity-30" style={{ animationDirection: 'reverse' }}></div>
+                     <div className="mt-auto relative z-10">
+                         <p className="text-[10px] font-sans uppercase tracking-[0.3em] text-cafe-brown/50 mb-3">
+                           Current Vibe
+                         </p>
+                         <div className="text-2xl font-serif italic text-cafe-sage">
+                             Calm & Aromatic
+                         </div>
+                     </div>
+                     <div className="mt-8 text-[12vw] md:text-[140px] leading-none font-serif font-black select-none text-cafe-dark/5 absolute bottom-0 right-0">
+                       CAFE
+                     </div>
+                  </div>
+                </div>
+                <div className="mt-16 pt-8 border-t border-cafe-border flex flex-col md:flex-row justify-between items-center gap-6">
+                  <span className="text-[10px] font-sans text-cafe-brown/40 uppercase tracking-widest">© 2025 Lumière Roastery</span>
+                  <div className="flex gap-4 text-[10px] font-sans text-cafe-brown/60 uppercase tracking-widest">
+                      <span className="hover:text-cafe-dark cursor-pointer transition-colors">Privacy</span>
+                      <span>/</span>
+                      <span className="hover:text-cafe-dark cursor-pointer transition-colors">Terms</span>
+                      <span>/</span>
+                      <span className="flex items-center gap-2 hover:text-cafe-dark cursor-pointer transition-colors">
+                          <Instagram className="w-3 h-3" /> Social
+                      </span>
+                  </div>
+                </div>
+              </section>
+            </main>
+          </div>
+        );
+      };
+
+      // MOUNT
+      const root = createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+</body>
+</html>
