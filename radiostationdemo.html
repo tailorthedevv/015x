@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SIGNAL FM [STANDALONE]</title>
+    <meta name="description" content="Global Underground Radio." />
+    
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ['"Chakra Petch"', 'sans-serif'],
+              body: ['Archivo', 'sans-serif'],
+            },
+            colors: {
+              signal: {
+                base: '#09090b', // Zinc 950
+                surface: '#18181b', // Zinc 900
+                accent: '#ef4444', // Red 500 (ON AIR)
+                secondary: '#3f3f46', // Zinc 700
+                text: '#fafafa', // Zinc 50
+                muted: '#71717a', // Zinc 500
+                success: '#22c55e', // Green
+              }
+            },
+            animation: {
+              'spin-slow': 'spin 12s linear infinite',
+              'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'marquee': 'marquee 25s linear infinite',
+              'noise': 'noise 0.2s infinite',
+            },
+            keyframes: {
+              marquee: {
+                '0%': { transform: 'translateX(0%)' },
+                '100%': { transform: 'translateX(-100%)' },
+              },
+              noise: {
+                '0%, 100%': { transform: 'translate(0,0)' },
+                '10%': { transform: 'translate(-5%,-5%)' },
+                '20%': { transform: 'translate(-10%,5%)' },
+                '30%': { transform: 'translate(5%,-10%)' },
+                '40%': { transform: 'translate(-5%,15%)' },
+                '50%': { transform: 'translate(-10%,5%)' },
+                '60%': { transform: 'translate(15%,0)' },
+                '70%': { transform: 'translate(0,10%)' },
+                '80%': { transform: 'translate(-15%,0)' },
+                '90%': { transform: 'translate(10%,5%)' },
+              }
+            }
+          },
+        },
+      }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <style>
+      body {
+        background-color: #09090b;
+        color: #fafafa;
+        overflow-x: hidden;
+      }
+      .blur-backdrop { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+      .crt-overlay {
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        background-size: 100% 2px, 3px 100%;
+        pointer-events: none;
+      }
+    </style>
+
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Import Map -->
+    <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "lucide-react": "https://esm.sh/lucide-react@0.292.0"
+  }
+}
+</script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module" data-presets="react,typescript">
+      import React, { useState, useEffect, useRef } from 'react';
+      import { createRoot } from 'react-dom/client';
+      import { 
+        Radio, Zap, SignalHigh, Globe2, Activity, RadioReceiver, 
+        Clock, Mic2, Music4, Play, Volume2, Twitter, Instagram, Globe 
+      } from 'lucide-react';
+
+      // --- UTILS: SFX ---
+      let audioCtx = null;
+      const initAudio = () => {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      };
+
+      const playStaticSfx = () => {
+        const ctx = initAudio();
+        if (!ctx) return;
+        const bufferSize = ctx.sampleRate * 0.15;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 1000;
+        
+        gain.gain.setValueAtTime(0.05, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        noise.start();
+      };
+
+      const playClickSfx = () => {
+        const ctx = initAudio();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.05, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.1);
+      };
+
+      // --- COMPONENTS ---
+
+      // CustomCursor
+      const CustomCursor = () => {
+        const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+        const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+
+        useEffect(() => {
+          const handleMouseMove = (e) => setMousePos({ x: e.clientX, y: e.clientY });
+          window.addEventListener('mousemove', handleMouseMove);
+          return () => window.removeEventListener('mousemove', handleMouseMove);
+        }, []);
+
+        useEffect(() => {
+          let animationFrameId;
+          const animateCursor = () => {
+            setCursorPos((prev) => ({
+              x: prev.x + (mousePos.x - prev.x) * 0.2,
+              y: prev.y + (mousePos.y - prev.y) * 0.2,
+            }));
+            animationFrameId = requestAnimationFrame(animateCursor);
+          };
+          animationFrameId = requestAnimationFrame(animateCursor);
+          return () => cancelAnimationFrame(animationFrameId);
+        }, [mousePos]);
+
+        return (
+          <div 
+            className="fixed pointer-events-none z-[100] hidden md:block mix-blend-difference text-white"
+            style={{ left: `${cursorPos.x}px`, top: `${cursorPos.y}px`, transform: 'translate(-50%, -50%)' }}
+          >
+            <div className="relative flex items-center justify-center w-10 h-10">
+               <div className="absolute w-full h-[1px] bg-white"></div>
+               <div className="absolute h-full w-[1px] bg-white"></div>
+               <div className="absolute w-2 h-2 bg-black"></div>
+               <div className="absolute top-0 left-0 w-2 h-[1px] bg-white"></div>
+               <div className="absolute top-0 left-0 h-2 w-[1px] bg-white"></div>
+               <div className="absolute bottom-0 right-0 w-2 h-[1px] bg-white"></div>
+               <div className="absolute bottom-0 right-0 h-2 w-[1px] bg-white"></div>
+            </div>
+          </div>
+        );
+      };
+
+      // NavBar
+      const NavBar = () => {
+        const scrollTo = (id) => {
+          playClickSfx();
+          const element = document.getElementById(id);
+          if (element) element.scrollIntoView({ behavior: 'smooth' });
+        };
+
+        return (
+          <nav className="fixed top-0 left-0 w-full z-50 bg-signal-base/90 blur-backdrop border-b border-signal-secondary/30">
+            <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+              <div className="flex items-center justify-between h-20">
+                <div onClick={() => scrollTo('index')} onMouseEnter={playStaticSfx} className="flex items-center gap-3 cursor-pointer group">
+                  <div className="w-10 h-10 bg-signal-accent flex items-center justify-center rounded-sm">
+                     <Radio className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex flex-col leading-none">
+                      <span className="text-2xl font-display font-bold text-signal-text tracking-tight group-hover:text-signal-accent transition-colors">SIGNAL FM</span>
+                      <span className="text-[10px] font-mono text-signal-muted uppercase tracking-[0.2em]">Global Broadcast</span>
+                  </div>
+                </div>
+                <div className="hidden md:flex items-center gap-8">
+                  {['Frequency', 'Schedule', 'Shows', 'Contact'].map((item) => (
+                    <button
+                      key={item}
+                      onClick={() => scrollTo(item.toLowerCase())}
+                      onMouseEnter={playStaticSfx}
+                      className="text-sm font-display font-medium uppercase tracking-widest text-signal-muted hover:text-signal-accent transition-colors relative group"
+                    >
+                      {item}
+                      <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-1 bg-signal-accent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-4">
+                   <div className="flex items-center gap-2 px-3 py-1 bg-signal-surface border border-signal-accent/30 rounded-full">
+                      <div className="w-2 h-2 bg-signal-accent rounded-full animate-pulse-fast"></div>
+                      <span className="text-xs font-mono font-bold text-signal-accent uppercase tracking-wider">On Air</span>
+                   </div>
+                   <button onClick={playClickSfx} className="hidden sm:flex p-2 hover:bg-signal-secondary/50 rounded-full text-signal-text transition-colors">
+                      <Zap className="w-5 h-5" />
+                   </button>
+                </div>
+              </div>
+            </div>
+          </nav>
+        );
+      };
+
+      // StatsGrid
+      const StatsGrid = () => {
+        const stats = [
+          { label: 'Frequency', value: '104.2', subtext: 'MHz FM / Digital', icon: <RadioReceiver className="w-5 h-5" />, isLive: true },
+          { label: 'Listeners', value: '84.2K', subtext: 'Concurrent Global', icon: <Globe2 className="w-5 h-5" /> },
+          { label: 'Signal Str', value: '98%', subtext: 'Optimal Coverage', icon: <SignalHigh className="w-5 h-5" /> },
+          { label: 'Bitrate', value: '320', subtext: 'kbps Audio Stream', icon: <Activity className="w-5 h-5" /> },
+        ];
+        return (
+          <div className="w-full py-12 border-t border-signal-secondary/20">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 divide-y sm:divide-y-0 sm:divide-x divide-signal-secondary/20">
+              {stats.map((stat, idx) => (
+                <div key={idx} onMouseEnter={playStaticSfx} onClick={playClickSfx} className="group p-8 bg-signal-base hover:bg-signal-surface transition-colors duration-300 relative overflow-hidden">
+                  <div className="flex justify-between items-start mb-4">
+                      <div className="text-signal-muted group-hover:text-signal-text transition-colors">{stat.icon}</div>
+                      {stat.isLive && <span className="text-[10px] font-mono uppercase bg-signal-accent/10 text-signal-accent px-2 py-0.5 rounded border border-signal-accent/20">Live</span>}
+                  </div>
+                  <div className="relative z-10">
+                    <div className="text-5xl font-display font-bold text-signal-text mb-1 tracking-tighter">{stat.value}</div>
+                    <div className="text-sm font-display font-medium text-signal-muted uppercase tracking-wider mb-0.5">{stat.label}</div>
+                    <div className="text-xs font-mono text-signal-muted/50">{stat.subtext}</div>
+                  </div>
+                  <div className="absolute inset-0 bg-signal-accent/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out pointer-events-none"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      };
+
+      // BlockDisplay (Schedule)
+      const BlockDisplay = () => {
+        const schedule = [
+          { id: '1', title: 'Morning Frequency', host: 'Sarah Void', time: '06:00 - 09:00', genre: 'Deep House / Talk', status: 'past' },
+          { id: '2', title: 'The Signal', host: 'Marcus Static', time: '09:00 - 12:00', genre: 'Indie / Alt', status: 'live' },
+          { id: '3', title: 'Underground Cuts', host: 'DJ Encoder', time: '12:00 - 15:00', genre: 'Techno', status: 'upcoming' },
+          { id: '4', title: 'Night Waves', host: 'Luna 9', time: '15:00 - 18:00', genre: 'Synthwave', status: 'upcoming' },
+          { id: '5', title: 'Data Stream', host: 'System', time: '18:00 - 21:00', genre: 'IDM / Glitch', status: 'upcoming' },
+          { id: '6', title: 'Midnight Oil', host: 'The Nightman', time: '21:00 - 00:00', genre: 'Jazz / LoFi', status: 'upcoming' },
+        ];
+        return (
+          <div className="w-full relative">
+            <div className="flex flex-col md:flex-row items-end justify-between mb-12 border-b border-signal-secondary/20 pb-6">
+              <div>
+                  <h2 className="text-4xl md:text-6xl font-display font-bold uppercase tracking-tighter text-signal-text">Broadcast <span className="text-signal-accent">Schedule</span></h2>
+                  <p className="text-signal-muted font-mono mt-2 text-sm uppercase tracking-widest">Today's Programming // GMT+0</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
+              {schedule.map((show) => (
+                <div key={show.id} onMouseEnter={playStaticSfx} onClick={playClickSfx} className={`group relative p-8 border border-signal-secondary/10 bg-signal-surface/50 hover:bg-signal-surface transition-all duration-300 cursor-pointer overflow-hidden ${show.status === 'live' ? 'border-signal-accent/50 bg-signal-surface' : ''}`}>
+                  <div className={`absolute top-0 left-0 w-1 h-full transition-colors ${show.status === 'live' ? 'bg-signal-accent' : 'bg-transparent group-hover:bg-signal-secondary'}`}></div>
+                  <div className="flex justify-between items-start mb-6">
+                       <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-signal-muted"><Clock className="w-3 h-3" /> {show.time}</div>
+                       {show.status === 'live' && <span className="animate-pulse text-xs font-bold font-mono uppercase text-signal-accent border border-signal-accent px-2 py-0.5">Live Now</span>}
+                  </div>
+                  <h3 className="text-2xl font-display font-bold text-signal-text mb-2 group-hover:text-signal-accent transition-colors">{show.title}</h3>
+                  <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2 text-sm font-body text-signal-muted"><Mic2 className="w-3 h-3" /> Host: <span className="text-white">{show.host}</span></div>
+                      <div className="flex items-center gap-2 text-sm font-body text-signal-muted"><Music4 className="w-3 h-3" /> Genre: {show.genre}</div>
+                  </div>
+                  <div className="absolute bottom-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-0.5 items-end h-12">
+                      {[...Array(10)].map((_, i) => <div key={i} className="w-1 bg-signal-accent/50 animate-pulse" style={{ height: `${Math.random() * 100}%`, animationDelay: `${i * 0.1}s` }}></div>)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      };
+
+      // SignalTuner
+      const SignalTuner = () => {
+        const canvasRef = useRef(null);
+        const [frequency, setFrequency] = useState(104.2);
+
+        useEffect(() => {
+          const canvas = canvasRef.current;
+          if (!canvas) return;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return;
+          let animationId;
+          let time = 0;
+          const draw = () => {
+            canvas.width = canvas.parentElement?.clientWidth || 800;
+            canvas.height = 200;
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.fillStyle = '#09090b';
+            ctx.fillRect(0, 0, w, h);
+            ctx.strokeStyle = '#3f3f46';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let x = 0; x < w; x += 40) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 2;
+            for (let x = 0; x < w; x++) {
+              const freqOffset = (x - w / 2) / 100;
+              const amplitude = Math.exp(-Math.pow(freqOffset, 2)) * 80; 
+              const noise = (Math.random() - 0.5) * 10;
+              const wave = Math.sin(x * 0.1 + time) * 10;
+              const y = h / 2 - (amplitude + wave + noise);
+              if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            ctx.lineTo(w, h);
+            ctx.lineTo(0, h);
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.1)';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1;
+            ctx.moveTo(w / 2, 0);
+            ctx.lineTo(w / 2, h);
+            ctx.stroke();
+            time += 0.2;
+            animationId = requestAnimationFrame(draw);
+          };
+          draw();
+          return () => cancelAnimationFrame(animationId);
+        }, []);
+
+        return (
+          <div className="w-full bg-signal-surface border-y border-signal-secondary/30 py-12 relative overflow-hidden flex flex-col items-center">
+              <h3 className="text-signal-accent text-xs font-mono uppercase tracking-[0.3em] mb-8 flex items-center gap-2"><span className="w-2 h-2 bg-signal-accent rounded-full animate-pulse"></span>Signal Visualizer</h3>
+              <div 
+                  className="w-full max-w-4xl h-[200px] border-x border-signal-secondary/30 relative cursor-crosshair"
+                  onMouseEnter={playStaticSfx}
+                  onClick={() => setFrequency(prev => +(prev + 0.1).toFixed(1))}
+              >
+                  <canvas ref={canvasRef} className="w-full h-full block" />
+                  <div className="absolute top-4 left-4 font-mono text-signal-accent text-xl">FM {frequency.toFixed(1)}</div>
+                  <div className="absolute bottom-4 right-4 font-mono text-signal-muted text-xs uppercase">Stereo / Signal: Strong</div>
+              </div>
+              <div className="mt-8 flex gap-8 font-display text-signal-muted uppercase tracking-widest text-sm"><span>Tune</span><span>Scan</span><span>Lock</span></div>
+          </div>
+        );
+      };
+
+      // App
+      const App = () => {
+        return (
+          <div className="min-h-screen font-body selection:bg-signal-accent selection:text-white overflow-x-hidden bg-signal-base text-signal-text">
+            <CustomCursor />
+            <div className="fixed inset-0 z-[60] crt-overlay pointer-events-none opacity-20"></div>
+            <NavBar />
+            <main className="pt-0 pb-0">
+              <section id="index" className="relative min-h-screen flex items-center justify-center px-4 md:px-12 overflow-hidden border-b border-signal-secondary/20">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-signal-secondary/20 via-signal-base to-signal-base z-0"></div>
+                <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+                <div className="relative z-10 text-center max-w-6xl mx-auto space-y-12 mt-16">
+                   <div className="inline-flex items-center gap-4 border border-signal-secondary/40 bg-signal-surface/50 px-6 py-3 rounded-sm backdrop-blur-md animate-slide-up">
+                      <div className="flex flex-col items-end text-right">
+                          <span className="text-[10px] font-mono uppercase tracking-widest text-signal-accent">Now Playing</span>
+                          <span className="text-sm font-display font-bold text-white">NEON VOYAGER - VOID SIGNALS</span>
+                      </div>
+                      <div className="h-8 w-[1px] bg-signal-secondary/40"></div>
+                      <div className="flex gap-1 items-end h-4">
+                          <div className="w-1 bg-signal-accent h-full animate-pulse"></div>
+                          <div className="w-1 bg-signal-accent h-2/3 animate-pulse animation-delay-200"></div>
+                          <div className="w-1 bg-signal-accent h-1/2 animate-pulse animation-delay-100"></div>
+                      </div>
+                   </div>
+                   <h1 className="text-7xl md:text-[10rem] font-display font-bold uppercase tracking-tighter text-white leading-[0.85] mix-blend-normal">Signal <br/><span className="text-transparent bg-clip-text bg-gradient-to-b from-signal-accent to-red-900">FM</span></h1>
+                   <p className="max-w-xl mx-auto text-signal-muted text-lg font-mono uppercase tracking-widest leading-relaxed">Underground Frequencies. <br/> Worldwide Transmission.</p>
+                   <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4">
+                      <button onMouseEnter={playStaticSfx} onClick={playClickSfx} className="bg-signal-accent text-white px-10 py-5 rounded-sm font-display font-bold text-xl hover:bg-red-600 transition-all duration-300 flex items-center gap-3 shadow-[0_0_20px_rgba(239,68,68,0.4)] hover:shadow-[0_0_40px_rgba(239,68,68,0.6)]">
+                          <Play className="w-6 h-6 fill-current" /> TUNE IN LIVE
+                      </button>
+                   </div>
+                </div>
+              </section>
+
+              <section id="frequency"><StatsGrid /></section>
+              <section id="schedule" className="px-4 md:px-12 max-w-[1400px] mx-auto py-24 scroll-mt-24"><BlockDisplay /></section>
+              <section className="py-0"><SignalTuner /></section>
+
+              <div className="relative bg-signal-accent text-white py-3 overflow-hidden">
+                  <div className="flex whitespace-nowrap animate-marquee">
+                      {Array.from({length: 10}).map((_, i) => (
+                          <div key={i} className="flex items-center mx-8 gap-4 font-mono font-bold uppercase tracking-widest text-sm">
+                              <span>/// BREAKING: NEW SHOW ANNOUNCED</span><span className="w-2 h-2 bg-black"></span>
+                              <span>GUEST MIX: DAFT PUNK LEGACY</span><span className="w-2 h-2 bg-black"></span>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+
+              <footer id="contact" className="bg-signal-surface pt-20 pb-12 px-4 border-t border-signal-secondary/20">
+                  <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+                      <div className="space-y-6">
+                          <h2 className="text-3xl font-display font-bold text-white tracking-tighter">SIGNAL FM</h2>
+                          <p className="text-signal-muted font-mono text-sm max-w-xs">Broadcasting from an undisclosed location in the digital void.</p>
+                          <div className="flex gap-4">
+                              {[Twitter, Instagram, Globe].map((Icon, i) => <a key={i} href="#" className="p-3 bg-signal-base border border-signal-secondary/30 rounded-sm hover:border-signal-accent hover:text-signal-accent transition-colors"><Icon className="w-5 h-5" /></a>)}
+                          </div>
+                      </div>
+                      <div className="space-y-6">
+                          <h3 className="font-display font-bold text-white uppercase tracking-wider">Studios</h3>
+                          <ul className="space-y-2 font-mono text-sm text-signal-muted uppercase"><li>London [HQ]</li><li>Berlin [Relay]</li><li>Tokyo [Digital]</li></ul>
+                      </div>
+                      <div className="space-y-6">
+                          <h3 className="font-display font-bold text-white uppercase tracking-wider">Newsletter</h3>
+                          <div className="flex">
+                              <input type="email" placeholder="EMAIL_ADDRESS" className="bg-signal-base border border-signal-secondary/30 px-4 py-2 text-sm font-mono text-white outline-none focus:border-signal-accent w-full" />
+                              <button className="bg-signal-secondary/20 border border-l-0 border-signal-secondary/30 px-4 hover:bg-signal-accent hover:text-white transition-colors">SUBMIT</button>
+                          </div>
+                      </div>
+                  </div>
+                  <div className="max-w-[1400px] mx-auto mt-20 pt-8 border-t border-signal-secondary/10 flex flex-col md:flex-row justify-between items-center text-xs font-mono text-signal-muted uppercase">
+                      <span>© 2025 Signal FM Broadcast Group.</span>
+                      <span className="flex items-center gap-2 mt-4 md:mt-0"><span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>Systems Operational</span>
+                  </div>
+              </footer>
+            </main>
+          </div>
+        );
+      };
+
+      const root = createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+</body>
+</html>
