@@ -1,809 +1,802 @@
+
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>015x.dev | Maths unit</title>
-    <meta name="description" content="Interactive visual guide to GCSE Math: Geometry, Trigonometry, and Graphs." />
-    
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              mono: ['JetBrains Mono', 'monospace'],
-            },
-            colors: {
-              nexus: {
-                dark: '#050505',
-                panel: '#0a0a0a',
-                accent: '#ffffff',
-                accentHover: '#d4d4d4',
-                secondary: '#333333',
-                dim: '#222222',
-              }
-            },
-            animation: {
-              'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              'spin-slow': 'spin 12s linear infinite',
-              'glitch': 'glitch 1s linear infinite',
-            },
-          },
-        },
-      }
-    </script>
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@100;400;800&display=swap" rel="stylesheet">
-
-    <!-- Styles -->
-    <style>
-      body {
-        background-color: #000000;
-        color: #e5e5e5;
-        overflow-x: hidden;
-      }
-      ::selection {
-        background: #ffffff;
-        color: #000000;
-      }
-      ::-webkit-scrollbar { width: 4px; }
-      ::-webkit-scrollbar-track { background: #000000; }
-      ::-webkit-scrollbar-thumb { background: #333333; }
-      @keyframes scan {
-            0% { top: 0%; opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
-        }
-    </style>
-
-    <!-- Babel for in-browser compilation -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <!-- Import Map -->
-    <script type="importmap">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>015x.dev | Maths Unit</title>
+<meta name="description" content="Interactive visual guide to GCSE Math: Geometry, Trigonometry, and Graphs." />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+darkMode: 'class',
+theme: {
+extend: {
+fontFamily: {
+sans: ['Inter', 'sans-serif'],
+mono: ['JetBrains Mono', 'monospace'],
+},
+colors: {
+nexus: {
+dark: '#050505',
+panel: '#0a0a0a',
+accent: '#ffffff',
+accentHover: '#d4d4d4',
+secondary: '#333333',
+dim: '#222222',
+}
+},
+animation: {
+'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+'spin-slow': 'spin 12s linear infinite',
+'glitch': 'glitch 1s linear infinite',
+},
+},
+},
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@100;400;800&display=swap" rel="stylesheet">
+<style>
+body {
+background-color: #000000;
+color: #e5e5e5;
+overflow-x: hidden;
+}
+::selection {
+background: #ffffff;
+color: #000000;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #000000; }
+::-webkit-scrollbar-thumb { background: #333333; }
+</style>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="importmap">
 {
-  "imports": {
-    "react": "https://esm.sh/react@18.2.0",
-    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-    "lucide-react": "https://esm.sh/lucide-react@0.292.0"
-  }
+"imports": {
+"react": "https://esm.sh/react@18.2.0",
+"react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+"lucide-react": "https://esm.sh/lucide-react@0.292.0"
+}
 }
 </script>
 </head>
 <body>
-    <div id="root"></div>
+<div id="root"></div>
+<script type="text/babel" data-type="module" data-presets="react,typescript">
+import React, { useState, useEffect, useRef } from 'react';
+import { createRoot } from 'react-dom/client';
+import {
+Terminal, Code, BookOpen, ArrowUpRight, Play, Pause, Database, Activity, Share2, Layers, ArrowDown, Grid, Triangle, Calculator,
+Cpu, Send, X, MessageSquare, HelpCircle, Sliders
+} from 'lucide-react';
+code
+Code
+let audioCtx = null;
+  const initAudio = () => {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  };
 
-    <script type="text/babel" data-type="module" data-presets="react,typescript">
-      import React, { useState, useEffect, useRef } from 'react';
-      import { createRoot } from 'react-dom/client';
-      import { 
-        Terminal, Code, BookOpen, ArrowUpRight, Play, Pause, Database, Activity, Share2, Layers, ArrowDown, Grid, Triangle, Calculator,
-        Cpu, Send, X, MessageSquare, HelpCircle, Sliders
-      } from 'lucide-react';
+  const playHoverSfx = () => {
+    const ctx = initAudio();
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.05);
+    gain.gain.setValueAtTime(0.02, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.05);
+  };
 
-      // --- UTILS ---
-      let audioCtx = null;
-      const initAudio = () => {
-        if (!audioCtx) {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioCtx.state === 'suspended') {
-          audioCtx.resume();
-        }
-        return audioCtx;
+  const playClickSfx = () => {
+    const ctx = initAudio();
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(200, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.03, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.1);
+  };
+
+  const CustomCursor = () => {
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+    const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+    useEffect(() => {
+      const handleMouseMove = (e) => setMousePos({ x: e.clientX, y: e.clientY });
+      window.addEventListener('mousemove', handleMouseMove);
+      return () => window.removeEventListener('mousemove', handleMouseMove);
+    }, []);
+    useEffect(() => {
+      let animationFrameId;
+      const animateCursor = () => {
+        setCursorPos((prev) => {
+          const dx = mousePos.x - prev.x;
+          const dy = mousePos.y - prev.y;
+          return { x: prev.x + dx * 0.15, y: prev.y + dy * 0.15 };
+        });
+        animationFrameId = requestAnimationFrame(animateCursor);
       };
+      animationFrameId = requestAnimationFrame(animateCursor);
+      return () => cancelAnimationFrame(animationFrameId);
+    }, [mousePos]);
+    return (
+      <div className="fixed pointer-events-none z-[100] text-[#00ff41] text-opacity-80 font-mono font-bold text-xs mix-blend-difference hidden md:block"
+           style={{ left: `${cursorPos.x}px`, top: `${cursorPos.y}px`, transform: 'translate(12px, 12px)' }}>
+        &lt;/&gt;
+      </div>
+    );
+  };
 
-      const playHoverSfx = () => {
-        const ctx = initAudio();
-        if (!ctx) return;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(800, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.05);
-        gain.gain.setValueAtTime(0.02, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.05);
-      };
-
-      const playClickSfx = () => {
-        const ctx = initAudio();
-        if (!ctx) return;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(200, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.03, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.1);
-      };
-
-      // --- COMPONENTS ---
-
-      const CustomCursor = () => {
-        const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-        const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-        useEffect(() => {
-          const handleMouseMove = (e) => setMousePos({ x: e.clientX, y: e.clientY });
-          window.addEventListener('mousemove', handleMouseMove);
-          return () => window.removeEventListener('mousemove', handleMouseMove);
-        }, []);
-        useEffect(() => {
-          let animationFrameId;
-          const animateCursor = () => {
-            setCursorPos((prev) => {
-              const dx = mousePos.x - prev.x;
-              const dy = mousePos.y - prev.y;
-              return { x: prev.x + dx * 0.15, y: prev.y + dy * 0.15 };
-            });
-            animationFrameId = requestAnimationFrame(animateCursor);
-          };
-          animationFrameId = requestAnimationFrame(animateCursor);
-          return () => cancelAnimationFrame(animationFrameId);
-        }, [mousePos]);
-        return (
-          <div className="fixed pointer-events-none z-[100] text-[#00ff41] text-opacity-80 font-mono font-bold text-xs mix-blend-difference hidden md:block"
-               style={{ left: `${cursorPos.x}px`, top: `${cursorPos.y}px`, transform: 'translate(12px, 12px)' }}>
-            &lt;/&gt;
-          </div>
-        );
-      };
-
-      const NavBar = () => {
-        const scrollTo = (id) => {
-          playClickSfx();
-          const element = document.getElementById(id);
-          if (element) element.scrollIntoView({ behavior: 'smooth' });
-        };
-        return (
-          <nav className="fixed top-0 left-0 w-full z-50 bg-black/90 backdrop-blur-sm border-b border-white/10">
-            <div className="max-w-[1600px] mx-auto px-4 md:px-8">
-              <div className="flex items-center justify-between h-16 md:h-20">
-                <div onClick={() => scrollTo('index')} onMouseEnter={playHoverSfx} className="flex items-center gap-4 group cursor-pointer">
-                  <div className="w-8 h-8 md:w-10 md:h-10 bg-white flex items-center justify-center border border-white transition-all duration-500 hover:bg-black hover:text-white hover:border-white">
-                    <Terminal className="text-black group-hover:text-white w-5 h-5 md:w-6 md:h-6 transition-colors duration-500" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-lg md:text-xl font-black tracking-[0.2em] text-white uppercase font-sans leading-none">015X.DEV</span>
-                    <span className="text-[10px] font-mono tracking-[0.4em] text-nexus-dim uppercase mt-1">MATH_ENGINE</span>
-                  </div>
-                </div>
-                <div className="hidden md:flex items-center gap-8 lg:gap-12">
-                  {['Index', 'Circles', 'Trig', 'Linear', 'Triangles'].map((item) => (
-                    <button key={item} onClick={() => scrollTo(item.toLowerCase())} onMouseEnter={playHoverSfx} className="relative text-gray-500 hover:text-white text-[10px] font-bold font-mono uppercase tracking-[0.2em] transition-colors duration-200 flex items-center gap-2 group">
-                      <span className="absolute -left-4 opacity-0 group-hover:opacity-100 transition-opacity text-nexus-dim">/</span>{item}
-                    </button>
-                  ))}
-                </div>
-                <div className="flex items-center gap-4 md:gap-6">
-                   <div className="hidden sm:flex items-center gap-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-green-500/80">v.5.0</span>
-                   </div>
-                   <button onClick={() => scrollTo('circles')} onMouseEnter={playHoverSfx} className="group bg-white text-black px-4 py-2 md:px-6 md:py-2.5 transition-all duration-300 hover:bg-transparent hover:text-white hover:border hover:border-white no-underline">
-                     <span className="flex items-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]"><BookOpen className="w-3 h-3" /> Begin</span>
-                   </button>
-                </div>
+  const NavBar = () => {
+    const scrollTo = (id) => {
+      playClickSfx();
+      const element = document.getElementById(id);
+      if (element) element.scrollIntoView({ behavior: 'smooth' });
+    };
+    return (
+      <nav className="fixed top-0 left-0 w-full z-50 bg-black/90 backdrop-blur-sm border-b border-white/10">
+        <div className="max-w-[1600px] mx-auto px-4 md:px-8">
+          <div className="flex items-center justify-between h-16 md:h-20">
+            <div onClick={() => scrollTo('index')} onMouseEnter={playHoverSfx} className="flex items-center gap-4 group cursor-pointer">
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-white flex items-center justify-center border border-white transition-all duration-500 hover:bg-black hover:text-white hover:border-white">
+                <Terminal className="text-black group-hover:text-white w-5 h-5 md:w-6 md:h-6 transition-colors duration-500" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-lg md:text-xl font-black tracking-[0.2em] text-white uppercase font-sans leading-none">015X.DEV</span>
+                <span className="text-[10px] font-mono tracking-[0.4em] text-nexus-dim uppercase mt-1">MATH_ENGINE</span>
               </div>
             </div>
-          </nav>
-        );
-      };
+            <div className="hidden md:flex items-center gap-8 lg:gap-12">
+              {['Index', 'Circles', 'Trig', 'Linear', 'Triangles'].map((item) => (
+                <button key={item} onClick={() => scrollTo(item.toLowerCase())} onMouseEnter={playHoverSfx} className="relative text-gray-500 hover:text-white text-[10px] font-bold font-mono uppercase tracking-[0.2em] transition-colors duration-200 flex items-center gap-2 group">
+                  <span className="absolute -left-4 opacity-0 group-hover:opacity-100 transition-opacity text-nexus-dim">/</span>{item}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-4 md:gap-6">
+               <div className="hidden sm:flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-green-500/80">v.5.0</span>
+               </div>
+               <button onClick={() => scrollTo('circles')} onMouseEnter={playHoverSfx} className="group bg-white text-black px-4 py-2 md:px-6 md:py-2.5 transition-all duration-300 hover:bg-transparent hover:text-white hover:border hover:border-white no-underline">
+                 <span className="flex items-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]"><BookOpen className="w-3 h-3" /> Begin</span>
+               </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
+  };
 
-      const GeometryCanvas = ({ type, isActive, values }) => {
-        const [t, setT] = useState(0);
-        const requestRef = useRef();
-        const CX = 200, CY = 200, R = 120;
+  const GeometryCanvas = ({ type, isActive, values }) => {
+    const [t, setT] = useState(0);
+    const requestRef = useRef();
+    const CX = 200, CY = 200, R = 120;
 
-        const animate = (time) => {
-          setT(time * 0.001); 
-          requestRef.current = requestAnimationFrame(animate);
-        };
+    const animate = (time) => {
+      setT(time * 0.001); 
+      requestRef.current = requestAnimationFrame(animate);
+    };
 
-        useEffect(() => {
-          if (isActive) requestRef.current = requestAnimationFrame(animate);
-          else if (requestRef.current) cancelAnimationFrame(requestRef.current);
-          return () => { if (requestRef.current) cancelAnimationFrame(requestRef.current); };
-        }, [isActive]);
+    useEffect(() => {
+      if (isActive) requestRef.current = requestAnimationFrame(animate);
+      else if (requestRef.current) cancelAnimationFrame(requestRef.current);
+      return () => { if (requestRef.current) cancelAnimationFrame(requestRef.current); };
+    }, [isActive]);
 
-        const getPos = (angleRad, radius = R) => ({
-          x: CX + radius * Math.cos(angleRad),
-          y: CY + radius * Math.sin(angleRad),
-        });
+    const getPos = (angleRad, radius = R) => ({
+      x: CX + radius * Math.cos(angleRad),
+      y: CY + radius * Math.sin(angleRad),
+    });
 
-        const renderGrid = () => (
-            <g className="opacity-20 pointer-events-none">
-            <line x1="20" y1={CY} x2="380" y2={CY} className="stroke-gray-500 stroke-1" />
-            <line x1={CX} y1="20" x2={CX} y2="380" className="stroke-gray-500 stroke-1" />
-            {[50, 100, 150, 250, 300, 350].map(p => (
+    const renderGrid = (isTrig = false) => (
+        <g className="opacity-20 pointer-events-none">
+        <line x1="20" y1={CY} x2="380" y2={CY} className="stroke-gray-500 stroke-1" />
+        <line x1={CX} y1="20" x2={CX} y2="380" className="stroke-gray-500 stroke-1" />
+        
+        {isTrig ? (
+            <>
+             <line x1={20+90} y1={20} x2={20+90} y2={380} className="stroke-gray-800 stroke-[1] stroke-dash-2" strokeDasharray="2 4" />
+             <line x1={20+180} y1={20} x2={20+180} y2={380} className="stroke-gray-800 stroke-[1] stroke-dash-2" strokeDasharray="2 4" />
+             <line x1={20+270} y1={20} x2={20+270} y2={380} className="stroke-gray-800 stroke-[1] stroke-dash-2" strokeDasharray="2 4" />
+             <line x1={20+360} y1={20} x2={20+360} y2={380} className="stroke-gray-800 stroke-[1] stroke-dash-2" strokeDasharray="2 4" />
+             <text x={20+90} y={CY + 15} className="fill-gray-500 text-[9px] font-mono" textAnchor="middle">90°</text>
+             <text x={20+180} y={CY + 15} className="fill-gray-500 text-[9px] font-mono" textAnchor="middle">180°</text>
+             <text x={20+270} y={CY + 15} className="fill-gray-500 text-[9px] font-mono" textAnchor="middle">270°</text>
+             <text x={20+360} y={CY + 15} className="fill-gray-500 text-[9px] font-mono" textAnchor="middle">360°</text>
+            </>
+        ) : (
+            [50, 100, 150, 250, 300, 350].map(p => (
                 <React.Fragment key={p}>
                     <line x1={p} y1={20} x2={p} y2={380} className="stroke-gray-800 stroke-[1] stroke-dash-2" strokeDasharray="2 4" />
                     <line x1={20} y1={p} x2={380} y2={p} className="stroke-gray-800 stroke-[1] stroke-dash-2" strokeDasharray="2 4" />
                 </React.Fragment>
-            ))}
-            <text x={370} y={CY + 15} className="fill-gray-500 text-[10px] font-mono">x</text>
-            <text x={CX + 10} y={30} className="fill-gray-500 text-[10px] font-mono">y</text>
-            </g>
-        );
+            ))
+        )}
+        
+        {!isTrig && <text x={370} y={CY + 15} className="fill-gray-500 text-[10px] font-mono">x</text>}
+        <text x={CX + 10} y={30} className="fill-gray-500 text-[10px] font-mono">y</text>
+        </g>
+    );
 
-        const renderGeometry = () => {
-          switch (type) {
-            case 'centre': {
-                const variableAngle = values?.angle || 100;
-                const spread = (variableAngle * Math.PI) / 180;
-                const angleBase = Math.PI * 0.5 + Math.sin(t * 0.2) * 0.2;
-                const angleA = angleBase - spread/2;
-                const angleB = angleBase + spread/2;
-                const angleP = -Math.PI * 0.5 + Math.sin(t * 0.5) * 0.8; 
-                const A = getPos(angleA), B = getPos(angleB), P = getPos(angleP);
-                const valX = variableAngle / 2;
-                return (
-                  <>
-                    <path d={`M${CX},${CY} L${A.x},${A.y}`} className="stroke-gray-600 stroke-1 stroke-dash-2" strokeDasharray="4 4" />
-                    <path d={`M${CX},${CY} L${B.x},${B.y}`} className="stroke-gray-600 stroke-1 stroke-dash-2" strokeDasharray="4 4" />
-                    <path d={`M${P.x},${P.y} L${A.x},${A.y} L${CX},${CY} L${B.x},${B.y} Z`} className="fill-green-500/5" />
-                    <path d={`M${P.x},${P.y} L${A.x},${A.y}`} className="stroke-white stroke-2" />
-                    <path d={`M${P.x},${P.y} L${B.x},${B.y}`} className="stroke-white stroke-2" />
-                    <path d={`M${CX},${CY} L${A.x},${A.y}`} className="stroke-green-500 stroke-2" />
-                    <path d={`M${CX},${CY} L${B.x},${B.y}`} className="stroke-green-500 stroke-2" />
-                    <circle cx={P.x} cy={P.y} r="6" className="fill-black stroke-white stroke-2" />
-                    <circle cx={CX} cy={CY} r="4" className="fill-green-500" />
-                    <text x={P.x} y={P.y - 15} className="fill-white text-[10px] font-mono font-bold" textAnchor="middle">x = {valX.toFixed(0)}°</text>
-                    <text x={CX} y={CY + 25} className="fill-green-500 text-[10px] font-mono font-bold" textAnchor="middle">2x = {variableAngle}°</text>
-                  </>
-                );
+    const renderGeometry = () => {
+      switch (type) {
+        case 'centre': {
+            const variableAngle = values?.angle || 100;
+            const spread = (variableAngle * Math.PI) / 180;
+            const angleBase = Math.PI * 0.5 + Math.sin(t * 0.2) * 0.2;
+            const angleA = angleBase - spread/2;
+            const angleB = angleBase + spread/2;
+            const angleP = -Math.PI * 0.5 + Math.sin(t * 0.5) * 0.8; 
+            const A = getPos(angleA), B = getPos(angleB), P = getPos(angleP);
+            const valX = variableAngle / 2;
+            return (
+              <>
+                <path d={`M${CX},${CY} L${A.x},${A.y}`} className="stroke-gray-600 stroke-1 stroke-dash-2" strokeDasharray="4 4" />
+                <path d={`M${CX},${CY} L${B.x},${B.y}`} className="stroke-gray-600 stroke-1 stroke-dash-2" strokeDasharray="4 4" />
+                <path d={`M${P.x},${P.y} L${A.x},${A.y} L${CX},${CY} L${B.x},${B.y} Z`} className="fill-green-500/5" />
+                <path d={`M${P.x},${P.y} L${A.x},${A.y}`} className="stroke-white stroke-2" />
+                <path d={`M${P.x},${P.y} L${B.x},${B.y}`} className="stroke-white stroke-2" />
+                <path d={`M${CX},${CY} L${A.x},${A.y}`} className="stroke-green-500 stroke-2" />
+                <path d={`M${CX},${CY} L${B.x},${B.y}`} className="stroke-green-500 stroke-2" />
+                <circle cx={P.x} cy={P.y} r="6" className="fill-black stroke-white stroke-2" />
+                <circle cx={CX} cy={CY} r="4" className="fill-green-500" />
+                <text x={P.x} y={P.y - 15} className="fill-white text-[10px] font-mono font-bold" textAnchor="middle">x = {valX.toFixed(0)}°</text>
+                <text x={CX} y={CY + 25} className="fill-green-500 text-[10px] font-mono font-bold" textAnchor="middle">2x = {variableAngle}°</text>
+              </>
+            );
+        }
+        case 'semicircle': {
+            const angleP = values?.rotation ? (values.rotation * Math.PI / 180) : (-Math.PI / 2 + Math.sin(t) * 1.5); 
+            const A = getPos(Math.PI), B = getPos(0), P = getPos(angleP);
+            return (
+              <>
+                <path d={`M${A.x},${A.y} L${B.x},${B.y}`} className="stroke-green-500 stroke-2" />
+                <path d={`M${A.x},${A.y} L${P.x},${P.y} L${B.x},${B.y}`} className="fill-white/5 stroke-white stroke-2" />
+                <circle cx={P.x} cy={P.y} r="6" className="fill-none stroke-green-500 stroke-1" />
+                <circle cx={P.x} cy={P.y} r="2" className="fill-green-500" />
+                <circle cx={P.x} cy={P.y} r="6" className="fill-black stroke-white stroke-2" />
+                <text x={CX} y={CY + 20} className="fill-green-500 text-[10px] font-mono" textAnchor="middle">DIAMETER</text>
+                <text x={P.x} y={P.y - 15} className="fill-white text-[10px] font-mono font-bold" textAnchor="middle">90°</text>
+              </>
+            );
+        }
+        case 'segment': {
+            const base1 = Math.PI * 0.8, base2 = Math.PI * 0.2;
+            const p1Angle = -Math.PI * 0.6 + Math.sin(t * 0.7) * 0.3;
+            const p2Angle = -Math.PI * 0.3 + Math.cos(t * 0.5) * 0.3;
+            const BaseA = getPos(base1), BaseB = getPos(base2), P1 = getPos(p1Angle), P2 = getPos(p2Angle);
+            return (
+              <>
+                <path d={`M${BaseA.x},${BaseA.y} L${BaseB.x},${BaseB.y}`} className="stroke-gray-600 stroke-1 stroke-dash-2" strokeDasharray="4 2" />
+                <path d={`M${BaseA.x},${BaseA.y} L${P1.x},${P1.y} L${BaseB.x},${BaseB.y}`} className="fill-none stroke-white stroke-1" />
+                <path d={`M${BaseA.x},${BaseA.y} L${P2.x},${P2.y} L${BaseB.x},${BaseB.y}`} className="fill-none stroke-green-400 stroke-1" />
+                <circle cx={P1.x} cy={P1.y} r="4" className="fill-black stroke-white stroke-2" />
+                <circle cx={P2.x} cy={P2.y} r="4" className="fill-black stroke-green-400 stroke-2" />
+                <text x={P1.x} y={P1.y - 15} className="fill-white text-[10px] font-mono" textAnchor="middle">x°</text>
+                <text x={P2.x} y={P2.y - 15} className="fill-green-400 text-[10px] font-mono" textAnchor="middle">x°</text>
+              </>
+            );
+        }
+        case 'cyclic': {
+            const a1 = Math.PI * 0.8, a2 = Math.PI * 0.2;
+            const a3 = -Math.PI * 0.2 + Math.sin(t) * 0.2, a4 = -Math.PI * 0.8;
+            const P1 = getPos(a1), P2 = getPos(a2), P3 = getPos(a3), P4 = getPos(a4);
+            const valA = 85 + Math.round(Math.sin(t) * 10);
+            const valOpposite = 180 - valA;
+            return (
+              <>
+                 <path d={`M${P1.x},${P1.y} L${P2.x},${P2.y} L${P3.x},${P3.y} L${P4.x},${P4.y} Z`} className="fill-white/5 stroke-white stroke-2" />
+                 <text x={P3.x + 20} y={P3.y} className="fill-green-400 text-[10px] font-mono">{valA}°</text>
+                 <text x={P1.x - 20} y={P1.y} className="fill-green-400 text-[10px] font-mono">{valOpposite}°</text>
+                 <text x={CX} y={CY} className="fill-white/50 text-[10px] font-mono tracking-widest" textAnchor="middle">SUM = 180°</text>
+              </>
+            );
+        }
+        case 'tangent_radius': {
+            const angle = Math.PI/2 + Math.sin(t) * 0.5;
+            const P = getPos(angle);
+            const tx = -Math.sin(angle) * 140, ty = Math.cos(angle) * 140;
+            return (
+               <>
+                  <path d={`M${CX},${CY} L${P.x},${P.y}`} className="stroke-white stroke-2" />
+                  <path d={`M${P.x - tx},${P.y - ty} L${P.x + tx},${P.y + ty}`} className="stroke-green-500 stroke-2" />
+                  <circle cx={P.x} cy={P.y} r="3" className="fill-black stroke-white stroke-2" />
+                  <circle cx={CX} cy={CY} r="3" className="fill-white" />
+                  <circle cx={P.x} cy={P.y} r="8" className="fill-none stroke-white/50" />
+                  <text x={P.x + tx} y={P.y + ty + 15} className="fill-green-500 text-[10px] font-mono">Tangent</text>
+                  <text x={P.x - 20} y={P.y - 20} className="fill-white font-bold text-[10px]">90°</text>
+               </>
+            );
+        }
+        case 'two_tangents': {
+            const dist = 200 + Math.sin(t) * 40;
+            const P = { x: CX + dist, y: CY };
+            const alpha = Math.acos(R/dist);
+            const T1 = getPos(alpha), T2 = getPos(-alpha);
+            const len = Math.round(Math.sqrt(dist*dist - R*R) / 10);
+            return (
+               <>
+                   <path d={`M${CX},${CY} L${P.x},${P.y}`} className="stroke-white/20 stroke-1 stroke-dash-2" strokeDasharray="4 4" />
+                   <path d={`M${CX},${CY} L${T1.x},${T1.y}`} className="stroke-white/30 stroke-1" />
+                   <path d={`M${CX},${CY} L${T2.x},${T2.y}`} className="stroke-white/30 stroke-1" />
+                   <path d={`M${P.x},${P.y} L${T1.x},${T1.y}`} className="stroke-green-500 stroke-2" />
+                   <path d={`M${P.x},${P.y} L${T2.x},${T2.y}`} className="stroke-green-500 stroke-2" />
+                   <circle cx={P.x} cy={P.y} r="3" className="fill-white" />
+                   <text x={P.x + 10} y={P.y} className="fill-white text-[10px] font-mono">P</text>
+                   <text x={(P.x + T1.x)/2} y={(P.y + T1.y)/2 - 10} className="fill-green-500 text-[10px] font-mono font-bold">{len}</text>
+                   <text x={(P.x + T2.x)/2} y={(P.y + T2.y)/2 + 20} className="fill-green-500 text-[10px] font-mono font-bold">{len}</text>
+               </>
+            );
+        }
+        case 'alternate_segment': {
+            const angleT = Math.PI / 2;
+            const T = getPos(angleT);
+            const angleA = Math.PI * 1.2 + Math.sin(t)*0.2;
+            const angleB = Math.PI * -0.1;
+            const A = getPos(angleA), B = getPos(angleB);
+            const tLen = 140, tStart = { x: T.x - tLen, y: T.y }, tEnd = { x: T.x + tLen, y: T.y };
+            return (
+                <>
+                  <path d={`M${tStart.x},${tStart.y} L${tEnd.x},${tEnd.y}`} className="stroke-gray-500 stroke-2" />
+                  <path d={`M${T.x},${T.y} L${A.x},${A.y} L${B.x},${B.y} Z`} className="stroke-white stroke-2 fill-white/5" />
+                  <path d={`M${T.x},${T.y} L${B.x},${B.y}`} className="stroke-green-500 stroke-2" />
+                  <line x1={T.x} y1={T.y} x2={tEnd.x} y2={tEnd.y} className="stroke-green-500 stroke-2" />
+                  <text x={T.x + 30} y={T.y - 10} className="fill-green-500 text-[10px] font-bold">x°</text>
+                  <text x={A.x} y={A.y + 20} className="fill-green-500 text-[10px] font-bold">x°</text>
+                  <circle cx={T.x} cy={T.y} r="3" className="fill-white" />
+                </>
+            );
+        }
+        case 'chord_bisect': {
+            const chordY = CY + 40 + Math.sin(t) * 30;
+            const dy = chordY - CY;
+            const dx = Math.sqrt(R*R - dy*dy);
+            const C1 = { x: CX - dx, y: chordY }, C2 = { x: CX + dx, y: chordY }, Mid = { x: CX, y: chordY };
+            return (
+                <>
+                   <path d={`M${C1.x},${C1.y} L${C2.x},${C2.y}`} className="stroke-white stroke-2" />
+                   <path d={`M${CX},${CY} L${CX},${chordY}`} className="stroke-green-500 stroke-2" />
+                   <rect x={CX-8} y={chordY-8} width="8" height="8" className="stroke-green-500 fill-none" />
+                   <line x1={(CX+C1.x)/2} y1={chordY-5} x2={(CX+C1.x)/2} y2={chordY+5} className="stroke-white stroke-2" />
+                   <line x1={(CX+C2.x)/2} y1={chordY-5} x2={(CX+C2.x)/2} y2={chordY+5} className="stroke-white stroke-2" />
+                   <circle cx={Mid.x} cy={Mid.y} r="4" className="fill-black stroke-green-500 stroke-2" />
+                   <circle cx={CX} cy={CY} r="3" className="fill-white" />
+                </>
+            );
+        }
+        case 'sin': {
+            const points = [];
+            const scaleY = 80;
+            for(let i=0; i<=360; i+=5) {
+                const rad = i * Math.PI / 180;
+                const x = 20 + i; 
+                const y = CY - Math.sin(rad) * scaleY; 
+                points.push(`${x},${y}`);
             }
-            case 'semicircle': {
-                const angleP = values?.rotation ? (values.rotation * Math.PI / 180) : (-Math.PI / 2 + Math.sin(t) * 1.5); 
-                const A = getPos(Math.PI), B = getPos(0), P = getPos(angleP);
-                return (
-                  <>
-                    <path d={`M${A.x},${A.y} L${B.x},${B.y}`} className="stroke-green-500 stroke-2" />
-                    <path d={`M${A.x},${A.y} L${P.x},${P.y} L${B.x},${B.y}`} className="fill-white/5 stroke-white stroke-2" />
-                    <circle cx={P.x} cy={P.y} r="6" className="fill-none stroke-green-500 stroke-1" />
-                    <circle cx={P.x} cy={P.y} r="2" className="fill-green-500" />
-                    <circle cx={P.x} cy={P.y} r="6" className="fill-black stroke-white stroke-2" />
-                    <text x={CX} y={CY + 20} className="fill-green-500 text-[10px] font-mono" textAnchor="middle">DIAMETER</text>
-                    <text x={P.x} y={P.y - 15} className="fill-white text-[10px] font-mono font-bold" textAnchor="middle">90°</text>
-                  </>
-                );
-            }
-            case 'segment': {
-                const base1 = Math.PI * 0.8, base2 = Math.PI * 0.2;
-                const p1Angle = -Math.PI * 0.6 + Math.sin(t * 0.7) * 0.3;
-                const p2Angle = -Math.PI * 0.3 + Math.cos(t * 0.5) * 0.3;
-                const BaseA = getPos(base1), BaseB = getPos(base2), P1 = getPos(p1Angle), P2 = getPos(p2Angle);
-                return (
-                  <>
-                    <path d={`M${BaseA.x},${BaseA.y} L${BaseB.x},${BaseB.y}`} className="stroke-gray-600 stroke-1 stroke-dash-2" strokeDasharray="4 2" />
-                    <path d={`M${BaseA.x},${BaseA.y} L${P1.x},${P1.y} L${BaseB.x},${BaseB.y}`} className="fill-none stroke-white stroke-1" />
-                    <path d={`M${BaseA.x},${BaseA.y} L${P2.x},${P2.y} L${BaseB.x},${BaseB.y}`} className="fill-none stroke-green-400 stroke-1" />
-                    <circle cx={P1.x} cy={P1.y} r="4" className="fill-black stroke-white stroke-2" />
-                    <circle cx={P2.x} cy={P2.y} r="4" className="fill-black stroke-green-400 stroke-2" />
-                    <text x={P1.x} y={P1.y - 15} className="fill-white text-[10px] font-mono" textAnchor="middle">x°</text>
-                    <text x={P2.x} y={P2.y - 15} className="fill-green-400 text-[10px] font-mono" textAnchor="middle">x°</text>
-                  </>
-                );
-            }
-            case 'cyclic': {
-                const a1 = Math.PI * 0.8, a2 = Math.PI * 0.2;
-                const a3 = -Math.PI * 0.2 + Math.sin(t) * 0.2, a4 = -Math.PI * 0.8;
-                const P1 = getPos(a1), P2 = getPos(a2), P3 = getPos(a3), P4 = getPos(a4);
-                const valA = 85 + Math.round(Math.sin(t) * 10);
-                const valOpposite = 180 - valA;
-                return (
-                  <>
-                     <path d={`M${P1.x},${P1.y} L${P2.x},${P2.y} L${P3.x},${P3.y} L${P4.x},${P4.y} Z`} className="fill-white/5 stroke-white stroke-2" />
-                     <text x={P3.x + 20} y={P3.y} className="fill-green-400 text-[10px] font-mono">{valA}°</text>
-                     <text x={P1.x - 20} y={P1.y} className="fill-green-400 text-[10px] font-mono">{valOpposite}°</text>
-                     <text x={CX} y={CY} className="fill-white/50 text-[10px] font-mono tracking-widest" textAnchor="middle">SUM = 180°</text>
-                  </>
-                );
-            }
-            case 'tangent_radius': {
-                const angle = Math.PI/2 + Math.sin(t) * 0.5;
-                const P = getPos(angle);
-                const tx = -Math.sin(angle) * 140, ty = Math.cos(angle) * 140;
-                return (
-                   <>
-                      <path d={`M${CX},${CY} L${P.x},${P.y}`} className="stroke-white stroke-2" />
-                      <path d={`M${P.x - tx},${P.y - ty} L${P.x + tx},${P.y + ty}`} className="stroke-green-500 stroke-2" />
-                      <circle cx={P.x} cy={P.y} r="3" className="fill-black stroke-white stroke-2" />
-                      <circle cx={CX} cy={CY} r="3" className="fill-white" />
-                      <circle cx={P.x} cy={P.y} r="8" className="fill-none stroke-white/50" />
-                      <text x={P.x + tx} y={P.y + ty + 15} className="fill-green-500 text-[10px] font-mono">Tangent</text>
-                      <text x={P.x - 20} y={P.y - 20} className="fill-white font-bold text-[10px]">90°</text>
-                   </>
-                );
-            }
-            case 'two_tangents': {
-                const dist = 200 + Math.sin(t) * 40;
-                const P = { x: CX + dist, y: CY };
-                const alpha = Math.acos(R/dist);
-                const T1 = getPos(alpha), T2 = getPos(-alpha);
-                const len = Math.round(Math.sqrt(dist*dist - R*R) / 10);
-                return (
-                   <>
-                       <path d={`M${CX},${CY} L${P.x},${P.y}`} className="stroke-white/20 stroke-1 stroke-dash-2" strokeDasharray="4 4" />
-                       <path d={`M${CX},${CY} L${T1.x},${T1.y}`} className="stroke-white/30 stroke-1" />
-                       <path d={`M${CX},${CY} L${T2.x},${T2.y}`} className="stroke-white/30 stroke-1" />
-                       <path d={`M${P.x},${P.y} L${T1.x},${T1.y}`} className="stroke-green-500 stroke-2" />
-                       <path d={`M${P.x},${P.y} L${T2.x},${T2.y}`} className="stroke-green-500 stroke-2" />
-                       <circle cx={P.x} cy={P.y} r="3" className="fill-white" />
-                       <text x={P.x + 10} y={P.y} className="fill-white text-[10px] font-mono">P</text>
-                       <text x={(P.x + T1.x)/2} y={(P.y + T1.y)/2 - 10} className="fill-green-500 text-[10px] font-mono font-bold">{len}</text>
-                       <text x={(P.x + T2.x)/2} y={(P.y + T2.y)/2 + 20} className="fill-green-500 text-[10px] font-mono font-bold">{len}</text>
-                   </>
-                );
-            }
-            case 'alternate_segment': {
-                const angleT = Math.PI / 2;
-                const T = getPos(angleT);
-                const angleA = Math.PI * 1.2 + Math.sin(t)*0.2;
-                const angleB = Math.PI * -0.1;
-                const A = getPos(angleA), B = getPos(angleB);
-                const tLen = 140, tStart = { x: T.x - tLen, y: T.y }, tEnd = { x: T.x + tLen, y: T.y };
-                return (
-                    <>
-                      <path d={`M${tStart.x},${tStart.y} L${tEnd.x},${tEnd.y}`} className="stroke-gray-500 stroke-2" />
-                      <path d={`M${T.x},${T.y} L${A.x},${A.y} L${B.x},${B.y} Z`} className="stroke-white stroke-2 fill-white/5" />
-                      <path d={`M${T.x},${T.y} L${B.x},${B.y}`} className="stroke-green-500 stroke-2" />
-                      <line x1={T.x} y1={T.y} x2={tEnd.x} y2={tEnd.y} className="stroke-green-500 stroke-2" />
-                      <text x={T.x + 30} y={T.y - 10} className="fill-green-500 text-[10px] font-bold">x°</text>
-                      <text x={A.x} y={A.y + 20} className="fill-green-500 text-[10px] font-bold">x°</text>
-                      <circle cx={T.x} cy={T.y} r="3" className="fill-white" />
-                    </>
-                );
-            }
-            case 'chord_bisect': {
-                const chordY = CY + 40 + Math.sin(t) * 30;
-                const dy = chordY - CY;
-                const dx = Math.sqrt(R*R - dy*dy);
-                const C1 = { x: CX - dx, y: chordY }, C2 = { x: CX + dx, y: chordY }, Mid = { x: CX, y: chordY };
-                return (
-                    <>
-                       <path d={`M${C1.x},${C1.y} L${C2.x},${C2.y}`} className="stroke-white stroke-2" />
-                       <path d={`M${CX},${CY} L${CX},${chordY}`} className="stroke-green-500 stroke-2" />
-                       <rect x={CX-8} y={chordY-8} width="8" height="8" className="stroke-green-500 fill-none" />
-                       <line x1={(CX+C1.x)/2} y1={chordY-5} x2={(CX+C1.x)/2} y2={chordY+5} className="stroke-white stroke-2" />
-                       <line x1={(CX+C2.x)/2} y1={chordY-5} x2={(CX+C2.x)/2} y2={chordY+5} className="stroke-white stroke-2" />
-                       <circle cx={Mid.x} cy={Mid.y} r="4" className="fill-black stroke-green-500 stroke-2" />
-                       <circle cx={CX} cy={CY} r="3" className="fill-white" />
-                    </>
-                );
-            }
-            case 'sin': {
-                const points = [];
-                const scaleX = 50;
-                const scaleY = 80;
-                for(let i=0; i<360; i+=5) {
-                    const rad = i * Math.PI / 180;
-                    const x = 20 + i; 
-                    const y = CY - Math.sin(rad * 2) * scaleY; 
-                    points.push(`${x},${y}`);
-                }
-                const pX = values?.angle ?? ((t * 50) % 360); 
-                const pRad = pX * Math.PI / 180;
-                const pY = CY - Math.sin(pRad * 2) * scaleY;
-                const val = Math.sin(pRad * 2).toFixed(2);
-                return (
-                    <>
-                        {renderGrid()}
-                        <polyline points={points.join(' ')} className="fill-none stroke-white stroke-2" />
-                        <circle cx={20 + pX} cy={pY} r="6" className="fill-black stroke-green-500 stroke-2" />
-                        <line x1={20+pX} y1={CY} x2={20+pX} y2={pY} className="stroke-green-500 stroke-1 stroke-dash-2" strokeDasharray="4 4"/>
-                        <text x={20+pX} y={pY - 15} className="fill-green-500 text-[10px] font-mono font-bold" textAnchor="middle">{val}</text>
-                        {values?.angle !== undefined && (
-                            <text x={20+pX} y={pY - 30} className="fill-white text-[9px] font-mono" textAnchor="middle">θ={pX.toFixed(0)}°</text>
-                        )}
-                    </>
-                );
-            }
-            case 'cos': {
-                const points = [];
-                const scaleX = 50;
-                const scaleY = 80;
-                for(let i=0; i<360; i+=5) {
-                    const rad = i * Math.PI / 180;
-                    const x = 20 + i; 
-                    const y = CY - Math.cos(rad * 2) * scaleY; 
-                    points.push(`${x},${y}`);
-                }
-                const pX = values?.angle ?? ((t * 50) % 360); 
-                const pRad = pX * Math.PI / 180;
-                const pY = CY - Math.cos(pRad * 2) * scaleY;
-                const val = Math.cos(pRad * 2).toFixed(2);
-                return (
-                    <>
-                        {renderGrid()}
-                        <polyline points={points.join(' ')} className="fill-none stroke-blue-400 stroke-2" />
-                        <circle cx={20 + pX} cy={pY} r="6" className="fill-black stroke-blue-400 stroke-2" />
-                        <line x1={20+pX} y1={CY} x2={20+pX} y2={pY} className="stroke-blue-400 stroke-1 stroke-dash-2" strokeDasharray="4 4"/>
-                        <text x={20+pX} y={pY - 15} className="fill-blue-400 text-[10px] font-mono font-bold" textAnchor="middle">{val}</text>
-                    </>
-                );
-            }
-            case 'tan': {
-                const renderTanSeg = (startDeg, endDeg) => {
-                    const pts = [];
-                    for(let i=startDeg; i<endDeg; i+=2) {
-                        const rad = i * Math.PI / 180;
-                        const x = 20 + i;
-                        const y = CY - Math.tan(rad * 2) * 30; 
-                        if (y > 20 && y < 380) pts.push(`${x},${y}`);
-                    }
-                    return <polyline points={pts.join(' ')} className="fill-none stroke-red-500 stroke-2" />;
-                };
-                const pX = values?.angle ?? ((t * 50) % 360); 
-                const pRad = pX * Math.PI / 180;
-                let pY = CY - Math.tan(pRad * 2) * 30;
-                const val = Math.tan(pRad * 2).toFixed(1);
-                const inBounds = pY > 20 && pY < 380;
-                return (
-                    <>
-                        {renderGrid()}
-                        {renderTanSeg(0, 40)} {renderTanSeg(50, 130)} {renderTanSeg(140, 220)} {renderTanSeg(230, 310)} {renderTanSeg(320, 360)}
-                        <line x1={20+45} y1={20} x2={20+45} y2={380} className="stroke-white/20 stroke-1 stroke-dash-2" strokeDasharray="2 2" />
-                        <line x1={20+135} y1={20} x2={20+135} y2={380} className="stroke-white/20 stroke-1 stroke-dash-2" strokeDasharray="2 2" />
-                        <line x1={20+225} y1={20} x2={20+225} y2={380} className="stroke-white/20 stroke-1 stroke-dash-2" strokeDasharray="2 2" />
-                        {inBounds && (<circle cx={20 + pX} cy={pY} r="4" className="fill-black stroke-red-500 stroke-2" />)}
-                        <text x={300} y={50} className="fill-red-500 text-[10px] font-mono">Tan(θ)</text>
-                    </>
-                );
-            }
-            case 'linear_parallel': {
-                const m = values?.m ?? 0.5;
-                const c1 = -50, c2 = 50;
-                const x1 = 0, x2 = 400;
-                const y1_a = CY - (x1-CX)*m - c1; 
-                const y2_a = CY - (x2-CX)*m - c1;
-                const y1_b = CY - (x1-CX)*m - c2;
-                const y2_b = CY - (x2-CX)*m - c2;
-                return (
-                   <>
-                      {renderGrid()}
-                      <line x1={x1} y1={y1_a} x2={x2} y2={y2_a} className="stroke-green-500 stroke-2" />
-                      <line x1={x1} y1={y1_b} x2={x2} y2={y2_b} className="stroke-green-500 stroke-2" />
-                      <text x={280} y={y2_a - 10} className="fill-green-500 text-[10px] font-mono">m = {m}</text>
-                      <text x={280} y={y2_b - 10} className="fill-green-500 text-[10px] font-mono">m = {m}</text>
-                   </>
-                );
-            }
-            case 'linear_perp': {
-                const angle = t * 0.5;
-                const m1 = Math.tan(angle);
-                const m2 = -1/m1;
-                const len = 150;
-                const l1_x1 = CX - Math.cos(angle)*len, l1_y1 = CY - Math.sin(angle)*len, l1_x2 = CX + Math.cos(angle)*len, l1_y2 = CY + Math.sin(angle)*len;
-                const l2_x1 = CX - Math.cos(angle + Math.PI/2)*len, l2_y1 = CY - Math.sin(angle + Math.PI/2)*len, l2_x2 = CX + Math.cos(angle + Math.PI/2)*len, l2_y2 = CY + Math.sin(angle + Math.PI/2)*len;
-                return (
-                   <>
-                      {renderGrid()}
-                      <line x1={l1_x1} y1={l1_y1} x2={l1_x2} y2={l1_y2} className="stroke-white stroke-2" />
-                      <line x1={l2_x1} y1={l2_y1} x2={l2_x2} y2={l2_y2} className="stroke-green-500 stroke-2" />
-                      <path d={`M${CX},${CY} L${CX + Math.cos(angle)*20},${CY + Math.sin(angle)*20} L${CX + Math.cos(angle)*20 + Math.cos(angle + Math.PI/2)*20},${CY + Math.sin(angle)*20 + Math.sin(angle + Math.PI/2)*20} L${CX + Math.cos(angle + Math.PI/2)*20},${CY + Math.sin(angle + Math.PI/2)*20} Z`} className="fill-white/20" />
-                      <text x={CX+20} y={CY+40} className="fill-white text-[10px] font-mono">m1 × m2 = -1</text>
-                   </>
-                );
-            }
-            case 'sine_rule': {
-                const p1 = { x: 100, y: 300 }, p2 = { x: 300, y: 300 }, p3 = { x: 200 + Math.sin(t)*50, y: 100 };
-                return (
-                   <>
-                      <path d={`M${p1.x},${p1.y} L${p2.x},${p2.y} L${p3.x},${p3.y} Z`} className="stroke-white stroke-2 fill-white/5" />
-                      <text x={p1.x-10} y={p1.y+15} className="fill-green-500 text-[10px] font-mono font-bold">A</text>
-                      <text x={p2.x+10} y={p2.y+15} className="fill-blue-500 text-[10px] font-mono font-bold">B</text>
-                      <text x={p3.x} y={p3.y-10} className="fill-red-500 text-[10px] font-mono font-bold">C</text>
-                      <text x={(p2.x+p3.x)/2 + 10} y={(p2.y+p3.y)/2} className="fill-green-500 text-[10px] font-mono">a</text>
-                      <text x={(p1.x+p3.x)/2 - 15} y={(p1.y+p3.y)/2} className="fill-blue-500 text-[10px] font-mono">b</text>
-                      <text x={(p1.x+p2.x)/2} y={p1.y+15} className="fill-red-500 text-[10px] font-mono">c</text>
-                   </>
-                );
-            }
-            case 'cosine_rule': {
-               const p1 = { x: 120, y: 280 }, p2 = { x: 280, y: 280 }, p3 = { x: 120 + Math.cos(t*0.5)*150, y: 280 - Math.sin(t*0.5)*150 };
-               return (
-                   <>
-                      <path d={`M${p1.x},${p1.y} L${p2.x},${p2.y} L${p3.x},${p3.y} Z`} className="stroke-white stroke-2 fill-white/5" />
-                      <circle cx={p1.x} cy={p1.y} r="20" className="stroke-green-500 stroke-1 fill-none opacity-50" />
-                      <text x={p1.x-15} y={p1.y+15} className="fill-green-500 text-[10px] font-bold">A</text>
-                      <text x={(p1.x+p3.x)/2 - 10} y={(p1.y+p3.y)/2} className="fill-white text-[10px]">b</text>
-                      <text x={(p1.x+p2.x)/2} y={p1.y+15} className="fill-white text-[10px]">c</text>
-                      <line x1={p2.x} y1={p2.y} x2={p3.x} y2={p3.y} className="stroke-red-500 stroke-2 stroke-dash-2" strokeDasharray="4 4" />
-                      <text x={(p2.x+p3.x)/2 + 10} y={(p2.y+p3.y)/2} className="fill-red-500 text-[10px] font-bold">a?</text>
-                   </>
-               );
-            }
-            case 'triangle_area': {
-               const p1 = { x: 100, y: 300 }, p2 = { x: 300, y: 300 };
-               const angleC = values?.angle || (60 + Math.sin(t) * 30);
-               const radC = angleC * Math.PI / 180;
-               const sideLen = 150;
-               const p3 = { x: 100 + sideLen * Math.cos(-radC), y: 300 + sideLen * Math.sin(-radC) };
-               return (
-                   <>
-                      <path d={`M${p1.x},${p1.y} L${p2.x},${p2.y} L${p3.x},${p3.y} Z`} className="stroke-white stroke-2 fill-green-500/10" />
-                      <text x={p2.x+10} y={p2.y} className="fill-white text-[10px]">B</text>
-                      <text x={p3.x} y={p3.y-10} className="fill-white text-[10px]">A</text>
-                      <text x={(p1.x+p2.x)/2} y={p1.y+15} className="fill-white text-[10px]">a</text>
-                      <text x={(p1.x+p3.x)/2 - 15} y={(p1.y+p3.y)/2} className="fill-white text-[10px]">b</text>
-                       <circle cx={p1.x} cy={p1.y} r="20" className="stroke-green-500 stroke-1 fill-none" />
-                       <text x={p1.x-10} y={p1.y+10} className="fill-green-500 text-[10px] font-bold">C={angleC.toFixed(0)}°</text>
-                   </>
-               );
-            }
-          }
-        };
-
-        return (
-          <div className="w-full aspect-square bg-[#050505] rounded-lg border border-white/10 relative overflow-hidden flex items-center justify-center">
-            <svg width="400" height="400" viewBox="0 0 400 400" className="relative z-10 w-full h-full">
-              {['centre','semicircle','segment','cyclic','tangent_radius','two_tangents','alternate_segment','chord_bisect'].includes(type) && (<circle cx={CX} cy={CY} r={R} className="fill-none stroke-white/10 stroke-1" />)}
-              {renderGeometry()}
-            </svg>
-            <div className="absolute top-4 left-4 pointer-events-none">
-               <div className="flex items-center gap-2"><div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-green-500' : 'bg-gray-500'}`}></div><span className="text-[9px] font-mono text-nexus-dim uppercase tracking-widest">{isActive ? 'ACTIVE_SIM' : 'PAUSED'}</span></div>
-               <div className="mt-1 text-[9px] font-mono text-gray-700">T: {t.toFixed(2)}s</div>
-            </div>
-          </div>
-        );
-      };
-
-      const TheoremCard = ({ theorem, index, isReversed = false }) => {
-        const [isActive, setIsActive] = useState(true);
-        const [values, setValues] = useState({});
-
-        useEffect(() => {
-            if (theorem.variables) {
-                const defaults = {};
-                theorem.variables.forEach(v => defaults[v.id] = v.defaultValue);
-                setValues(defaults);
-            }
-        }, [theorem]);
-
-        const toggleSim = () => { playClickSfx(); setIsActive(!isActive); };
-        const updateValue = (id, newVal) => setValues(prev => ({ ...prev, [id]: newVal }));
-
-        return (
-          <div onMouseEnter={playHoverSfx} className="group bg-black border border-white/10 p-0 md:p-0 flex flex-col overflow-hidden hover:border-white/30 transition-all duration-500">
-            <div className={`flex flex-col ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'}`}>
-              <div className={`p-6 md:p-8 flex-1 flex flex-col justify-between ${isReversed ? 'border-l' : 'border-r'} border-b md:border-b-0 border-white/10 relative`}>
-                  <div>
-                      <div className="flex items-center gap-3 mb-4">
-                        <span className="text-[10px] font-mono bg-white text-black px-1.5 py-0.5 font-bold">RULE_{index + 1}</span>
-                        <span className="text-[10px] font-mono text-nexus-dim uppercase tracking-[0.2em]">{theorem.type.toUpperCase().replace('_', ' ')}</span>
-                      </div>
-                      <h3 className="text-3xl font-black uppercase tracking-tighter text-white mb-2 leading-[0.9]">{theorem.title}</h3>
-                      <h4 className="text-sm font-mono text-green-500 uppercase tracking-wider mb-6">{theorem.subtitle}</h4>
-                      
-                      <div className="relative group/desc">
-                        <p className="text-sm text-gray-400 leading-relaxed font-mono border-l-2 border-white/10 pl-4 mb-8 pr-8">{theorem.description}</p>
-                      </div>
-
-                      <div className="mb-8 relative group/algo">
-                        <div className="flex justify-between items-center mb-3">
-                            <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block">Solving Algorithm</span>
-                        </div>
-                        <div className="space-y-2">{theorem.steps.map((step, i) => (<div key={i} className="flex items-start gap-3"><span className="text-[10px] font-mono text-nexus-dim pt-0.5">0{i+1}</span><p className="text-xs font-mono text-gray-300 leading-tight">{step}</p></div>))}</div>
-                      </div>
-
-                      {theorem.variables && theorem.variables.length > 0 && (
-                        <div className="mb-8 bg-white/5 border border-white/10 p-4 rounded-sm relative group/vars">
-                            <div className="flex items-center gap-2 mb-4 text-nexus-dim"><Sliders className="w-3 h-3 text-white" /><span className="text-[9px] font-bold text-white uppercase tracking-widest">Variable Control</span></div>
-                            <div className="grid gap-4">
-                                {theorem.variables.map((variable) => (
-                                    <div key={variable.id} className="relative">
-                                        <div className="flex justify-between items-end mb-1"><label className="text-[10px] font-mono text-gray-400 uppercase tracking-wider">{variable.label}</label><span className="text-[10px] font-mono text-green-400 font-bold">{values[variable.id]}{variable.unit}</span></div>
-                                        <input type="range" min={variable.min} max={variable.max} step={variable.step} value={values[variable.id] || variable.defaultValue} onChange={(e) => updateValue(variable.id, parseFloat(e.target.value))} className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full hover:[&::-webkit-slider-thumb]:bg-green-500 transition-colors"/>
-                                        <div className="flex justify-between mt-1 text-[8px] text-gray-600 font-mono"><span>{variable.min}{variable.unit}</span><span>{variable.max}{variable.unit}</span></div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+            const pX = values?.angle ?? ((t * 50) % 360); 
+            const pRad = pX * Math.PI / 180;
+            const pY = CY - Math.sin(pRad) * scaleY;
+            const val = Math.sin(pRad).toFixed(2);
+            return (
+                <>
+                    {renderGrid(true)}
+                    <polyline points={points.join(' ')} className="fill-none stroke-white stroke-2" />
+                    <circle cx={20 + pX} cy={pY} r="6" className="fill-black stroke-green-500 stroke-2" />
+                    <line x1={20+pX} y1={CY} x2={20+pX} y2={pY} className="stroke-green-500 stroke-1 stroke-dash-2" strokeDasharray="4 4"/>
+                    <text x={20+pX} y={pY - 15} className="fill-green-500 text-[10px] font-mono font-bold" textAnchor="middle">{val}</text>
+                    {values?.angle !== undefined && (
+                        <text x={20+pX} y={pY - 30} className="fill-white text-[9px] font-mono" textAnchor="middle">θ={pX.toFixed(0)}°</text>
                     )}
+                </>
+            );
+        }
+        case 'cos': {
+            const points = [];
+            const scaleY = 80;
+            for(let i=0; i<=360; i+=5) {
+                const rad = i * Math.PI / 180;
+                const x = 20 + i; 
+                const y = CY - Math.cos(rad) * scaleY; 
+                points.push(`${x},${y}`);
+            }
+            const pX = values?.angle ?? ((t * 50) % 360); 
+            const pRad = pX * Math.PI / 180;
+            const pY = CY - Math.cos(pRad) * scaleY;
+            const val = Math.cos(pRad).toFixed(2);
+            return (
+                <>
+                    {renderGrid(true)}
+                    <polyline points={points.join(' ')} className="fill-none stroke-blue-400 stroke-2" />
+                    <circle cx={20 + pX} cy={pY} r="6" className="fill-black stroke-blue-400 stroke-2" />
+                    <line x1={20+pX} y1={CY} x2={20+pX} y2={pY} className="stroke-blue-400 stroke-1 stroke-dash-2" strokeDasharray="4 4"/>
+                    <text x={20+pX} y={pY - 15} className="fill-blue-400 text-[10px] font-mono font-bold" textAnchor="middle">{val}</text>
+                </>
+            );
+        }
+        case 'tan': {
+            const renderTanSeg = (startDeg, endDeg) => {
+                const pts = [];
+                for(let i=startDeg; i<endDeg; i+=2) {
+                    const rad = i * Math.PI / 180;
+                    const x = 20 + i;
+                    const y = CY - Math.tan(rad) * 30; 
+                    if (y > 20 && y < 380) pts.push(`${x},${y}`);
+                }
+                return <polyline points={pts.join(' ')} className="fill-none stroke-red-500 stroke-2" />;
+            };
+            const pX = values?.angle ?? ((t * 50) % 360); 
+            const pRad = pX * Math.PI / 180;
+            let pY = CY - Math.tan(pRad) * 30;
+            const val = Math.tan(pRad).toFixed(1);
+            const inBounds = pY > 20 && pY < 380;
+            return (
+                <>
+                    {renderGrid(true)}
+                    {renderTanSeg(0, 88)} {renderTanSeg(92, 268)} {renderTanSeg(272, 360)}
+                    <line x1={20+90} y1={20} x2={20+90} y2={380} className="stroke-white/20 stroke-1 stroke-dash-2" strokeDasharray="2 2" />
+                    <line x1={20+270} y1={20} x2={20+270} y2={380} className="stroke-white/20 stroke-1 stroke-dash-2" strokeDasharray="2 2" />
+                    {inBounds && (<circle cx={20 + pX} cy={pY} r="4" className="fill-black stroke-red-500 stroke-2" />)}
+                    <text x={300} y={50} className="fill-red-500 text-[10px] font-mono">Tan(θ)</text>
+                </>
+            );
+        }
+        case 'linear_parallel': {
+            const m = values?.m ?? 0.5;
+            const c1 = -50, c2 = 50;
+            const x1 = 0, x2 = 400;
+            const y1_a = CY - (x1-CX)*m - c1; 
+            const y2_a = CY - (x2-CX)*m - c1;
+            const y1_b = CY - (x1-CX)*m - c2;
+            const y2_b = CY - (x2-CX)*m - c2;
+            return (
+               <>
+                  {renderGrid()}
+                  <line x1={x1} y1={y1_a} x2={x2} y2={y2_a} className="stroke-green-500 stroke-2" />
+                  <line x1={x1} y1={y1_b} x2={x2} y2={y2_b} className="stroke-green-500 stroke-2" />
+                  <text x={280} y={y2_a - 10} className="fill-green-500 text-[10px] font-mono">m = {m}</text>
+                  <text x={280} y={y2_b - 10} className="fill-green-500 text-[10px] font-mono">m = {m}</text>
+               </>
+            );
+        }
+        case 'linear_perp': {
+            const angle = t * 0.5;
+            const m1 = Math.tan(angle);
+            const len = 150;
+            const l1_x1 = CX - Math.cos(angle)*len, l1_y1 = CY - Math.sin(angle)*len, l1_x2 = CX + Math.cos(angle)*len, l1_y2 = CY + Math.sin(angle)*len;
+            const l2_x1 = CX - Math.cos(angle + Math.PI/2)*len, l2_y1 = CY - Math.sin(angle + Math.PI/2)*len, l2_x2 = CX + Math.cos(angle + Math.PI/2)*len, l2_y2 = CY + Math.sin(angle + Math.PI/2)*len;
+            return (
+               <>
+                  {renderGrid()}
+                  <line x1={l1_x1} y1={l1_y1} x2={l1_x2} y2={l1_y2} className="stroke-white stroke-2" />
+                  <line x1={l2_x1} y1={l2_y1} x2={l2_x2} y2={l2_y2} className="stroke-green-500 stroke-2" />
+                  <path d={`M${CX},${CY} L${CX + Math.cos(angle)*20},${CY + Math.sin(angle)*20} L${CX + Math.cos(angle)*20 + Math.cos(angle + Math.PI/2)*20},${CY + Math.sin(angle)*20 + Math.sin(angle + Math.PI/2)*20} L${CX + Math.cos(angle + Math.PI/2)*20},${CY + Math.sin(angle + Math.PI/2)*20} Z`} className="fill-white/20" />
+                  <text x={CX+20} y={CY+40} className="fill-white text-[10px] font-mono">m1 × m2 = -1</text>
+               </>
+            );
+        }
+        case 'sine_rule': {
+            const p1 = { x: 100, y: 300 }, p2 = { x: 300, y: 300 }, p3 = { x: 200 + Math.sin(t)*50, y: 100 };
+            return (
+               <>
+                  <path d={`M${p1.x},${p1.y} L${p2.x},${p2.y} L${p3.x},${p3.y} Z`} className="stroke-white stroke-2 fill-white/5" />
+                  <text x={p1.x-10} y={p1.y+15} className="fill-green-500 text-[10px] font-mono font-bold">A</text>
+                  <text x={p2.x+10} y={p2.y+15} className="fill-blue-500 text-[10px] font-mono font-bold">B</text>
+                  <text x={p3.x} y={p3.y-10} className="fill-red-500 text-[10px] font-mono font-bold">C</text>
+                  <text x={(p2.x+p3.x)/2 + 10} y={(p2.y+p3.y)/2} className="fill-green-500 text-[10px] font-mono">a</text>
+                  <text x={(p1.x+p3.x)/2 - 15} y={(p1.y+p3.y)/2} className="fill-blue-500 text-[10px] font-mono">b</text>
+                  <text x={(p1.x+p2.x)/2} y={p1.y+15} className="fill-red-500 text-[10px] font-mono">c</text>
+               </>
+            );
+        }
+        case 'cosine_rule': {
+           const p1 = { x: 120, y: 280 }, p2 = { x: 280, y: 280 }, p3 = { x: 120 + Math.cos(t*0.5)*150, y: 280 - Math.sin(t*0.5)*150 };
+           return (
+               <>
+                  <path d={`M${p1.x},${p1.y} L${p2.x},${p2.y} L${p3.x},${p3.y} Z`} className="stroke-white stroke-2 fill-white/5" />
+                  <circle cx={p1.x} cy={p1.y} r="20" className="stroke-green-500 stroke-1 fill-none opacity-50" />
+                  <text x={p1.x-15} y={p1.y+15} className="fill-green-500 text-[10px] font-bold">A</text>
+                  <text x={(p1.x+p3.x)/2 - 10} y={(p1.y+p3.y)/2} className="fill-white text-[10px]">b</text>
+                  <text x={(p1.x+p2.x)/2} y={p1.y+15} className="fill-white text-[10px]">c</text>
+                  <line x1={p2.x} y1={p2.y} x2={p3.x} y2={p3.y} className="stroke-red-500 stroke-2 stroke-dash-2" strokeDasharray="4 4" />
+                  <text x={(p2.x+p3.x)/2 + 10} y={(p2.y+p3.y)/2} className="fill-red-500 text-[10px] font-bold">a?</text>
+               </>
+           );
+        }
+        case 'triangle_area': {
+           const p1 = { x: 100, y: 300 }, p2 = { x: 300, y: 300 };
+           const angleC = values?.angle || (60 + Math.sin(t) * 30);
+           const radC = angleC * Math.PI / 180;
+           const sideLen = 150;
+           const p3 = { x: 100 + sideLen * Math.cos(-radC), y: 300 + sideLen * Math.sin(-radC) };
+           return (
+               <>
+                  <path d={`M${p1.x},${p1.y} L${p2.x},${p2.y} L${p3.x},${p3.y} Z`} className="stroke-white stroke-2 fill-green-500/10" />
+                  <text x={p2.x+10} y={p2.y} className="fill-white text-[10px]">B</text>
+                  <text x={p3.x} y={p3.y-10} className="fill-white text-[10px]">A</text>
+                  <text x={(p1.x+p2.x)/2} y={p1.y+15} className="fill-white text-[10px]">a</text>
+                  <text x={(p1.x+p3.x)/2 - 15} y={(p1.y+p3.y)/2} className="fill-white text-[10px]">b</text>
+                   <circle cx={p1.x} cy={p1.y} r="20" className="stroke-green-500 stroke-1 fill-none" />
+                   <text x={p1.x-10} y={p1.y+10} className="fill-green-500 text-[10px] font-bold">C={angleC.toFixed(0)}°</text>
+               </>
+           );
+        }
+      }
+    };
+
+    return (
+      <div className="w-full aspect-square bg-[#050505] rounded-lg border border-white/10 relative overflow-hidden flex items-center justify-center">
+        <svg width="400" height="400" viewBox="0 0 400 400" className="relative z-10 w-full h-full">
+          {['centre','semicircle','segment','cyclic','tangent_radius','two_tangents','alternate_segment','chord_bisect'].includes(type) && (<circle cx={CX} cy={CY} r={R} className="fill-none stroke-white/10 stroke-1" />)}
+          {renderGeometry()}
+        </svg>
+        <div className="absolute top-4 left-4 pointer-events-none">
+           <div className="flex items-center gap-2"><div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-green-500' : 'bg-gray-500'}`}></div><span className="text-[9px] font-mono text-nexus-dim uppercase tracking-widest">{isActive ? 'ACTIVE_SIM' : 'PAUSED'}</span></div>
+           <div className="mt-1 text-[9px] font-mono text-gray-700">T: {t.toFixed(2)}s</div>
+        </div>
+      </div>
+    );
+  };
+
+  const TheoremCard = ({ theorem, index, isReversed = false }) => {
+    const [isActive, setIsActive] = useState(true);
+    const [values, setValues] = useState({});
+
+    useEffect(() => {
+        if (theorem.variables) {
+            const defaults = {};
+            theorem.variables.forEach(v => defaults[v.id] = v.defaultValue);
+            setValues(defaults);
+        }
+    }, [theorem]);
+
+    const toggleSim = () => { playClickSfx(); setIsActive(!isActive); };
+    const updateValue = (id, newVal) => setValues(prev => ({ ...prev, [id]: newVal }));
+
+    return (
+      <div onMouseEnter={playHoverSfx} className="group bg-black border border-white/10 p-0 md:p-0 flex flex-col overflow-hidden hover:border-white/30 transition-all duration-500">
+        <div className={`flex flex-col ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'}`}>
+          <div className={`p-6 md:p-8 flex-1 flex flex-col justify-between ${isReversed ? 'border-l' : 'border-r'} border-b md:border-b-0 border-white/10 relative`}>
+              <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-[10px] font-mono bg-white text-black px-1.5 py-0.5 font-bold">RULE_{index + 1}</span>
+                    <span className="text-[10px] font-mono text-nexus-dim uppercase tracking-[0.2em]">{theorem.type.toUpperCase().replace('_', ' ')}</span>
                   </div>
-                  <div>
-                      <div className="bg-[#111] border border-white/10 p-4 mb-6 relative group/formula">
-                          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-2">Mathematical Formula</span><p className="text-white font-mono text-sm">{theorem.rule}</p>
-                      </div>
-                      <div className="flex items-center gap-4"><button onClick={toggleSim} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white hover:text-green-400 transition-colors">{isActive ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}{isActive ? 'Freeze' : 'Resume'}</button></div>
+                  <h3 className="text-3xl font-black uppercase tracking-tighter text-white mb-2 leading-[0.9]">{theorem.title}</h3>
+                  <h4 className="text-sm font-mono text-green-500 uppercase tracking-wider mb-6">{theorem.subtitle}</h4>
+                  
+                  <div className="relative group/desc">
+                    <p className="text-sm text-gray-400 leading-relaxed font-mono border-l-2 border-white/10 pl-4 mb-8 pr-8">{theorem.description}</p>
                   </div>
+
+                  <div className="mb-8 relative group/algo">
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block">Solving Algorithm</span>
+                    </div>
+                    <div className="space-y-2">{theorem.steps.map((step, i) => (<div key={i} className="flex items-start gap-3"><span className="text-[10px] font-mono text-nexus-dim pt-0.5">0{i+1}</span><p className="text-xs font-mono text-gray-300 leading-tight">{step}</p></div>))}</div>
+                  </div>
+
+                  {theorem.variables && theorem.variables.length > 0 && (
+                    <div className="mb-8 bg-white/5 border border-white/10 p-4 rounded-sm relative group/vars">
+                        <div className="flex items-center gap-2 mb-4 text-nexus-dim"><Sliders className="w-3 h-3 text-white" /><span className="text-[9px] font-bold text-white uppercase tracking-widest">Variable Control</span></div>
+                        <div className="grid gap-4">
+                            {theorem.variables.map((variable) => (
+                                <div key={variable.id} className="relative">
+                                    <div className="flex justify-between items-end mb-1"><label className="text-[10px] font-mono text-gray-400 uppercase tracking-wider">{variable.label}</label><span className="text-[10px] font-mono text-green-400 font-bold">{values[variable.id]}{variable.unit}</span></div>
+                                    <input type="range" min={variable.min} max={variable.max} step={variable.step} value={values[variable.id] || variable.defaultValue} onChange={(e) => updateValue(variable.id, parseFloat(e.target.value))} className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full hover:[&::-webkit-slider-thumb]:bg-green-500 transition-colors"/>
+                                    <div className="flex justify-between mt-1 text-[8px] text-gray-600 font-mono"><span>{variable.min}{variable.unit}</span><span>{variable.max}{variable.unit}</span></div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
               </div>
-              <div className="bg-[#050505] p-4 md:p-8 flex-1 flex items-center justify-center min-h-[400px]"><GeometryCanvas type={theorem.type} isActive={isActive} values={values} /></div>
+              <div>
+                  <div className="bg-[#111] border border-white/10 p-4 mb-6 relative group/formula">
+                      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-2">Mathematical Formula</span><p className="text-white font-mono text-sm">{theorem.rule}</p>
+                  </div>
+                  <div className="flex items-center gap-4"><button onClick={toggleSim} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white hover:text-green-400 transition-colors">{isActive ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}{isActive ? 'Freeze' : 'Resume'}</button></div>
+              </div>
+          </div>
+          <div className="bg-[#050505] p-4 md:p-8 flex-1 flex items-center justify-center min-h-[400px]"><GeometryCanvas type={theorem.type} isActive={isActive} values={values} /></div>
+        </div>
+      </div>
+    );
+  };
+
+  const ConceptGrid = () => {
+    const terms = [
+        { id: 't1', term: 'Radius', definition: 'Distance from centre to circumference.', category: 'Structure' },
+        { id: 't2', term: 'Tangent', definition: 'Line touching circle at exactly one point.', category: 'External' },
+        { id: 't3', term: 'Chord', definition: 'Line segment connecting two points on curve.', category: 'Structure' },
+        { id: 't4', term: 'Cyclic Quad', definition: '4-sided shape with all corners on circle.', category: 'Property' },
+        { id: 't5', term: 'Gradient', definition: 'The steepness of a line (rise over run).', category: 'Graph' },
+        { id: 't6', term: 'Intercept', definition: 'Where a line crosses the y-axis (when x=0).', category: 'Graph' },
+        { id: 't7', term: 'Period', definition: 'The length of one complete cycle of a wave.', category: 'Trig' },
+        { id: 't8', term: 'Asymptote', definition: 'A line that a curve approaches but never touches.', category: 'Trig' },
+        { id: 't9', term: 'Hypotenuse', definition: 'Longest side of a right-angled triangle.', category: 'Structure' },
+        { id: 't10', term: 'Subtend', definition: 'To create an angle at a specific point.', category: 'External' },
+        { id: 't11', term: 'Perpendicular', definition: 'Lines intersecting at exactly 90 degrees.', category: 'Property' },
+        { id: 't12', term: 'Segment', definition: 'Area enclosed by a chord and an arc.', category: 'Structure' },
+    ];
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-l border-t border-white/10">
+        {terms.map((item, i) => (
+          <div key={item.id} onMouseEnter={playHoverSfx} className="group bg-black border-r border-b border-white/10 p-6 relative overflow-hidden hover:bg-white transition-colors duration-300">
+            <div className="relative z-10 flex flex-col h-full justify-between gap-4">
+               <div className="flex justify-between items-start"><span className="text-[9px] font-mono text-gray-500 uppercase tracking-widest group-hover:text-black/60">{item.category}</span><span className="text-[9px] font-mono text-nexus-dim group-hover:text-black/30">0{i + 1}</span></div>
+               <div><h4 className="text-xl font-bold uppercase text-white mb-2 group-hover:text-black transition-colors">{item.term}</h4><p className="text-[10px] font-mono text-gray-500 leading-tight group-hover:text-black/80 transition-colors">{item.definition}</p></div>
             </div>
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none"></div>
           </div>
-        );
-      };
+        ))}
+      </div>
+    );
+  };
 
-      const ConceptGrid = () => {
-        const terms = [
-            { id: 't1', term: 'Radius', definition: 'Distance from centre to circumference.', category: 'Structure' },
-            { id: 't2', term: 'Tangent', definition: 'Line touching circle at exactly one point.', category: 'External' },
-            { id: 't3', term: 'Chord', definition: 'Line segment connecting two points on curve.', category: 'Structure' },
-            { id: 't4', term: 'Cyclic Quad', definition: '4-sided shape with all corners on circle.', category: 'Property' },
-            { id: 't5', term: 'Gradient', definition: 'The steepness of a line (rise over run).', category: 'Graph' },
-            { id: 't6', term: 'Intercept', definition: 'Where a line crosses the y-axis (when x=0).', category: 'Graph' },
-            { id: 't7', term: 'Period', definition: 'The length of one complete cycle of a wave.', category: 'Trig' },
-            { id: 't8', term: 'Asymptote', definition: 'A line that a curve approaches but never touches.', category: 'Trig' },
-            { id: 't9', term: 'Hypotenuse', definition: 'Longest side of a right-angled triangle.', category: 'Structure' },
-            { id: 't10', term: 'Subtend', definition: 'To create an angle at a specific point.', category: 'External' },
-            { id: 't11', term: 'Perpendicular', definition: 'Lines intersecting at exactly 90 degrees.', category: 'Property' },
-            { id: 't12', term: 'Segment', definition: 'Area enclosed by a chord and an arc.', category: 'Structure' },
-        ];
-        return (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-l border-t border-white/10">
-            {terms.map((item, i) => (
-              <div key={item.id} onMouseEnter={playHoverSfx} className="group bg-black border-r border-b border-white/10 p-6 relative overflow-hidden hover:bg-white transition-colors duration-300">
-                <div className="relative z-10 flex flex-col h-full justify-between gap-4">
-                   <div className="flex justify-between items-start"><span className="text-[9px] font-mono text-gray-500 uppercase tracking-widest group-hover:text-black/60">{item.category}</span><span className="text-[9px] font-mono text-nexus-dim group-hover:text-black/30">0{i + 1}</span></div>
-                   <div><h4 className="text-xl font-bold uppercase text-white mb-2 group-hover:text-black transition-colors">{item.term}</h4><p className="text-[10px] font-mono text-gray-500 leading-tight group-hover:text-black/80 transition-colors">{item.definition}</p></div>
-                </div>
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none"></div>
-              </div>
-            ))}
-          </div>
-        );
-      };
+  const App = () => {
+    const circleTheorems = [
+      { 
+          id: 'th1', title: 'Angle at Centre', subtitle: 'Centre vs Circumference', description: 'The angle subtended by an arc at the centre is exactly double the angle subtended at any point on the remaining part of the circle.', rule: 'x at circumference = 2x at centre', type: 'centre',
+          steps: ['Identify the angle at the circumference (x).', 'Locate the central angle subtended by the same arc.', 'Multiply the circumference angle by 2 to find the centre angle.', 'Alternatively, divide centre angle by 2 to find x.'],
+          variables: [{ id: 'angle', label: 'Centre Angle', min: 40, max: 160, step: 1, defaultValue: 100, unit: '°' }] 
+      },
+      { 
+          id: 'th2', title: 'Semicircle Angle', subtitle: 'The Diameter Rule', description: 'The angle in a semicircle is always 90°. If you form a triangle using the diameter as the base and any point on the arc as the vertex, that vertex will always be a right angle.', rule: 'Angle = 90°', type: 'semicircle',
+          steps: ['Check if one side of the triangle is the diameter.', 'Identify the vertex on the circumference opposite the diameter.', 'Set this angle immediately to 90°.', 'Use sum of angles in a triangle (180°) to find remaining angles.'],
+          variables: [{ id: 'rotation', label: 'Vertex Position', min: 0, max: 180, step: 1, defaultValue: 90, unit: '°' }]
+      },
+      { 
+          id: 'th3', title: 'Same Segment', subtitle: 'The Bowtie Theorem', description: 'Angles subtended by the same arc at the circumference are equal. Visually, this creates a "bowtie" shape.', rule: '∠A = ∠B', type: 'segment',
+          steps: ['Find two angles that start and end at the same two points on the arc.', 'Verify they are in the same segment (usually looks like a bowtie).', 'Equate the two angles: Angle A = Angle B.', 'Solve for unknown variable x.']
+      },
+      { 
+          id: 'th4', title: 'Cyclic Quadrilateral', subtitle: 'Four Point Polygon', description: 'A quadrilateral with all four vertices touching the circumference is cyclic. Its distinctive property is that opposite angles sum to 180°.', rule: 'Opposite Angles Sum 180°', type: 'cyclic',
+          steps: ['Confirm all 4 corners touch the circle edge.', 'Identify the pair of opposite angles.', 'Set up equation: Angle A + Angle C = 180°.', 'Subtract known angle from 180° to find the unknown.']
+      },
+      { 
+          id: 'th5', title: 'Tangent & Radius', subtitle: 'Point of Contact', description: 'A tangent is a straight line touching the circle at one point. The angle between this tangent and the radius at the point of contact is always 90°.', rule: 'Tangent ⊥ Radius', type: 'tangent_radius',
+          steps: ['Identify the radius meeting the tangent line.', 'Mark the angle at the point of contact as 90°.', 'Look for a right-angled triangle formed with the chord.', 'Use Pythagoras or Trig ratios if side lengths are involved.']
+      },
+      { 
+          id: 'th6', title: 'Two Tangents', subtitle: 'External Point Equality', description: 'If two tangents are drawn from a single external point to a circle, they are equal in length. This creates a "kite" shape with the radii.', rule: 'Tangent A = Tangent B', type: 'two_tangents',
+          steps: ['Locate the external point P where tangents meet.', 'State that PA = PB (equal lengths).', 'Identify the isosceles triangle formed by the chord AB.', 'Calculate base angles using (180 - angle P) / 2.']
+      },
+      { 
+          id: 'th7', title: 'Alternate Segment', subtitle: 'Tangent-Chord Theorem', description: 'The angle between a tangent and a chord is equal to the angle in the alternate segment.', rule: 'Angle between Chord/Tangent = Opposite Angle', type: 'alternate_segment',
+          steps: ['Identify the angle between the tangent and the chord (x).', 'Look for the angle inside the triangle in the opposite segment.', 'Equate the two angles directly.', 'Useful for finding angles "looking away" from the tangent.']
+      },
+      { 
+          id: 'th8', title: 'Perpendicular Chord', subtitle: 'Bisector Rule', description: 'A straight line drawn from the centre perpendicular to a chord bisects the chord.', rule: 'Perpendicular = Bisector', type: 'chord_bisect',
+          steps: ['Draw a line from centre to chord at 90°.', 'Conclude that the chord is split into two equal halves.', 'Form a right-angled triangle with the radius.', 'Use Pythagoras: r² = (half-chord)² + (distance)².']
+      }
+    ];
 
-      const App = () => {
-        const circleTheorems = [
-          { 
-              id: 'th1', title: 'Angle at Centre', subtitle: 'Centre vs Circumference', description: 'The angle subtended by an arc at the centre is exactly double the angle subtended at any point on the remaining part of the circle.', rule: 'x at circumference = 2x at centre', type: 'centre',
-              steps: ['Identify the angle at the circumference (x).', 'Locate the central angle subtended by the same arc.', 'Multiply the circumference angle by 2 to find the centre angle.', 'Alternatively, divide centre angle by 2 to find x.'],
-              variables: [{ id: 'angle', label: 'Centre Angle', min: 40, max: 160, step: 1, defaultValue: 100, unit: '°' }] 
-          },
-          { 
-              id: 'th2', title: 'Semicircle Angle', subtitle: 'The Diameter Rule', description: 'The angle in a semicircle is always 90°. If you form a triangle using the diameter as the base and any point on the arc as the vertex, that vertex will always be a right angle.', rule: 'Angle = 90°', type: 'semicircle',
-              steps: ['Check if one side of the triangle is the diameter.', 'Identify the vertex on the circumference opposite the diameter.', 'Set this angle immediately to 90°.', 'Use sum of angles in a triangle (180°) to find remaining angles.'],
-              variables: [{ id: 'rotation', label: 'Vertex Position', min: 0, max: 180, step: 1, defaultValue: 90, unit: '°' }]
-          },
-          { 
-              id: 'th3', title: 'Same Segment', subtitle: 'The Bowtie Theorem', description: 'Angles subtended by the same arc at the circumference are equal. Visually, this creates a "bowtie" shape.', rule: '∠A = ∠B', type: 'segment',
-              steps: ['Find two angles that start and end at the same two points on the arc.', 'Verify they are in the same segment (usually looks like a bowtie).', 'Equate the two angles: Angle A = Angle B.', 'Solve for unknown variable x.']
-          },
-          { 
-              id: 'th4', title: 'Cyclic Quadrilateral', subtitle: 'Four Point Polygon', description: 'A quadrilateral with all four vertices touching the circumference is cyclic. Its distinctive property is that opposite angles sum to 180°.', rule: 'Opposite Angles Sum 180°', type: 'cyclic',
-              steps: ['Confirm all 4 corners touch the circle edge.', 'Identify the pair of opposite angles.', 'Set up equation: Angle A + Angle C = 180°.', 'Subtract known angle from 180° to find the unknown.']
-          },
-          { 
-              id: 'th5', title: 'Tangent & Radius', subtitle: 'Point of Contact', description: 'A tangent is a straight line touching the circle at one point. The angle between this tangent and the radius at the point of contact is always 90°.', rule: 'Tangent ⊥ Radius', type: 'tangent_radius',
-              steps: ['Identify the radius meeting the tangent line.', 'Mark the angle at the point of contact as 90°.', 'Look for a right-angled triangle formed with the chord.', 'Use Pythagoras or Trig ratios if side lengths are involved.']
-          },
-          { 
-              id: 'th6', title: 'Two Tangents', subtitle: 'External Point Equality', description: 'If two tangents are drawn from a single external point to a circle, they are equal in length. This creates a "kite" shape with the radii.', rule: 'Tangent A = Tangent B', type: 'two_tangents',
-              steps: ['Locate the external point P where tangents meet.', 'State that PA = PB (equal lengths).', 'Identify the isosceles triangle formed by the chord AB.', 'Calculate base angles using (180 - angle P) / 2.']
-          },
-          { 
-              id: 'th7', title: 'Alternate Segment', subtitle: 'Tangent-Chord Theorem', description: 'The angle between a tangent and a chord is equal to the angle in the alternate segment.', rule: 'Angle between Chord/Tangent = Opposite Angle', type: 'alternate_segment',
-              steps: ['Identify the angle between the tangent and the chord (x).', 'Look for the angle inside the triangle in the opposite segment.', 'Equate the two angles directly.', 'Useful for finding angles "looking away" from the tangent.']
-          },
-          { 
-              id: 'th8', title: 'Perpendicular Chord', subtitle: 'Bisector Rule', description: 'A straight line drawn from the centre perpendicular to a chord bisects the chord.', rule: 'Perpendicular = Bisector', type: 'chord_bisect',
-              steps: ['Draw a line from centre to chord at 90°.', 'Conclude that the chord is split into two equal halves.', 'Form a right-angled triangle with the radius.', 'Use Pythagoras: r² = (half-chord)² + (distance)².']
-          }
-        ];
+    const trigRules = [
+        { 
+            id: 'tri1', title: 'Sine Wave', subtitle: 'The Fundamental Oscillation', description: 'The Sine function creates a smooth wave that repeats every 360 degrees. It represents the y-coordinate of a point rotating around a unit circle.', rule: 'y = sin(x)', type: 'sin',
+            steps: ['Input angle x into the function.', 'Identify quadrant: 0-180 (+ve), 180-360 (-ve).', 'Determine reference angle from horizontal axis.', 'Result is the height (y-coord) on unit circle.'],
+            variables: [{ id: 'angle', label: 'Angle (Theta)', min: 0, max: 360, step: 1, defaultValue: 45, unit: '°' }]
+        },
+        { 
+            id: 'tri2', title: 'Cosine Wave', subtitle: 'The Phase Shift', description: 'The Cosine wave follows the same shape as Sine but starts at its peak (1) instead of 0. It corresponds to the x-coordinate on the unit circle.', rule: 'y = cos(x)', type: 'cos',
+            steps: ['Notice graph starts at 1 when x = 0.', 'Shift sine wave left by 90° to visualize.', 'Values repeat: cos(x) = cos(360 - x).', 'Use to model periodic phenomena starting at max.'],
+            variables: [{ id: 'angle', label: 'Angle (Theta)', min: 0, max: 360, step: 1, defaultValue: 45, unit: '°' }]
+        },
+        { 
+            id: 'tri3', title: 'Tangent Graph', subtitle: 'Asymptotic Growth', description: 'The Tangent function represents the ratio sin(x)/cos(x). It repeats every 180° and shoots to infinity where cos(x) is 0.', rule: 'y = tan(x)', type: 'tan',
+            steps: ['Calculate sin(x) divided by cos(x).', 'Check if x is 90, 270, etc. (Undefined/Asymptote).', 'If valid, result is the slope of radius.', 'Note the period is 180°, not 360°.'],
+            variables: [{ id: 'angle', label: 'Angle (Theta)', min: 0, max: 360, step: 1, defaultValue: 45, unit: '°' }]
+        }
+    ];
 
-        const trigRules = [
-            { 
-                id: 'tri1', title: 'Sine Wave', subtitle: 'The Fundamental Oscillation', description: 'The Sine function creates a smooth wave that repeats every 360 degrees. It represents the y-coordinate of a point rotating around a unit circle.', rule: 'y = sin(x)', type: 'sin',
-                steps: ['Input angle x into the function.', 'Identify quadrant: 0-180 (+ve), 180-360 (-ve).', 'Determine reference angle from horizontal axis.', 'Result is the height (y-coord) on unit circle.'],
-                variables: [{ id: 'angle', label: 'Angle (Theta)', min: 0, max: 360, step: 1, defaultValue: 45, unit: '°' }]
-            },
-            { 
-                id: 'tri2', title: 'Cosine Wave', subtitle: 'The Phase Shift', description: 'The Cosine wave follows the same shape as Sine but starts at its peak (1) instead of 0. It corresponds to the x-coordinate on the unit circle.', rule: 'y = cos(x)', type: 'cos',
-                steps: ['Notice graph starts at 1 when x = 0.', 'Shift sine wave left by 90° to visualize.', 'Values repeat: cos(x) = cos(360 - x).', 'Use to model periodic phenomena starting at max.'],
-                variables: [{ id: 'angle', label: 'Angle (Theta)', min: 0, max: 360, step: 1, defaultValue: 45, unit: '°' }]
-            },
-            { 
-                id: 'tri3', title: 'Tangent Graph', subtitle: 'Asymptotic Growth', description: 'The Tangent function represents the ratio sin(x)/cos(x). It repeats every 180° and shoots to infinity where cos(x) is 0.', rule: 'y = tan(x)', type: 'tan',
-                steps: ['Calculate sin(x) divided by cos(x).', 'Check if x is 90, 270, etc. (Undefined/Asymptote).', 'If valid, result is the slope of radius.', 'Note the period is 180°, not 360°.'],
-                variables: [{ id: 'angle', label: 'Angle (Theta)', min: 0, max: 360, step: 1, defaultValue: 45, unit: '°' }]
-            }
-        ];
+    const linearRules = [
+        { 
+            id: 'lin1', title: 'Parallel Lines', subtitle: 'Consistent Gradients', description: 'Parallel lines never intersect because their rate of change is identical. If two equations have the same \'m\' value, they are parallel.', rule: 'm1 = m2', type: 'linear_parallel',
+            steps: ['Rearrange both equations to y = mx + c.', 'Extract the coefficient of x (m) from both.', 'Compare values: if m1 == m2, lines are parallel.', 'Calculate different c values for vertical spacing.'],
+            variables: [{ id: 'm', label: 'Gradient (m)', min: -2, max: 2, step: 0.1, defaultValue: 0.5, unit: '' }]
+        },
+        { 
+            id: 'lin2', title: 'Perpendicular Lines', subtitle: 'The Negative Reciprocal', description: 'Lines that intersect at exactly 90 degrees are perpendicular. If you multiply their gradients, the result is always -1.', rule: 'm1 × m2 = -1', type: 'linear_perp',
+            steps: ['Identify gradient of first line (m1).', 'Calculate negative reciprocal: -1 / m1.', 'Set this value as gradient m2.', 'Equation of new line is y = m2x + c.']
+        }
+    ];
 
-        const linearRules = [
-            { 
-                id: 'lin1', title: 'Parallel Lines', subtitle: 'Consistent Gradients', description: 'Parallel lines never intersect because their rate of change is identical. If two equations have the same \'m\' value, they are parallel.', rule: 'm1 = m2', type: 'linear_parallel',
-                steps: ['Rearrange both equations to y = mx + c.', 'Extract the coefficient of x (m) from both.', 'Compare values: if m1 == m2, lines are parallel.', 'Calculate different c values for vertical spacing.'],
-                variables: [{ id: 'm', label: 'Gradient (m)', min: -2, max: 2, step: 0.1, defaultValue: 0.5, unit: '' }]
-            },
-            { 
-                id: 'lin2', title: 'Perpendicular Lines', subtitle: 'The Negative Reciprocal', description: 'Lines that intersect at exactly 90 degrees are perpendicular. If you multiply their gradients, the result is always -1.', rule: 'm1 × m2 = -1', type: 'linear_perp',
-                steps: ['Identify gradient of first line (m1).', 'Calculate negative reciprocal: -1 / m1.', 'Set this value as gradient m2.', 'Equation of new line is y = m2x + c.']
-            }
-        ];
+    const advancedTriangleRules = [
+        { 
+            id: 'adv1', title: 'Sine Rule', subtitle: 'Opposite Pairs', description: 'Used for non-right angled triangles. It works when you have a "matching pair" of a side and its opposite angle.', rule: 'a/sinA = b/sinB = c/sinC', type: 'sine_rule',
+            steps: ['Check for a complete pair (side a and angle A known).', 'Identify the target unknown (side b or angle B).', 'Set up ratio: a/sinA = b/sinB.', 'Cross multiply and solve for unknown.']
+        },
+        { 
+            id: 'adv2', title: 'Cosine Rule', subtitle: 'The Sandwich Rule', description: 'Use this when you have two sides and the angle "sandwiched" between them, or when you need to find an angle given three sides.', rule: 'a² = b² + c² - 2bcCosA', type: 'cosine_rule',
+            steps: ['Identify two sides (b, c) and included angle A.', 'Substitute into formula: a² = b² + c² - 2bcCosA.', 'Calculate RHS carefully (BODMAS).', 'Square root the result to find length a.']
+        },
+        { 
+            id: 'adv3', title: 'Area of Triangle', subtitle: 'Without Vertical Height', description: 'The classic 1/2 base × height fails if you don\'t have the perpendicular height. This formula uses the included angle instead.', rule: 'Area = 1/2 abSinC', type: 'triangle_area',
+            steps: ['Identify two sides (a, b).', 'Ensure you have the *included* angle C between them.', 'Calculate sin(C).', 'Multiply 0.5 * a * b * sin(C) for Area.'],
+            variables: [{ id: 'angle', label: 'Angle C', min: 10, max: 170, step: 1, defaultValue: 60, unit: '°' }]
+        }
+    ];
 
-        const advancedTriangleRules = [
-            { 
-                id: 'adv1', title: 'Sine Rule', subtitle: 'Opposite Pairs', description: 'Used for non-right angled triangles. It works when you have a "matching pair" of a side and its opposite angle.', rule: 'a/sinA = b/sinB = c/sinC', type: 'sine_rule',
-                steps: ['Check for a complete pair (side a and angle A known).', 'Identify the target unknown (side b or angle B).', 'Set up ratio: a/sinA = b/sinB.', 'Cross multiply and solve for unknown.']
-            },
-            { 
-                id: 'adv2', title: 'Cosine Rule', subtitle: 'The Sandwich Rule', description: 'Use this when you have two sides and the angle "sandwiched" between them, or when you need to find an angle given three sides.', rule: 'a² = b² + c² - 2bcCosA', type: 'cosine_rule',
-                steps: ['Identify two sides (b, c) and included angle A.', 'Substitute into formula: a² = b² + c² - 2bcCosA.', 'Calculate RHS carefully (BODMAS).', 'Square root the result to find length a.']
-            },
-            { 
-                id: 'adv3', title: 'Area of Triangle', subtitle: 'Without Vertical Height', description: 'The classic 1/2 base × height fails if you don\'t have the perpendicular height. This formula uses the included angle instead.', rule: 'Area = 1/2 abSinC', type: 'triangle_area',
-                steps: ['Identify two sides (a, b).', 'Ensure you have the *included* angle C between them.', 'Calculate sin(C).', 'Multiply 0.5 * a * b * sin(C) for Area.'],
-                variables: [{ id: 'angle', label: 'Angle C', min: 10, max: 170, step: 1, defaultValue: 60, unit: '°' }]
-            }
-        ];
-
-        return (
-          <div className="min-h-screen font-sans selection:bg-white selection:text-black overflow-x-hidden transition-colors duration-300 bg-black text-white">
-            <CustomCursor />
-            <NavBar />
-            <main className="pt-24 pb-12 px-4 md:px-8 max-w-[1600px] mx-auto space-y-32">
-              <section id="index" className="relative min-h-[60vh] flex flex-col justify-center border border-white/10 bg-[#050505] p-8 md:p-16 overflow-hidden">
-                   <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none"></div>
-                   <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none"></div>
-                   <div className="absolute bottom-0 left-0 w-64 h-64 bg-green-500/10 blur-[100px] rounded-full pointer-events-none"></div>
-                   <div className="relative z-10 max-w-4xl">
-                       <div className="flex items-center gap-3 mb-6"><div className="w-12 h-[1px] bg-white"></div><span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-white">015x.dev Visual Unit</span></div>
-                       <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.8] mb-8 mix-blend-exclusion">Mathematic rules <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">Unit</span></h1>
-                       <p className="text-lg md:text-xl font-mono text-gray-400 max-w-2xl leading-relaxed border-l-2 border-white/20 pl-6">Advanced interactive learning modules for Geometry, Trigonometry, and Coordinate Systems. Powered by 015x.dev Edu Guide.</p>
-                       <div className="flex flex-wrap gap-4 mt-12">
-                           <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-full"><Activity className="w-4 h-4 text-white" /><span className="text-[10px] font-bold uppercase tracking-widest">v.5.0 Stable</span></div>
-                       </div>
+    return (
+      <div className="min-h-screen font-sans selection:bg-white selection:text-black overflow-x-hidden transition-colors duration-300 bg-black text-white">
+        <CustomCursor />
+        <NavBar />
+        <main className="pt-24 pb-12 px-4 md:px-8 max-w-[1600px] mx-auto space-y-32">
+          <section id="index" className="relative min-h-[60vh] flex flex-col justify-center border border-white/10 bg-[#050505] p-8 md:p-16 overflow-hidden">
+               <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none"></div>
+               <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+               <div className="absolute bottom-0 left-0 w-64 h-64 bg-green-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+               <div className="relative z-10 max-w-4xl">
+                   <div className="flex items-center gap-3 mb-6"><div className="w-12 h-[1px] bg-white"></div><span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-white">015x.dev Visual Unit</span></div>
+                   <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.8] mb-8 mix-blend-exclusion">Mathematic rules <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">Unit</span></h1>
+                   <p className="text-lg md:text-xl font-mono text-gray-400 max-w-2xl leading-relaxed border-l-2 border-white/20 pl-6">Advanced interactive learning modules for Geometry, Trigonometry, and Coordinate Systems. Powered by 015x.dev Edu Guide.</p>
+                   <div className="flex flex-wrap gap-4 mt-12">
+                       <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-full"><Activity className="w-4 h-4 text-white" /><span className="text-[10px] font-bold uppercase tracking-widest">v.5.0 Stable</span></div>
                    </div>
-                   <div className="absolute bottom-8 right-8 flex flex-col items-end gap-1"><span className="text-[9px] font-mono text-gray-600 uppercase">Scroll to begin</span><ArrowDown className="w-4 h-4 text-white animate-bounce" /></div>
-              </section>
-              <section id="concepts" className="scroll-mt-32">
-                  <div className="flex items-end justify-between mb-8 border-b border-white/10 pb-4"><div><h2 className="text-4xl font-black uppercase tracking-tighter text-white">Dictionary</h2><span className="text-[10px] font-mono text-gray-500 uppercase tracking-[0.3em]">Fundamental Terminology</span></div><Database className="w-6 h-6 text-white/20" /></div>
-                  <ConceptGrid />
-              </section>
-              <section id="circles" className="scroll-mt-32">
-                   <div className="flex items-end justify-between mb-12 border-b border-white/10 pb-4"><div><h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white">Circle Rules</h2><span className="text-[10px] font-mono text-green-500 uppercase tracking-[0.3em]">Geometry Module</span></div></div>
-                  <div className="space-y-12">{circleTheorems.map((theorem, idx) => (<TheoremCard key={theorem.id} theorem={theorem} index={idx} isReversed={idx % 2 !== 0} />))}</div>
-              </section>
-              <section id="trig" className="scroll-mt-32">
-                  <div className="flex items-end justify-between mb-12 border-b border-white/10 pb-4"><div><h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white">Trigonometry</h2><span className="text-[10px] font-mono text-blue-500 uppercase tracking-[0.3em]">Wave Functions</span></div><Activity className="w-6 h-6 text-blue-500" /></div>
-                  <div className="space-y-12">{trigRules.map((theorem, idx) => (<TheoremCard key={theorem.id} theorem={theorem} index={idx} isReversed={idx % 2 !== 0} />))}</div>
-              </section>
-              <section id="linear" className="scroll-mt-32">
-                  <div className="flex items-end justify-between mb-12 border-b border-white/10 pb-4"><div><h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white">Linear Graphs</h2><span className="text-[10px] font-mono text-purple-500 uppercase tracking-[0.3em]">Coordinate Geometry</span></div><Grid className="w-6 h-6 text-purple-500" /></div>
-                  <div className="space-y-12">{linearRules.map((theorem, idx) => (<TheoremCard key={theorem.id} theorem={theorem} index={idx} isReversed={idx % 2 !== 0} />))}</div>
-              </section>
-              <section id="triangles" className="scroll-mt-32">
-                  <div className="flex items-end justify-between mb-12 border-b border-white/10 pb-4"><div><h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white">Advanced Triangles</h2><span className="text-[10px] font-mono text-red-500 uppercase tracking-[0.3em]">Non-Right Angled Rules</span></div><Triangle className="w-6 h-6 text-red-500" /></div>
-                  <div className="space-y-12">{advancedTriangleRules.map((theorem, idx) => (<TheoremCard key={theorem.id} theorem={theorem} index={idx} isReversed={idx % 2 !== 0} />))}</div>
-              </section>
-              <section id="summary" className="border border-white/10 bg-[#0a0a0a] p-8 md:p-12 relative overflow-hidden">
-                   <div className="absolute top-0 right-0 p-32 bg-indigo-900/10 blur-[120px] rounded-full"></div>
-                   <div className="relative z-10 grid md:grid-cols-2 gap-16">
-                       <div>
-                           <h3 className="text-3xl font-black uppercase tracking-tighter mb-8">Universal Solving Steps</h3>
-                           <div className="space-y-8">{[{ title: 'Identify', text: 'Determine which domain the problem falls into: Circles (Angles), Graphs (y=mx+c), or Triangles (Sine/Cosine Rule).' }, { title: 'Label', text: 'Mark key information. For graphs, mark intercepts. For circles, mark radii. For triangles, label opposite pairs (A-a, B-b).' }, { title: 'Select', text: 'Choose the correct formula. If you have a matching pair, use Sine Rule. If you have "SAS", use Cosine Rule.' }, { title: 'Verify', text: 'Does your answer make sense physically? (e.g., Sin(x) cannot be > 1, Hypotenuse must be longest side).' }].map((step, i) => (<div key={i} className="flex gap-4 group"><div className="flex-shrink-0 w-8 h-8 flex items-center justify-center border border-white/20 text-xs font-mono font-bold text-gray-500 group-hover:border-white group-hover:text-white transition-colors">0{i+1}</div><div><h4 className="text-sm font-bold uppercase tracking-wider text-white mb-1">{step.title}</h4><p className="text-xs font-mono text-gray-400 leading-relaxed">{step.text}</p></div></div>))}</div>
-                       </div>
-                       <div className="flex flex-col justify-between">
-                           <div className="border border-white/10 bg-white/5 p-6 rounded-sm"><span className="text-[10px] font-mono text-white/50 uppercase tracking-widest block mb-4">Mastery Tip</span><p className="text-lg font-bold text-white mb-2">Sketch Everything</p><p className="text-sm font-mono text-gray-400">Visualising the problem is 80% of the solution. Always draw a rough sketch of the graph or shape before attempting calculation. This prevents "impossible" answers from going unnoticed.</p></div>
-                           <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-8"><div className="flex flex-col"><span className="text-[10px] font-mono text-gray-500 uppercase">Module Status</span><span className="text-white font-bold uppercase tracking-widest">Online</span></div><Share2 className="w-5 h-5 text-gray-500 hover:text-white cursor-pointer transition-colors" /></div>
-                       </div>
+               </div>
+               <div className="absolute bottom-8 right-8 flex flex-col items-end gap-1"><span className="text-[9px] font-mono text-gray-600 uppercase">Scroll to begin</span><ArrowDown className="w-4 h-4 text-white animate-bounce" /></div>
+          </section>
+          <section id="concepts" className="scroll-mt-32">
+              <div className="flex items-end justify-between mb-8 border-b border-white/10 pb-4"><div><h2 className="text-4xl font-black uppercase tracking-tighter text-white">Dictionary</h2><span className="text-[10px] font-mono text-gray-500 uppercase tracking-[0.3em]">Fundamental Terminology</span></div><Database className="w-6 h-6 text-white/20" /></div>
+              <ConceptGrid />
+          </section>
+          <section id="circles" className="scroll-mt-32">
+               <div className="flex items-end justify-between mb-12 border-b border-white/10 pb-4"><div><h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white">Circle Rules</h2><span className="text-[10px] font-mono text-green-500 uppercase tracking-[0.3em]">Geometry Module</span></div></div>
+              <div className="space-y-12">{circleTheorems.map((theorem, idx) => (<TheoremCard key={theorem.id} theorem={theorem} index={idx} isReversed={idx % 2 !== 0} />))}</div>
+          </section>
+          <section id="trig" className="scroll-mt-32">
+              <div className="flex items-end justify-between mb-12 border-b border-white/10 pb-4"><div><h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white">Trigonometry</h2><span className="text-[10px] font-mono text-blue-500 uppercase tracking-[0.3em]">Wave Functions</span></div><Activity className="w-6 h-6 text-blue-500" /></div>
+              <div className="space-y-12">{trigRules.map((theorem, idx) => (<TheoremCard key={theorem.id} theorem={theorem} index={idx} isReversed={idx % 2 !== 0} />))}</div>
+          </section>
+          <section id="linear" className="scroll-mt-32">
+              <div className="flex items-end justify-between mb-12 border-b border-white/10 pb-4"><div><h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white">Linear Graphs</h2><span className="text-[10px] font-mono text-purple-500 uppercase tracking-[0.3em]">Coordinate Geometry</span></div><Grid className="w-6 h-6 text-purple-500" /></div>
+              <div className="space-y-12">{linearRules.map((theorem, idx) => (<TheoremCard key={theorem.id} theorem={theorem} index={idx} isReversed={idx % 2 !== 0} />))}</div>
+          </section>
+          <section id="triangles" className="scroll-mt-32">
+              <div className="flex items-end justify-between mb-12 border-b border-white/10 pb-4"><div><h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white">Advanced Triangles</h2><span className="text-[10px] font-mono text-red-500 uppercase tracking-[0.3em]">Non-Right Angled Rules</span></div><Triangle className="w-6 h-6 text-red-500" /></div>
+              <div className="space-y-12">{advancedTriangleRules.map((theorem, idx) => (<TheoremCard key={theorem.id} theorem={theorem} index={idx} isReversed={idx % 2 !== 0} />))}</div>
+          </section>
+          <section id="summary" className="border border-white/10 bg-[#0a0a0a] p-8 md:p-12 relative overflow-hidden">
+               <div className="absolute top-0 right-0 p-32 bg-indigo-900/10 blur-[120px] rounded-full"></div>
+               <div className="relative z-10 grid md:grid-cols-2 gap-16">
+                   <div>
+                       <h3 className="text-3xl font-black uppercase tracking-tighter mb-8">Universal Solving Steps</h3>
+                       <div className="space-y-8">{[{ title: 'Identify', text: 'Determine which domain the problem falls into: Circles (Angles), Graphs (y=mx+c), or Triangles (Sine/Cosine Rule).' }, { title: 'Label', text: 'Mark key information. For graphs, mark intercepts. For circles, mark radii. For triangles, label opposite pairs (A-a, B-b).' }, { title: 'Select', text: 'Choose the correct formula. If you have a matching pair, use Sine Rule. If you have "SAS", use Cosine Rule.' }, { title: 'Verify', text: 'Does your answer make sense physically? (e.g., Sin(x) cannot be > 1, Hypotenuse must be longest side).' }].map((step, i) => (<div key={i} className="flex gap-4 group"><div className="flex-shrink-0 w-8 h-8 flex items-center justify-center border border-white/20 text-xs font-mono font-bold text-gray-500 group-hover:border-white group-hover:text-white transition-colors">0{i+1}</div><div><h4 className="text-sm font-bold uppercase tracking-wider text-white mb-1">{step.title}</h4><p className="text-xs font-mono text-gray-400 leading-relaxed">{step.text}</p></div></div>))}</div>
                    </div>
-              </section>
-              <footer className="border-t border-white/10 pt-8 pb-4 flex justify-between items-center text-[10px] font-mono text-gray-600 uppercase tracking-widest"><span>015X.DEV | edu math guide</span><span>Version 5.0</span></footer>
-            </main>
-          </div>
-        );
-      };
+                   <div className="flex flex-col justify-between">
+                       <div className="border border-white/10 bg-white/5 p-6 rounded-sm"><span className="text-[10px] font-mono text-white/50 uppercase tracking-widest block mb-4">Mastery Tip</span><p className="text-lg font-bold text-white mb-2">Sketch Everything</p><p className="text-sm font-mono text-gray-400">Visualising the problem is 80% of the solution. Always draw a rough sketch of the graph or shape before attempting calculation. This prevents "impossible" answers from going unnoticed.</p></div>
+                       <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-8"><div className="flex flex-col"><span className="text-[10px] font-mono text-gray-500 uppercase">Module Status</span><span className="text-white font-bold uppercase tracking-widest">Online</span></div><Share2 className="w-5 h-5 text-gray-500 hover:text-white cursor-pointer transition-colors" /></div>
+                   </div>
+               </div>
+          </section>
+          <footer className="border-t border-white/10 pt-8 pb-4 flex justify-between items-center text-[10px] font-mono text-gray-600 uppercase tracking-widest"><span>015X.DEV | edu math guide</span><span>Version 5.0</span></footer>
+        </main>
+      </div>
+    );
+  };
 
-      const root = createRoot(document.getElementById('root'));
-      root.render(<App />);
-    </script>
+  const root = createRoot(document.getElementById('root'));
+  root.render(<App />);
+</script>
 </body>
 </html>
