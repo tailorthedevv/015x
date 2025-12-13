@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>015x.dev | Maths unit</title>
+    <title>015x.dev | Neural Math Engine</title>
     <meta name="description" content="Interactive visual guide to GCSE Math: Geometry, Trigonometry, and Graphs." />
     
     <!-- Tailwind -->
@@ -93,16 +93,16 @@
 
       // --- SERVICES ---
       const getClient = () => {
-        const apiKey = process.env.API_KEY; // In this mock env we assume it's injected or mocked
+        const apiKey = process.env.API_KEY; 
         if (!apiKey) return null;
         return new GoogleGenAI({ apiKey });
       };
 
       const generateMathHelp = async (userQuery, context) => {
         try {
-            // In a real env, this calls the API. For this single-file demo, we mock if no key, or call if key exists.
             const apiKey = process.env.API_KEY;
             if (!apiKey) {
+                // Mock response if no API key
                 return `[SIMULATED AI RESPONSE]\nContext: ${context}\n\nI am simulating a response because no API_KEY is present.\n\nTo answer "${userQuery}":\nThis concept relates to ${context}. Ensure you visualize the geometry before calculating.`;
             }
             
@@ -115,7 +115,7 @@
             model: 'gemini-2.5-flash',
             contents: userQuery,
             config: {
-                systemInstruction: `You are the 015x Math Guide. 
+                systemInstruction: `You are the 015x Neural Math Guide. 
                 IDENTITY:
                 - You are an embedded AI tutor within a futuristic math visualization app.
                 - Your tone is sleek, encouraging, slightly robotic but helpful (Cyberpunk/Academic).
@@ -881,13 +881,13 @@
                    <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none"></div>
                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-green-500/10 blur-[100px] rounded-full pointer-events-none"></div>
                    <div className="relative z-10 max-w-4xl">
-                       <div className="flex items-center gap-3 mb-6"><div className="w-12 h-[1px] bg-white"></div><span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-white">015x.dev Math's Rules Unit</span></div>
-                       <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.8] mb-8 mix-blend-exclusion">Mathematic <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">Rules</span></h1>
-                       <p className="text-lg md:text-xl font-mono text-gray-400 max-w-2xl leading-relaxed border-l-2 border-white/20 pl-6">Advanced interactive learning modules for Geometry, Trigonometry, and Coordinate Systems. Powered by 015x.dev.</p>
+                       <div className="flex items-center gap-3 mb-6"><div className="w-12 h-[1px] bg-white"></div><span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-white">015x.dev Visual Unit</span></div>
+                       <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.8] mb-8 mix-blend-exclusion">Neural <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">Math Engine</span></h1>
+                       <p className="text-lg md:text-xl font-mono text-gray-400 max-w-2xl leading-relaxed border-l-2 border-white/20 pl-6">Advanced interactive learning modules for Geometry, Trigonometry, and Coordinate Systems. Powered by 015x.dev Neural Guide.</p>
                        <div className="flex flex-wrap gap-4 mt-12">
                            <button onClick={() => handleAskAi('General', 'What does this app do?')} className="flex items-center gap-3 bg-green-900/20 border border-green-500/30 px-4 py-2 rounded-full hover:bg-green-900/40 transition-colors">
                               <MessageSquare className="w-4 h-4 text-green-500" />
-                              <span className="text-[10px] font-bold uppercase tracking-widest text-green-100">AI Guide</span>
+                              <span className="text-[10px] font-bold uppercase tracking-widest text-green-100">Consult AI Guide</span>
                            </button>
                            <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-full"><Activity className="w-4 h-4 text-white" /><span className="text-[10px] font-bold uppercase tracking-widest">v.5.0 Stable</span></div>
                        </div>
@@ -895,7 +895,7 @@
                    <div className="absolute bottom-8 right-8 flex flex-col items-end gap-1"><span className="text-[9px] font-mono text-gray-600 uppercase">Scroll to begin</span><ArrowDown className="w-4 h-4 text-white animate-bounce" /></div>
               </section>
               <section id="concepts" className="scroll-mt-32">
-                  <div className="flex items-end justify-between mb-8 border-b border-white/10 pb-4"><div><h2 className="text-4xl font-black uppercase tracking-tighter text-white">Terms</h2><span className="text-[10px] font-mono text-gray-500 uppercase tracking-[0.3em]">Fundamental Terminology</span></div><Database className="w-6 h-6 text-white/20" /></div>
+                  <div className="flex items-end justify-between mb-8 border-b border-white/10 pb-4"><div><h2 className="text-4xl font-black uppercase tracking-tighter text-white">Dictionary</h2><span className="text-[10px] font-mono text-gray-500 uppercase tracking-[0.3em]">Fundamental Terminology</span></div><Database className="w-6 h-6 text-white/20" /></div>
                   <ConceptGrid />
               </section>
               <section id="circles" className="scroll-mt-32">
