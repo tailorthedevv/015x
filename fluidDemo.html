@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferrofluidic Geodesic Interface</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&family=Space+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --obsidian: #050505;
+            --chrome: #e0e0e0;
+            --magnetite: #1a1a1a;
+            --ferro-glow: rgba(0, 240, 255, 0.15);
+            --transition-fluid: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--obsidian);
+            color: var(--chrome);
+            font-family: 'Space Grotesk', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: 
+                radial-gradient(circle at 50% 50%, #111 0%, transparent 80%),
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 10px);
+        }
+
+        .liquid-filter {
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+
+        .ferro-modal-wrapper {
+            position: relative;
+            width: 90vw;
+            max-width: 1100px;
+            height: 80vh;
+            filter: url('#ferro-distort');
+            transition: transform 0.6s var(--transition-fluid);
+        }
+
+        .ferro-modal-background {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(145deg, #0a0a0a, #151515);
+            border: 1px solid rgba(255,255,255,0.1);
+            clip-path: polygon(5% 0%, 95% 0%, 100% 5%, 100% 95%, 95% 100%, 5% 100%, 0% 95%, 0% 5%);
+            box-shadow: 0 0 100px rgba(0,0,0,1);
+        }
+
+        .ferro-content {
+            position: relative;
+            z-index: 2;
+            padding: 4rem;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 3rem;
+            filter: none;
+        }
+
+        .content-inner {
+            filter: drop-shadow(0 0 0 transparent);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 700;
+            line-height: 0.9;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            margin-bottom: 2rem;
+            background: linear-gradient(to bottom, #fff, #555);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .mono {
+            font-family: 'Space Mono', monospace;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: #666;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .data-cell {
+            border-left: 1px solid rgba(255,255,255,0.1);
+            padding-left: 1rem;
+        }
+
+        .data-cell .val {
+            font-size: 1.5rem;
+            display: block;
+            margin-top: 0.5rem;
+        }
+
+        .geodesic-sidebar {
+            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.02);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .geodesic-sidebar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 180deg at 50% 50%, transparent 0%, rgba(255,255,255,0.05) 25%, transparent 50%);
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff;
+            color: #000;
+            padding: 4px 12px;
+            font-weight: 700;
+            font-size: 0.7rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            width: fit-content;
+        }
+
+        .liquid-button {
+            margin-top: auto;
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 1.5rem;
+            font-family: 'Space Grotesk';
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s var(--transition-fluid);
+        }
+
+        .liquid-button:hover {
+            background: #fff;
+            color: #000;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+        }
+
+        .spike-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .spike {
+            position: absolute;
+            background: #fff;
+            width: 2px;
+            height: 40px;
+            opacity: 0.5;
+        }
+
+        .metric-slider {
+            width: 100%;
+            height: 1px;
+            background: rgba(255,255,255,0.2);
+            appearance: none;
+            margin: 2rem 0;
+        }
+
+        .metric-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 40px;
+            height: 10px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .terminal-output {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            color: #444;
+            line-height: 1.4;
+            height: 150px;
+            overflow: hidden;
+            mask-image: linear-gradient(to bottom, black 50%, transparent);
+        }
+
+        .hex-grid {
+            position: absolute;
+            inset: 0;
+            opacity: 0.1;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l25.98 15v30L30 60 4.02 45V15z' fill-rule='evenodd' stroke='%23fff' fill='none'/%3E%3C/svg%3E");
+            background-size: 30px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <svg class="liquid-filter">
+        <defs>
+            <filter id="ferro-distort">
+                <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="5" seed="2" result="noise">
+                    <animate attributeName="baseFrequency" values="0.01;0.015;0.01" dur="10s" repeatCount="indefinite" />
+                </feTurbulence>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="15" />
+            </filter>
+            
+            <filter id="gooey">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+            </filter>
+        </defs>
+    </svg>
+
+    <div class="ferro-modal-wrapper" id="modal">
+        <div class="ferro-modal-background"></div>
+        <div class="hex-grid"></div>
+        
+        <div class="ferro-content">
+            <div class="content-inner">
+                <header>
+                    <div class="status-pill">
+                        <span style="width: 6px; height: 6px; background: #00ff00; border-radius: 50%; display: inline-block;"></span>
+                        SYSTEM_STABLE / NEURAL_SYNC
+                    </div>
+                    <p class="mono">Protocol: Ferro-7 // Depth: 12,000m</p>
+                    <h1>Fluid<br>Dynamics</h1>
+                </header>
+
+                <div class="data-grid">
+                    <div class="data-cell">
+                        <span class="mono">Viscosity</span>
+                        <span class="val">14.2 cp</span>
+                    </div>
+                    <div class="data-cell">
+                        <span class="mono">Magnetic Pull</span>
+                        <span class="val">0.98 Tesla</span>
+                    </div>
+                    <div class="data-cell">
+                        <span class="mono">Surface Tension</span>
+                        <span class="val">72 mN/m</span>
+                    </div>
+                </div>
+
+                <div class="interaction-zone">
+                    <input type="range" class="metric-slider" value="70">
+                    <div class="terminal-output">
+                        > Initializing liquid manifold...<br>
+                        > Calibrating geodesic sensors... [OK]<br>
+                        > Flux density detected at 0.44% deviation.<br>
+                        > Recalculating vertex positioning...<br>
+                        > Ferro-fluidic state: ACTIVE<br>
+                        > Waiting for user input...
+                    </div>
+                </div>
+            </div>
+
+            <aside class="geodesic-sidebar">
+                <div style="z-index: 2; position: relative;">
+                    <p class="mono" style="color: #fff; margin-bottom: 1rem;">Core Geometry</p>
+                    <div style="height: 200px; border: 1px solid rgba(255,255,255,0.2); margin-bottom: 2rem; display: flex; align-items: center; justify-content: center;">
+                        <svg width="120" height="120" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="white" stroke-width="0.5" stroke-dasharray="2 2" />
+                            <path d="M50 5 L95 75 L5 75 Z" fill="none" stroke="white" stroke-width="1" />
+                            <circle cx="50" cy="5" r="3" fill="white" />
+                            <circle cx="95" cy="75" r="3" fill="white" />
+                            <circle cx="5" cy="75" r="3" fill="white" />
+                        </svg>
+                    </div>
+                    
+                    <p class="mono" style="font-size: 0.6rem; color: #888; line-height: 1.6;">
+                        Abstract deformation of the geodesic sphere through high-intensity magnetic fields. Data integrity is maintained through liquid-state redundancy.
+                    </p>
+                </div>
+                
+                <button class="liquid-button">INITIALIZE VORTEX</button>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('modal');
+        const turb = document.querySelector('#ferro-distort feTurbulence');
+        
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            modal.style.transform = `perspective(1000px) rotateX(${-y}deg) rotateY(${x}deg)`;
+            const intensity = Math.abs(x) + Math.abs(y);
+            turb.setAttribute('baseFrequency', 0.01 + (intensity * 0.001));
+        });
+        const btn = document.querySelector('.liquid-button');
+        btn.addEventListener('mousedown', () => {
+        // Something here idk yet
+        });
+        const terminal = document.querySelector('.terminal-output');
+        const messages = [
+            "> Pulse sequence synchronized.",
+            "> Analyzing magnetic anomalies...",
+            "> Structural integrity: 98.4%",
+            "> Geodesic mapping complete.",
+            "> Liquid core temperature: Stable."
+        ];
+        
+        setInterval(() => {
+            const line = document.createElement('div');
+            line.innerHTML = messages[Math.floor(Math.random() * messages.length)];
+            terminal.prepend(line);
+            if(terminal.children.length > 10) terminal.lastChild.remove();
+        }, 3000);
+    </script>
+</body>
+</html>
