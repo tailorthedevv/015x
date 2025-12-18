@@ -4,9 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>015x.dev | Free Frontend Development</title>
-    <meta name="description" content="015x.dev - Empowering the next generation of web developers with free resources and tools." />
-    
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -25,7 +22,8 @@
                 accentHover: '#d4d4d4',
                 secondary: '#333333',
                 dim: '#222222',
-              }
+              },
+              discord: '#5865F2'
             },
             animation: {
               'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -48,13 +46,9 @@
         },
       }
     </script>
-
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@100;400;800&display=swap" rel="stylesheet">
-
-    <!-- Styles -->
     <style>
       body {
         background-color: #000000;
@@ -75,30 +69,27 @@
         -webkit-backdrop-filter: blur(8px);
       }
     </style>
-
-    <!-- Babel for in-browser compilation -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- Import Map -->
     <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@18.2.0",
-    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-    "lucide-react": "https://esm.sh/lucide-react@0.292.0"
-  }
-}
-</script>
+    {
+      "imports": {
+        "react-dom/client": "https://esm.sh/react-dom@^19.2.3/client",
+        "react": "https://esm.sh/react@^19.2.3",
+        "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
+      }
+    }
+    </script>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel" data-type="module" data-presets="react,typescript">
-      import React, { useState, useEffect, useRef } from 'react';
+      import React, { useState, useEffect } from 'react';
       import { createRoot } from 'react-dom/client';
       import { 
-        SquareAsterisk, ArrowUpRight, Box, Lock, RefreshCw, AlertTriangle, ExternalLink,
-        ArrowDown, Globe, GitCommit, Database, Cpu, Send, Terminal, ChevronRight, Code, BookOpen, Layers, Monitor
+        ExternalLink, ArrowDown, Database, Terminal, Code, 
+        BookOpen, Layers, Monitor, MessageSquare 
       } from 'lucide-react';
 
       // --- UTILS: SFX ---
@@ -145,9 +136,6 @@
         osc.stop(ctx.currentTime + 0.1);
       };
 
-      // --- COMPONENTS ---
-
-      // CustomCursor
       const CustomCursor = () => {
         const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
         const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
@@ -191,7 +179,6 @@
         );
       };
 
-      // NavBar
       const NavBar = () => {
         const scrollTo = (id) => {
           playClickSfx();
@@ -205,8 +192,6 @@
           <nav className="fixed top-0 left-0 w-full z-50 bg-black/90 backdrop-blur-sm border-b border-white/10">
             <div className="max-w-[1600px] mx-auto px-4 md:px-8">
               <div className="flex items-center justify-between h-16 md:h-20">
-                
-                {/* Logo / Brand */}
                 <div 
                   onClick={() => scrollTo('index')} 
                   onMouseEnter={playHoverSfx}
@@ -225,7 +210,6 @@
                   </div>
                 </div>
                 
-                {/* Desktop Nav */}
                 <div className="hidden md:flex items-center gap-12">
                   {['Index', 'Metrics', 'Demos', 'Mission'].map((item) => (
                     <button
@@ -240,7 +224,6 @@
                   ))}
                 </div>
 
-                {/* Status / CTA */}
                 <div className="flex items-center gap-4 md:gap-6">
                    <div className="hidden sm:flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -249,8 +232,9 @@
                       </span>
                    </div>
                    <a 
-                     href="/code-editor"
+                     href="#"
                      onMouseEnter={playHoverSfx}
+                     onClick={(e) => { e.preventDefault(); playClickSfx(); }}
                      className="group bg-white text-black px-4 py-2 md:px-6 md:py-2.5 transition-all duration-300 hover:bg-transparent hover:text-white hover:border hover:border-white no-underline"
                    >
                      <span className="flex items-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]">
@@ -265,7 +249,6 @@
         );
       };
 
-      // StatsGrid
       const StatsGrid = () => {
         const [activeStat, setActiveStat] = useState(null);
 
@@ -284,7 +267,6 @@
 
         return (
           <div className="w-full relative">
-            {/* Decorative Label */}
             <div className="absolute -top-6 right-0 text-[10px] font-mono text-gray-700 tracking-widest">
               PLATFORM_METRICS_V.2.0
             </div>
@@ -320,8 +302,6 @@
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Background Grid Hover */}
                   <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-0 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none"></div>
                 </div>
               ))}
@@ -330,7 +310,6 @@
         );
       };
 
-      // PixelPlayground
       const PixelPlayground = () => {
         const [pixels, setPixels] = useState([]);
         const cols = 20;
@@ -342,13 +321,10 @@
 
         const handleInteraction = (index) => {
           playHoverSfx();
-          // Light up the pixel
           const pixelElement = document.getElementById(`pixel-${index}`);
           if (pixelElement) {
               pixelElement.style.backgroundColor = 'white';
               pixelElement.style.transition = 'none';
-              
-              // Fade out
               setTimeout(() => {
                   pixelElement.style.transition = 'background-color 1s ease-out';
                   pixelElement.style.backgroundColor = 'transparent';
@@ -382,69 +358,42 @@
         );
       };
 
-      // BlockDisplay
       const BlockDisplay = () => {
-        const [accessState, setAccessState] = useState('idle');
-        
         const projects = [
           {
             id: '001',
             title: 'CAFE_DEMO',
-            client: '015x Demo',
             role: 'Template',
-            year: '2024',
             description: 'Modern hospitality interface for local coffee roasters. Demonstrates semantic HTML structure and CSS grid layout systems for menus.',
             tags: ['HTML5', 'CSS Grid', 'Layout'],
-            previewType: 'iframe',
             url: 'https://015x.dev/cafedemo.html'
           },
           {
             id: '002',
             title: 'PUCK_DATA',
-            client: '015x Demo',
             role: 'Template',
-            year: '2024',
             description: 'Sports league tracking system. Focuses on complex tabular data representation and accessible data patterns.',
             tags: ['Tables', 'Accessibility', 'Data'],
-            previewType: 'iframe',
             url: 'https://015x.dev/icehockeydemo.html'
           },
           {
             id: '003',
             title: 'AUDIO_WAVE',
-            client: '015x Demo',
             role: 'Template',
-            year: '2024',
             description: 'Artist portfolio and event scheduling platform. Highlights media embedding, flexbox positioning, and responsiveness.',
             tags: ['Media', 'Flexbox', 'Audio'],
-            previewType: 'iframe',
             url: 'https://015x.dev/musiciandemo.html'
           },
           {
             id: '004',
             title: 'FREQ_MOD',
-            client: '015x Demo',
             role: 'Template',
-            year: '2024',
             description: 'Live streaming interface for digital radio. Advanced UI components, fixed positioning, and z-index management.',
             tags: ['UI', 'Positioning', 'Streams'],
-            previewType: 'iframe',
             url: 'https://015x.dev/radiostationdemo.html'
           }
         ];
         
-        const placeholders = Array.from({ length: 4 }, (_, i) => i + 1);
-
-        const handleLoadMore = () => {
-          playClickSfx();
-          if (accessState !== 'idle') return;
-          setAccessState('loading');
-          setTimeout(() => {
-            setAccessState('denied');
-            setTimeout(() => setAccessState('idle'), 3000);
-          }, 1500);
-        };
-
         const openDemo = (url) => {
           playClickSfx();
           window.open(url, '_blank');
@@ -471,15 +420,12 @@
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/10 border border-white/10">
-              
-              {/* Active Projects */}
-              {projects.map((project, idx) => (
+              {projects.map((project) => (
                 <div 
                   key={project.id}
                   onMouseEnter={playHoverSfx}
                   className="group relative bg-black p-6 md:p-8 flex flex-col gap-6 border-b md:border-b-0 md:odd:border-r border-white/10 hover:bg-[#0a0a0a] transition-all duration-500 cursor-default"
                 >
-                  {/* Project Header */}
                   <div className="flex justify-between items-start" onClick={() => openDemo(project.url)}>
                       <div className="flex flex-col cursor-pointer">
                           <span className="text-[10px] font-mono text-gray-500 mb-1">DEMO_{project.id}</span>
@@ -495,7 +441,6 @@
                       </button>
                   </div>
 
-                  {/* Visual Preview Iframe - SCALED FOR DESKTOP VIEW */}
                   <div 
                     onClick={() => openDemo(project.url)}
                     className="w-full aspect-[16/10] border border-white/10 bg-[#050505] relative overflow-hidden group-hover:border-white/30 transition-colors cursor-pointer"
@@ -516,8 +461,6 @@
                           loading="lazy"
                         />
                       </div>
-
-                      {/* Overlay details */}
                       <div className="absolute bottom-0 left-0 w-full p-3 bg-gradient-to-t from-black via-black/80 to-transparent flex items-end justify-between pointer-events-none z-10">
                            <span className="text-[10px] font-mono bg-white text-black px-1.5 py-0.5 uppercase font-bold tracking-wider">
                                {project.role}
@@ -526,8 +469,6 @@
                               {project.url.replace('https://', '')}
                            </span>
                       </div>
-                      
-                      {/* Hover Overlay */}
                       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex items-center justify-center z-20">
                           <div className="bg-black/80 backdrop-blur-sm border border-white/20 px-4 py-2 text-xs font-mono text-white uppercase tracking-widest">
                               View Live Source
@@ -535,7 +476,6 @@
                       </div>
                   </div>
 
-                  {/* Details */}
                   <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-4">
                       <div className="col-span-2">
                            <p className="text-xs md:text-sm font-mono text-gray-400 leading-relaxed max-w-lg">
@@ -553,57 +493,43 @@
                 </div>
               ))}
             </div>
-
-            {/* Placeholder Grid */}
-            <div className="mt-8">
-                <h4 className="text-xs font-mono uppercase tracking-[0.3em] text-gray-500 mb-4 flex items-center gap-4">
-                   <span className="w-8 h-[1px] bg-gray-700"></span>
-                   Advanced Modules (Coming Soon)
-                </h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {placeholders.map((i) => (
-                      <div 
-                          key={`placeholder-${i}`} 
-                          onMouseEnter={playHoverSfx}
-                          className="aspect-video bg-[#050505] border border-white/5 p-4 flex flex-col justify-between hover:border-white/20 transition-all group cursor-not-allowed"
-                      >
-                          <div className="flex justify-between items-start">
-                              <span className="text-[8px] font-mono text-gray-700">MODULE_0{i + 4}</span>
-                              <Lock className="w-3 h-3 text-gray-800 group-hover:text-red-900 transition-colors" />
-                          </div>
-                          
-                          <div className="flex justify-center">
-                              <Box className="w-6 h-6 text-gray-800 group-hover:text-white/20 transition-colors" />
-                          </div>
-
-                          <div className="h-0.5 w-full bg-gray-900 overflow-hidden">
-                              <div className="h-full bg-gray-700 w-[40%] group-hover:w-[80%] transition-all duration-700"></div>
-                          </div>
-                      </div>
-                  ))}
-                </div>
-            </div>
           </div>
         );
       };
 
-      // App
+      const DiscordButton = () => {
+        return (
+          <a 
+            href="https://discord.gg/QAatPDQPn8"
+            target="_blank"
+            rel="noopener noreferrer"
+            onMouseEnter={playHoverSfx}
+            onClick={() => playClickSfx()}
+            className="fixed bottom-6 left-6 z-[60] group flex items-center gap-3 bg-[#5865F2] hover:bg-white text-white hover:text-[#5865F2] p-4 transition-all duration-300 border border-[#5865F2] shadow-[0_0_20px_rgba(88,101,242,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)]"
+          >
+            <img 
+              src="https://pngimg.com/d/discord_PNG3.png" 
+              alt="Discord Logo" 
+              className="w-6 h-6 object-contain brightness-0 invert group-hover:brightness-100 group-hover:invert-0 transition-all duration-300"
+            />
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 whitespace-nowrap">
+              Join Discord
+            </span>
+          </a>
+        );
+      };
+
       const App = () => {
         return (
           <div className="min-h-screen font-sans selection:bg-white selection:text-black overflow-x-hidden transition-colors duration-300 bg-black text-white">
             <CustomCursor />
-            
             <NavBar />
+            <DiscordButton />
 
             <main className="pt-24 pb-12 px-4 md:px-8 max-w-[1600px] mx-auto space-y-12">
-              
-              {/* Hero Section */}
               <section id="index" className="relative min-h-[65vh] flex flex-col justify-between pb-8 border-x border-white/5 md:px-12 pt-12 scroll-mt-32">
-                
-                {/* Abstract Grid Background */}
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:100px_100px] pointer-events-none"></div>
 
-                {/* Top Info Bar */}
                 <div className="flex justify-between items-start relative z-10 border-b border-white/10 pb-4">
                    <div className="flex flex-col gap-1">
                       <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-gray-500">Platform</span>
@@ -618,7 +544,6 @@
                    </div>
                 </div>
 
-                {/* Main Typography */}
                 <div className="relative z-10 mt-8 md:mt-0">
                   <h1 className="text-[12vw] leading-[0.8] font-black uppercase tracking-tighter mix-blend-exclusion">
                     015X.DEV<br/>
@@ -636,7 +561,6 @@
                           </p>
                       </div>
 
-                      {/* Technical Stack Pills */}
                       <div className="flex flex-col items-end gap-2">
                           {['Free Education', 'Open Standards', 'Developer Tools'].map((skill, i) => (
                               <div key={i} className="flex items-center gap-3 group cursor-default" onMouseEnter={playHoverSfx}>
@@ -650,7 +574,6 @@
                   </div>
                 </div>
 
-                {/* Bottom Diagnostic Bar */}
                 <div className="grid grid-cols-2 md:grid-cols-4 border-t border-white/10 pt-4 mt-8 relative z-10">
                     <div className="hidden md:flex flex-col gap-1">
                         <span className="text-[9px] font-mono text-gray-600 uppercase">System Date</span>
@@ -670,12 +593,10 @@
                 </div>
               </section>
 
-              {/* Stats / Skills Grid */}
               <section id="grid" className="scroll-mt-24">
                 <StatsGrid />
               </section>
 
-              {/* Curriculum Section */}
               <section id="mission" className="border border-white/10 bg-[#0a0a0a] p-8 md:p-12 relative overflow-hidden">
                    <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.02)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.02)_50%,rgba(255,255,255,0.02)_75%,transparent_75%,transparent)] bg-[size:24px_24px] pointer-events-none"></div>
                    
@@ -723,12 +644,10 @@
                    </div>
               </section>
 
-              {/* Interactive Pixel Break */}
               <section>
                 <PixelPlayground />
               </section>
 
-              {/* Marquee Separator */}
               <div className="relative border-y border-white/10 bg-neutral-900/50 py-3 overflow-hidden">
                   <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity bg-white/5"></div>
                   <div className="flex whitespace-nowrap animate-marquee hover:[animation-play-state:paused] cursor-help">
@@ -747,12 +666,10 @@
                   </div>
               </div>
 
-              {/* Projects / Block Display */}
               <section id="demos" className="scroll-mt-24">
                 <BlockDisplay />
               </section>
 
-              {/* Studio Teaser Section */}
               <section className="border border-white/10 bg-black relative overflow-hidden group">
                   <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-10 transition-opacity duration-700"></div>
                   <div className="grid md:grid-cols-2">
@@ -771,8 +688,9 @@
                           </p>
                           <div>
                               <a 
-                                  href="/code-editor"
+                                  href="#"
                                   onMouseEnter={playHoverSfx}
+                                  onClick={(e) => { e.preventDefault(); playClickSfx(); }}
                                   className="inline-flex items-center gap-3 bg-white text-black px-8 py-3 text-xs font-bold uppercase tracking-[0.2em] hover:bg-transparent hover:text-white hover:border hover:border-white border border-transparent transition-all"
                               >
                                   Launch Studio <Monitor className="w-4 h-4" />
@@ -780,7 +698,6 @@
                           </div>
                       </div>
                       <div className="bg-[#0c0c0c] relative min-h-[300px] p-8 flex items-center justify-center overflow-hidden">
-                          {/* Abstract Code Editor Visual */}
                           <div className="w-full max-w-md bg-[#111] border border-white/10 rounded-lg p-4 shadow-2xl transform rotate-1 group-hover:rotate-0 transition-transform duration-700">
                               <div className="flex gap-2 mb-4 border-b border-white/5 pb-2">
                                   <div className="w-2 h-2 rounded-full bg-red-500/50"></div>
@@ -802,7 +719,6 @@
                   </div>
               </section>
 
-              {/* Contact / Footer */}
               <section id="comms" className="border-t-2 border-white pt-12 pb-8">
                 <div className="grid md:grid-cols-2 gap-12">
                   <div>
@@ -821,10 +737,6 @@
                            <a href="mailto:hello@015x.dev" onMouseEnter={playHoverSfx} className="group flex items-center gap-4 transition-colors hover:text-white">
                               <span className="w-8 h-[1px] bg-gray-600 transition-all duration-300 group-hover:w-16 group-hover:bg-white"></span>
                               HELLO@015X.DEV
-                           </a>
-                           <a href="/code-editor" onMouseEnter={playHoverSfx} className="group flex items-center gap-4 transition-colors hover:text-white">
-                              <span className="w-8 h-[1px] bg-gray-600 transition-all duration-300 group-hover:w-16 group-hover:bg-white"></span>
-                              LAUNCH STUDIO
                            </a>
                          </div>
                      </div>
@@ -865,7 +777,6 @@
         );
       };
 
-      // MOUNT
       const root = createRoot(document.getElementById('root'));
       root.render(<App />);
     </script>
