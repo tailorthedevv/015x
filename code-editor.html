@@ -175,7 +175,7 @@
 
         import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
         import ReactDOM from 'react-dom/client';
-        import Editor, { OnMount } from '@monaco-editor/react';
+        import Editor from '@monaco-editor/react';
         import { 
             FileCode2, FileJson, FileType2, FileImage, File, Folder, FolderOpen, 
             ChevronRight, ChevronDown, Plus, Trash2, Edit2, Settings, 
@@ -1928,7 +1928,7 @@ loop();`
                              Next
                              <ChevronRight size={14} className="ml-1" />
                            </button>
-                         ) : (
+                 ) : (
                            <button 
                               onClick={onClose}
                               className="flex items-center text-sm text-green-400 hover:text-green-300"
