@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z'%3E%3C/path%3E%3Cpolyline points='14 2 14 8 20 8'%3E%3C/polyline%3E%3C/svg%3E" />
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z'%3E%3C/path%3E%3Cpolyline points='14 2 14 8 20 8'%3E%3C/polyline%3E%3C/svg%3E" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>015x.dev Editor</title>
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      tailwind.config = {
+        tailwind.config = {
         theme: {
           extend: {
             colors: {
@@ -62,7 +64,7 @@
 
     <!-- Import Map for Dependencies -->
     <script type="importmap">
-    {
+        {
       "imports": {
         "react": "https://esm.sh/react@18.2.0",
         "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
@@ -82,68 +84,90 @@
     </script>
 
     <style>
-      :root {
-        --vs-bg: #1e1e1e;
-        --vs-sidebar: #252526;
-        --vs-activity-bar: #333333;
-        --vs-active-tab: #1e1e1e;
-        --vs-inactive-tab: #2d2d2d;
-        --vs-border: #454545;
-        --vs-accent: #007acc;
-        --vs-text: #cccccc;
-        --vs-text-hover: #ffffff;
-        --vs-item-hover: #2a2d2e;
-        --vs-item-active: #37373d;
-        --vs-input-bg: #3c3c3c;
-      }
-      
-      body {
-        background-color: var(--vs-bg);
-        color: var(--vs-text);
-      }
+        :root {
+            --vs-bg: #1e1e1e;
+            --vs-sidebar: #252526;
+            --vs-activity-bar: #333333;
+            --vs-active-tab: #1e1e1e;
+            --vs-inactive-tab: #2d2d2d;
+            --vs-border: #454545;
+            --vs-accent: #007acc;
+            --vs-text: #cccccc;
+            --vs-text-hover: #ffffff;
+            --vs-item-hover: #2a2d2e;
+            --vs-item-active: #37373d;
+            --vs-input-bg: #3c3c3c;
+        }
 
-      ::-webkit-scrollbar { width: 10px; height: 10px; }
-      ::-webkit-scrollbar-corner { background: var(--vs-bg); }
-      ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb {
-        background: var(--vs-border);
-        border-radius: 5px;
-        border: 2px solid transparent;
-        background-clip: content-box;
-      }
-      ::-webkit-scrollbar-thumb:hover { background-color: var(--vs-text); }
+        body {
+            background-color: var(--vs-bg);
+            color: var(--vs-text);
+        }
 
-      select, input[type="text"], input[type="search"] {
-        background-color: var(--vs-input-bg);
-        color: var(--vs-text);
-        border-color: var(--vs-border);
-        outline: none;
-      }
-      select:focus, input:focus { border-color: var(--vs-accent); }
-      
-      input[type="range"] {
-         -webkit-appearance: none;
-         background: transparent;
-      }
-      input[type="range"]::-webkit-slider-thumb {
-         -webkit-appearance: none;
-         height: 12px;
-         width: 12px;
-         border-radius: 50%;
-         background: var(--vs-accent);
-         cursor: pointer;
-         margin-top: -4px;
-      }
-      input[type="range"]::-webkit-slider-runnable-track {
-        width: 100%;
-        height: 4px;
-        cursor: pointer;
-        background: var(--vs-border);
-        border-radius: 2px;
-      }
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: var(--vs-bg);
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--vs-border);
+            border-radius: 5px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: var(--vs-text);
+        }
+
+        select,
+        input[type="text"],
+        input[type="search"] {
+            background-color: var(--vs-input-bg);
+            color: var(--vs-text);
+            border-color: var(--vs-border);
+            outline: none;
+        }
+
+        select:focus,
+        input:focus {
+            border-color: var(--vs-accent);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            background: var(--vs-accent);
+            cursor: pointer;
+            margin-top: -4px;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: var(--vs-border);
+            border-radius: 2px;
+        }
     </style>
-  </head>
-  <body class="overflow-hidden h-screen w-screen m-0 select-none">
+</head>
+
+<body class="overflow-hidden h-screen w-screen m-0 select-none">
     <div id="root" class="h-full w-full"></div>
 
     <script type="text/babel" data-type="module" data-presets="typescript,react">
@@ -156,7 +180,8 @@
             Search, Layers, Play, Download, Upload, RefreshCw, X, Menu,
             Code2, LayoutTemplate, MoreVertical, Terminal, XCircle, AlertTriangle, 
             Info, Maximize, Minimize, Palette, Type, Layout, Code, Zap, BookOpen, 
-            CheckCircle2, FilePlus, FolderPlus, GraduationCap, Globe, ArrowRight
+            CheckCircle2, FilePlus, FolderPlus, GraduationCap, Globe, ArrowRight,
+            ExternalLink, Lightbulb, Command, ArrowLeft
         } from 'lucide-react';
         import JSZip from 'jszip';
         import { format } from 'prettier';
@@ -1272,22 +1297,48 @@ loop();`
 
           if (!file) {
             return (
-              <div className="h-full w-full bg-vs-bg flex flex-col items-center justify-center text-vs-text select-none animate-fade-in">
-                <div className="bg-vs-activityBar p-6 rounded-full mb-6 shadow-lg">
-                     <div className="w-12 h-12 bg-vs-accent rounded opacity-50"></div>
+              <div className="h-full w-full bg-vs-bg flex flex-col items-center justify-center text-vs-text select-none animate-fade-in relative overflow-hidden">
+                <div className="absolute opacity-[0.02] pointer-events-none transform -rotate-12 scale-150 select-none">
+                     <LayoutTemplate size={400} />
                 </div>
-                <p className="text-xl font-medium mb-3">No file is open</p>
-                <p className="text-sm opacity-60 mb-8">Select a file from the explorer or create a new one.</p>
                 
-                <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-xs opacity-50">
-                     <div className="text-right">Save</div>
-                     <div className="font-mono bg-vs-activityBar px-2 py-0.5 rounded border border-vs-border">Ctrl + S</div>
-                     
-                     <div className="text-right">Format</div>
-                     <div className="font-mono bg-vs-activityBar px-2 py-0.5 rounded border border-vs-border">Ctrl + Shift + F</div>
-                     
-                     <div className="text-right">Command Palette</div>
-                     <div className="font-mono bg-vs-activityBar px-2 py-0.5 rounded border border-vs-border">F1</div>
+                <div className="z-10 flex flex-col items-center max-w-md w-full px-6">
+                    <div className="mb-8 flex flex-col items-center text-center">
+                         <div className="p-4 bg-vs-activityBar rounded-full mb-4 shadow-lg border border-vs-border">
+                            <Lightbulb size={32} className="text-vs-accent" />
+                         </div>
+                         <h2 className="text-2xl font-bold tracking-tight text-vs-text mb-2">Ready to create?</h2>
+                         <p className="text-neutral-500 max-w-sm">
+                            Open a file from the explorer on the left, or create a new one to get started. 
+                         </p>
+                    </div>
+
+                    <div className="w-full bg-vs-sidebar border border-vs-border rounded-lg p-4 shadow-lg">
+                         <div className="flex items-center justify-between text-sm group mb-3 last:mb-0">
+                              <span className="text-neutral-400 font-medium">Command Palette</span>
+                              <div className="flex items-center space-x-1 font-mono text-xs text-neutral-500">
+                                  <span className="bg-vs-activityBar border border-vs-border px-1.5 py-0.5 rounded shadow-sm">F1</span>
+                              </div>
+                         </div>
+                         <div className="flex items-center justify-between text-sm group mb-3 last:mb-0">
+                              <span className="text-neutral-400 font-medium">Quick Open</span>
+                              <div className="flex items-center space-x-1 font-mono text-xs text-neutral-500">
+                                  <span className="bg-vs-activityBar border border-vs-border px-1.5 py-0.5 rounded shadow-sm">Ctrl</span>
+                                  <span className="bg-vs-activityBar border border-vs-border px-1.5 py-0.5 rounded shadow-sm">P</span>
+                              </div>
+                         </div>
+                         <div className="flex items-center justify-between text-sm group">
+                              <span className="text-neutral-400 font-medium">New File</span>
+                              <div className="flex items-center space-x-1 font-mono text-xs text-neutral-500">
+                                  <span className="bg-vs-activityBar border border-vs-border px-1.5 py-0.5 rounded shadow-sm">Ctrl</span>
+                                  <span className="bg-vs-activityBar border border-vs-border px-1.5 py-0.5 rounded shadow-sm">N</span>
+                              </div>
+                         </div>
+                    </div>
+                    
+                    <div className="mt-8 text-xs text-neutral-600 font-mono">
+                        Pro Tip: Use the 'Learn' button to practice.
+                    </div>
                 </div>
               </div>
             );
@@ -1422,7 +1473,7 @@ loop();`
               <\/script>
             `;
 
-            content = content.replace(/<link\s+[^>]*href=["']([^"']+)["'][^>]*>/gi, (match, href) => {
+            content = content.replace(/<link\s+(?:[^>]*?\s+)?href\s*=\s*["']([^"']+)["']/gi, (match, href) => {
               const cssFile = findItemByPath(href, currentDir, fileSystem);
               if (cssFile && cssFile.content) {
                 return `<style>${cssFile.content}</style>`;
@@ -1430,7 +1481,7 @@ loop();`
               return match;
             });
 
-            content = content.replace(/<script\s+[^>]*src=["']([^"']+)["'][^>]*><\/script>/gi, (match, src) => {
+            content = content.replace(/<script\s+(?:[^>]*?\s+)?src\s*=\s*["']([^"']+)["'][^>]*><\/script>/gi, (match, src) => {
               const jsFile = findItemByPath(src, currentDir, fileSystem);
               if (jsFile && jsFile.content) {
                 return `<script>${jsFile.content}<\/script>`;
@@ -1438,7 +1489,7 @@ loop();`
               return match;
             });
             
-            content = content.replace(/<img\s+[^>]*src=["']([^"']+)["'][^>]*>/gi, (match, src) => {
+            content = content.replace(/<img\s+(?:[^>]*?\s+)?src\s*=\s*["']([^"']+)["']/gi, (match, src) => {
                  const imgFile = findItemByPath(src, currentDir, fileSystem);
                  if (imgFile && imgFile.content && imgFile.language === FileType.PNG) {
                      return match.replace(src, `data:image/png;base64,${imgFile.content}`);
@@ -2464,6 +2515,7 @@ loop();`
           const activeFile = activeFileId && fileSystem[activeFileId] ? fileSystem[activeFileId] : null;
 
           const lineCount = useMemo(() => {
+              // Fix: Added safety check for null activeFile to prevent crashes during render
               if (!activeFile || typeof activeFile.content !== 'string') return 0;
               return activeFile.content.split('\n').length;
           }, [activeFile]);
@@ -2831,7 +2883,8 @@ loop();`
                                     file={activeFile} 
                                     settings={settings}
                                     theme={currentTheme}
-                                    ghostText={ghostText?.fileId === activeFile?.id ? ghostText.content : null}
+                                    /* FIX: Added check to ensure activeFile exists before checking ID equality to prevent undefined === undefined crash */
+                                    ghostText={(activeFile && ghostText && ghostText.fileId === activeFile.id) ? ghostText.content : null}
                                     onChange={(val) => activeFileId && updateFileContent(activeFileId, val)} 
                                     onFormat={handleFormat}
                                     onSave={() => console.log('Saved!')}
@@ -2882,5 +2935,6 @@ loop();`
           </React.StrictMode>
         );
     </script>
-  </body>
+</body>
+
 </html>
