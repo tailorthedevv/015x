@@ -6,6 +6,9 @@
     <title>015x.dev | Free Frontend Development</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+    document.getElementById("open").addEventListener("click", function(){window.location.href = "/code-editor"})
+    </script>
+    <script>
       tailwind.config = {
         darkMode: 'class',
         theme: {
@@ -249,8 +252,6 @@
           </nav>
         );
       };
-
-        document.getElementById("open").addEventListener("click", function(){window.location.href = "/code-editor"})
 
       const StatsGrid = () => {
         const [activeStat, setActiveStat] = useState(null);
