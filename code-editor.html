@@ -156,7 +156,7 @@
             Search, Layers, Play, Download, Upload, RefreshCw, X, Menu,
             Code2, LayoutTemplate, MoreVertical, Terminal, XCircle, AlertTriangle, 
             Info, Maximize, Minimize, Palette, Type, Layout, Code, Zap, BookOpen, 
-            CheckCircle2, FilePlus, FolderPlus, GraduationCap
+            CheckCircle2, FilePlus, FolderPlus, GraduationCap, Globe, ArrowRight
         } from 'lucide-react';
         import JSZip from 'jszip';
         import { format } from 'prettier';
@@ -165,7 +165,7 @@
         import parserBabel from 'prettier/parser-babel';
         import parserPostcss from 'prettier/parser-postcss';
 
-        // --- DEFINITIONS (Replaced Enums with Objects for robustness) ---
+        // --- DEFINITIONS ---
         
         const FileType = {
           HTML: 'html',
@@ -203,7 +203,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to 015x.dev Editor</h1>
+        <h1>Hello World!</h1>
         <p>Edit files, format code, and download your project!</p>
         <button id="actionBtn">Click Me</button>
         <div id="output"></div>
@@ -220,8 +220,8 @@
             language: FileType.CSS,
             content: `body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #1e1e1e;
-    color: #e0e0e0;
+    background-color: var(--vs-bg);
+    color: var(--vs-text);
     margin: 0;
     display: flex;
     justify-content: center;
@@ -231,31 +231,31 @@
 
 .container {
     text-align: center;
-    background: #252526;
+    background: var(--vs-sidebar);
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    border: 1px solid #333;
+    border: 1px solid var(--vs-border);
 }
 
 h1 {
-    color: #61dafb;
+    color: var(--vs-accent);
     margin-bottom: 1rem;
 }
 
 button {
-    background-color: #007acc;
+    background-color: var(--vs-accent);
     color: white;
     border: none;
     padding: 10px 20px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 1rem;
-    transition: background-color 0.2s;
+    transition: opacity 0.2s;
 }
 
 button:hover {
-    background-color: #0062a3;
+    opacity: 0.9;
 }
 
 #output {
@@ -340,16 +340,7 @@ This is a sample project created with the 015x.dev Editor.
             monaco: { 
                 base: 'vs-dark', 
                 inherit: true, 
-                rules: [
-                    { token: 'comment', foreground: '6A9955' },
-                    { token: 'keyword', foreground: '569CD6' },
-                    { token: 'string', foreground: 'CE9178' },
-                    { token: 'number', foreground: 'B5CEA8' },
-                    { token: 'type', foreground: '4EC9B0' },
-                    { token: 'class', foreground: '4EC9B0' },
-                    { token: 'function', foreground: 'DCDCAA' },
-                    { token: 'variable', foreground: '9CDCFE' }
-                ], 
+                rules: [], 
                 colors: { 'editor.background': '#1e1e1e' } 
             }
           },
@@ -360,26 +351,21 @@ This is a sample project created with the 015x.dev Editor.
             colors: {
               bg: '#ffffff',
               sidebar: '#f3f3f3',
-              activityBar: '#2c2c2c',
+              activityBar: '#e8e8e8',
               activeTab: '#ffffff',
-              inactiveTab: '#ececec',
-              border: '#e7e7e7',
+              inactiveTab: '#f3f3f3',
+              border: '#d4d4d4',
               accent: '#007acc',
               text: '#333333',
               textHover: '#000000',
-              itemHover: '#e8e8e8',
+              itemHover: '#e4e6f1',
               itemActive: '#ffffff',
               inputBg: '#ffffff',
             },
             monaco: { 
                 base: 'vs', 
                 inherit: true, 
-                rules: [
-                    { token: 'comment', foreground: '008000' },
-                    { token: 'keyword', foreground: '0000ff' },
-                    { token: 'string', foreground: 'a31515' },
-                    { token: 'number', foreground: '098658' }
-                ], 
+                rules: [], 
                 colors: { 'editor.background': '#ffffff' } 
             }
           },
@@ -390,73 +376,36 @@ This is a sample project created with the 015x.dev Editor.
             colors: {
               bg: '#0d1117',
               sidebar: '#010409',
-              activityBar: '#0d1117',
+              activityBar: '#161b22',
               activeTab: '#0d1117',
               inactiveTab: '#010409',
               border: '#30363d',
               accent: '#58a6ff',
               text: '#c9d1d9',
               textHover: '#58a6ff',
-              itemHover: '#161b22',
-              itemActive: '#1f2428',
+              itemHover: '#21262d',
+              itemActive: '#0d1117',
               inputBg: '#0d1117',
             },
             monaco: {
               base: 'vs-dark',
               inherit: true,
               rules: [
-                { token: 'comment', foreground: '8b949e' },
-                { token: 'keyword', foreground: 'ff7b72' },
-                { token: 'string', foreground: 'a5d6ff' },
-                { token: 'number', foreground: '79c0ff' },
-                { token: 'type', foreground: '79c0ff' },
-                { token: 'class', foreground: 'f0883e' },
-                { token: 'function', foreground: 'd2a8ff' },
+                  { token: 'comment', foreground: '8b949e', fontStyle: 'italic' },
+                  { token: 'keyword', foreground: 'ff7b72' },
+                  { token: 'string', foreground: 'a5d6ff' },
+                  { token: 'number', foreground: '79c0ff' },
+                  { token: 'type', foreground: 'ffa657' },
+                  { token: 'class', foreground: 'ffa657' },
+                  { token: 'function', foreground: 'd2a8ff' },
+                  { token: 'variable', foreground: 'c9d1d9' },
+                  { token: 'delimiter', foreground: 'c9d1d9' }
               ],
               colors: {
                 'editor.background': '#0d1117',
                 'editor.foreground': '#c9d1d9',
-                'editorLineNumber.foreground': '#8b949e',
-                'editor.lineHighlightBackground': '#161b22',
-                'editorCursor.foreground': '#58a6ff'
-              }
-            }
-          },
-          {
-            id: 'github-light',
-            name: 'GitHub Light',
-            type: 'light',
-            colors: {
-              bg: '#ffffff',
-              sidebar: '#f6f8fa',
-              activityBar: '#ffffff',
-              activeTab: '#ffffff',
-              inactiveTab: '#f6f8fa',
-              border: '#d0d7de',
-              accent: '#0969da',
-              text: '#24292f',
-              textHover: '#0969da',
-              itemHover: '#f3f4f6',
-              itemActive: '#ffffff',
-              inputBg: '#ffffff',
-            },
-            monaco: {
-              base: 'vs',
-              inherit: true,
-              rules: [
-                { token: 'comment', foreground: '6e7781' },
-                { token: 'keyword', foreground: 'cf222e' },
-                { token: 'string', foreground: '0a3069' },
-                { token: 'number', foreground: '0550ae' },
-                { token: 'type', foreground: '0550ae' },
-                { token: 'class', foreground: '953800' },
-                { token: 'function', foreground: '8250df' },
-              ],
-              colors: {
-                'editor.background': '#ffffff',
-                'editor.foreground': '#24292f',
-                'editorLineNumber.foreground': '#8c959f',
-                'editorCursor.foreground': '#0969da'
+                'editorCursor.foreground': '#58a6ff',
+                'editor.lineHighlightBackground': '#161b22'
               }
             }
           },
@@ -475,26 +424,27 @@ This is a sample project created with the 015x.dev Editor.
               text: '#f8f8f2',
               textHover: '#ffffff',
               itemHover: '#3e3d32',
-              itemActive: '#49483e',
-              inputBg: '#49483e',
+              itemActive: '#272822',
+              inputBg: '#272822',
             },
             monaco: {
               base: 'vs-dark',
               inherit: true,
               rules: [
-                { token: 'comment', foreground: '75715e' },
-                { token: 'keyword', foreground: 'f92672' },
-                { token: 'string', foreground: 'e6db74' },
-                { token: 'number', foreground: 'ae81ff' },
-                { token: 'type', foreground: '66d9ef' },
-                { token: 'class', foreground: 'a6e22e' },
-                { token: 'function', foreground: 'a6e22e' },
+                  { token: 'comment', foreground: '75715e' },
+                  { token: 'keyword', foreground: 'f92672' },
+                  { token: 'string', foreground: 'e6db74' },
+                  { token: 'number', foreground: 'ae81ff' },
+                  { token: 'type', foreground: '66d9ef', fontStyle: 'italic' },
+                  { token: 'class', foreground: 'a6e22e' },
+                  { token: 'function', foreground: 'a6e22e' },
+                  { token: 'variable', foreground: 'f8f8f2' }
               ],
               colors: {
                 'editor.background': '#272822',
                 'editor.foreground': '#f8f8f2',
-                'editorLineNumber.foreground': '#90908a',
-                'editorCursor.foreground': '#f8f8f0'
+                'editorCursor.foreground': '#f8f8f0',
+                'editor.selectionBackground': '#49483e'
               }
             }
           },
@@ -513,28 +463,29 @@ This is a sample project created with the 015x.dev Editor.
               text: '#f8f8f2',
               textHover: '#ffffff',
               itemHover: '#44475a',
-              itemActive: '#6272a4',
+              itemActive: '#282a36',
               inputBg: '#282a36',
             },
             monaco: {
               base: 'vs-dark',
               inherit: true,
               rules: [
-                { token: 'comment', foreground: '6272a4' },
-                { token: 'keyword', foreground: 'ff79c6' },
-                { token: 'string', foreground: 'f1fa8c' },
-                { token: 'number', foreground: 'bd93f9' },
-                { token: 'type', foreground: '8be9fd' },
-                { token: 'class', foreground: '50fa7b' },
-                { token: 'function', foreground: '50fa7b' },
-                { token: 'variable', foreground: 'f8f8f2' }
+                  { token: 'comment', foreground: '6272a4' },
+                  { token: 'keyword', foreground: 'ff79c6' },
+                  { token: 'string', foreground: 'f1fa8c' },
+                  { token: 'number', foreground: 'bd93f9' },
+                  { token: 'type', foreground: '8be9fd', fontStyle: 'italic' },
+                  { token: 'class', foreground: '50fa7b' },
+                  { token: 'function', foreground: '50fa7b' },
+                  { token: 'variable', foreground: 'f8f8f2' },
+                  { token: 'operator', foreground: 'ff79c6' }
               ],
               colors: {
                 'editor.background': '#282a36',
                 'editor.foreground': '#f8f8f2',
-                'editorLineNumber.foreground': '#6272a4',
                 'editorCursor.foreground': '#f8f8f0',
-                'editor.selectionBackground': '#44475a'
+                'editor.selectionBackground': '#44475a',
+                'editor.lineHighlightBackground': '#44475a'
               }
             }
           },
@@ -553,198 +504,282 @@ This is a sample project created with the 015x.dev Editor.
               text: '#d8dee9',
               textHover: '#eceff4',
               itemHover: '#434c5e',
-              itemActive: '#4c566a',
+              itemActive: '#3b4252',
               inputBg: '#3b4252',
             },
             monaco: {
               base: 'vs-dark',
               inherit: true,
               rules: [
-                { token: 'comment', foreground: '616e88' },
-                { token: 'keyword', foreground: '81a1c1' },
-                { token: 'string', foreground: 'a3be8c' },
-                { token: 'number', foreground: 'b48ead' },
-                { token: 'type', foreground: '8fbcbb' },
-                { token: 'class', foreground: '8fbcbb' },
-                { token: 'function', foreground: '88c0d0' },
+                  { token: 'comment', foreground: '616e88' },
+                  { token: 'keyword', foreground: '81a1c1' },
+                  { token: 'string', foreground: 'a3be8c' },
+                  { token: 'number', foreground: 'b48ead' },
+                  { token: 'type', foreground: '8fbcbb' },
+                  { token: 'class', foreground: '8fbcbb' },
+                  { token: 'function', foreground: '88c0d0' },
+                  { token: 'variable', foreground: 'd8dee9' }
               ],
               colors: {
                 'editor.background': '#2e3440',
                 'editor.foreground': '#d8dee9',
-                'editorLineNumber.foreground': '#4c566a',
                 'editorCursor.foreground': '#d8dee9',
-                'editor.selectionBackground': '#434c5e'
+                'editor.lineHighlightBackground': '#3b4252'
               }
             }
           },
           {
-            id: 'solarized-dark',
-            name: 'Solarized Dark',
-            type: 'dark',
-            colors: {
-              bg: '#002b36',
-              sidebar: '#073642',
-              activityBar: '#002b36',
-              activeTab: '#002b36',
-              inactiveTab: '#073642',
-              border: '#586e75',
-              accent: '#268bd2',
-              text: '#839496',
-              textHover: '#93a1a1',
-              itemHover: '#586e75',
-              itemActive: '#657b83',
-              inputBg: '#073642',
-            },
-            monaco: {
-              base: 'vs-dark',
-              inherit: true,
-              rules: [
-                { token: 'comment', foreground: '586e75' },
-                { token: 'keyword', foreground: '859900' },
-                { token: 'string', foreground: '2aa198' },
-                { token: 'number', foreground: 'd33682' },
-                { token: 'type', foreground: 'b58900' },
-                { token: 'class', foreground: 'b58900' },
-                { token: 'function', foreground: '268bd2' },
-              ],
+              id: 'solarized-dark',
+              name: 'Solarized Dark',
+              type: 'dark',
               colors: {
-                'editor.background': '#002b36',
-                'editor.foreground': '#839496',
-                'editorLineNumber.foreground': '#586e75',
-                'editorCursor.foreground': '#d33682',
-                'editor.selectionBackground': '#073642'
+                  bg: '#002b36',
+                  sidebar: '#073642',
+                  activityBar: '#002b36',
+                  activeTab: '#002b36',
+                  inactiveTab: '#073642',
+                  border: '#586e75',
+                  accent: '#268bd2',
+                  text: '#839496',
+                  textHover: '#93a1a1',
+                  itemHover: '#586e75',
+                  itemActive: '#002b36',
+                  inputBg: '#073642'
+              },
+              monaco: {
+                  base: 'vs-dark',
+                  inherit: true,
+                  rules: [
+                      { token: 'comment', foreground: '586e75', fontStyle: 'italic' },
+                      { token: 'keyword', foreground: '859900' },
+                      { token: 'string', foreground: '2aa198' },
+                      { token: 'number', foreground: 'd33682' },
+                      { token: 'type', foreground: 'b58900' },
+                      { token: 'class', foreground: 'b58900' },
+                      { token: 'function', foreground: '268bd2' },
+                      { token: 'variable', foreground: '839496' }
+                  ],
+                  colors: {
+                      'editor.background': '#002b36',
+                      'editor.foreground': '#839496',
+                      'editorCursor.foreground': '#d33682',
+                      'editor.lineHighlightBackground': '#073642'
+                  }
               }
-            }
           },
           {
-            id: 'solarized-light',
-            name: 'Solarized Light',
-            type: 'light',
-            colors: {
-              bg: '#fdf6e3',
-              sidebar: '#eee8d5',
-              activityBar: '#fdf6e3',
-              activeTab: '#fdf6e3',
-              inactiveTab: '#eee8d5',
-              border: '#93a1a1',
-              accent: '#268bd2',
-              text: '#657b83',
-              textHover: '#586e75',
-              itemHover: '#d33682',
-              itemActive: '#ffffff',
-              inputBg: '#fdf6e3',
-            },
-            monaco: {
-              base: 'vs',
-              inherit: true,
-              rules: [
-                { token: 'comment', foreground: '93a1a1' },
-                { token: 'keyword', foreground: '859900' },
-                { token: 'string', foreground: '2aa198' },
-                { token: 'number', foreground: 'd33682' },
-                { token: 'type', foreground: 'b58900' },
-                { token: 'class', foreground: 'b58900' },
-                { token: 'function', foreground: '268bd2' },
-              ],
+              id: 'solarized-light',
+              name: 'Solarized Light',
+              type: 'light',
               colors: {
-                'editor.background': '#fdf6e3',
-                'editor.foreground': '#657b83',
-                'editorLineNumber.foreground': '#93a1a1',
-                'editorCursor.foreground': '#657b83'
+                  bg: '#fdf6e3',
+                  sidebar: '#eee8d5',
+                  activityBar: '#fdf6e3',
+                  activeTab: '#fdf6e3',
+                  inactiveTab: '#eee8d5',
+                  border: '#93a1a1',
+                  accent: '#268bd2',
+                  text: '#657b83',
+                  textHover: '#586e75',
+                  itemHover: '#d33682',
+                  itemActive: '#fdf6e3',
+                  inputBg: '#eee8d5'
+              },
+              monaco: {
+                  base: 'vs',
+                  inherit: true,
+                  rules: [
+                      { token: 'comment', foreground: '93a1a1', fontStyle: 'italic' },
+                      { token: 'keyword', foreground: '859900' },
+                      { token: 'string', foreground: '2aa198' },
+                      { token: 'number', foreground: 'd33682' },
+                      { token: 'type', foreground: 'b58900' },
+                      { token: 'function', foreground: '268bd2' },
+                      { token: 'variable', foreground: '657b83' }
+                  ],
+                  colors: {
+                      'editor.background': '#fdf6e3',
+                      'editor.foreground': '#657b83',
+                      'editorCursor.foreground': '#657b83',
+                      'editor.lineHighlightBackground': '#eee8d5'
+                  }
               }
-            }
           },
           {
-            id: 'one-dark-pro',
-            name: 'One Dark Pro',
-            type: 'dark',
-            colors: {
-              bg: '#282c34',
-              sidebar: '#21252b',
-              activityBar: '#21252b',
-              activeTab: '#282c34',
-              inactiveTab: '#21252b',
-              border: '#181a1f',
-              accent: '#61afef',
-              text: '#abb2bf',
-              textHover: '#ffffff',
-              itemHover: '#2c313a',
-              itemActive: '#3e4451',
-              inputBg: '#282c34',
-            },
-            monaco: {
-              base: 'vs-dark',
-              inherit: true,
-              rules: [
-                { token: 'comment', foreground: '5c6370' },
-                { token: 'keyword', foreground: 'c678dd' },
-                { token: 'string', foreground: '98c379' },
-                { token: 'number', foreground: 'd19a66' },
-                { token: 'type', foreground: 'e5c07b' },
-                { token: 'class', foreground: 'e5c07b' },
-                { token: 'function', foreground: '61afef' },
-                { token: 'variable', foreground: 'abb2bf' }
-              ],
+              id: 'night-owl',
+              name: 'Night Owl',
+              type: 'dark',
               colors: {
-                'editor.background': '#282c34',
-                'editor.foreground': '#abb2bf',
-                'editorLineNumber.foreground': '#4b5263',
-                'editorCursor.foreground': '#528bff',
-                'editor.selectionBackground': '#3e4451'
+                  bg: '#011627',
+                  sidebar: '#011627',
+                  activityBar: '#011627',
+                  activeTab: '#0b2942',
+                  inactiveTab: '#01111d',
+                  border: '#5f7e97',
+                  accent: '#82aaff',
+                  text: '#d6deeb',
+                  textHover: '#ffffff',
+                  itemHover: '#0b253a',
+                  itemActive: '#0b2942',
+                  inputBg: '#0b253a'
+              },
+              monaco: {
+                  base: 'vs-dark',
+                  inherit: true,
+                  rules: [
+                      { token: 'comment', foreground: '637777', fontStyle: 'italic' },
+                      { token: 'keyword', foreground: 'c792ea', fontStyle: 'italic' },
+                      { token: 'string', foreground: 'ecc48d' },
+                      { token: 'number', foreground: 'f78c6c' },
+                      { token: 'type', foreground: 'addb67' },
+                      { token: 'function', foreground: '82aaff' },
+                      { token: 'variable', foreground: 'd6deeb' },
+                      { token: 'tag', foreground: '7fdbca' }
+                  ],
+                  colors: {
+                      'editor.background': '#011627',
+                      'editor.foreground': '#d6deeb',
+                      'editorCursor.foreground': '#80a4c2',
+                      'editor.selectionBackground': '#1d3b53',
+                      'editor.lineHighlightBackground': '#01111d'
+                  }
               }
-            }
+          },
+          {
+              id: 'one-dark-pro',
+              name: 'One Dark Pro',
+              type: 'dark',
+              colors: {
+                  bg: '#282c34',
+                  sidebar: '#21252b',
+                  activityBar: '#21252b',
+                  activeTab: '#282c34',
+                  inactiveTab: '#21252b',
+                  border: '#181a1f',
+                  accent: '#61afef',
+                  text: '#abb2bf',
+                  textHover: '#ffffff',
+                  itemHover: '#2c313a',
+                  itemActive: '#282c34',
+                  inputBg: '#181a1f'
+              },
+              monaco: {
+                  base: 'vs-dark',
+                  inherit: true,
+                  rules: [
+                      { token: 'comment', foreground: '5c6370', fontStyle: 'italic' },
+                      { token: 'keyword', foreground: 'c678dd' },
+                      { token: 'string', foreground: '98c379' },
+                      { token: 'number', foreground: 'd19a66' },
+                      { token: 'type', foreground: 'e5c07b' },
+                      { token: 'class', foreground: 'e5c07b' },
+                      { token: 'function', foreground: '61afef' },
+                      { token: 'variable', foreground: 'abb2bf' },
+                      { token: 'tag', foreground: 'e06c75' }
+                  ],
+                  colors: {
+                      'editor.background': '#282c34',
+                      'editor.foreground': '#abb2bf',
+                      'editorCursor.foreground': '#528bff',
+                      'editor.selectionBackground': '#3e4451',
+                      'editor.lineHighlightBackground': '#2c313a'
+                  }
+              }
+          },
+          {
+              id: 'synthwave-84',
+              name: 'SynthWave \'84',
+              type: 'dark',
+              colors: {
+                  bg: '#262335',
+                  sidebar: '#241b2f',
+                  activityBar: '#1f1627',
+                  activeTab: '#262335',
+                  inactiveTab: '#241b2f',
+                  border: '#34294f',
+                  accent: '#ff7edb',
+                  text: '#ffffff',
+                  textHover: '#ff7edb',
+                  itemHover: '#37294d',
+                  itemActive: '#262335',
+                  inputBg: '#241b2f'
+              },
+              monaco: {
+                  base: 'vs-dark',
+                  inherit: true,
+                  rules: [
+                      { token: 'comment', foreground: '848bbd', fontStyle: 'italic' },
+                      { token: 'keyword', foreground: 'fede5d' },
+                      { token: 'string', foreground: 'ff8b39' },
+                      { token: 'number', foreground: 'f97e72' },
+                      { token: 'type', foreground: 'ff7edb' },
+                      { token: 'function', foreground: '36f9f6' },
+                      { token: 'variable', foreground: 'ffffff' },
+                      { token: 'tag', foreground: 'fe4450' }
+                  ],
+                  colors: {
+                      'editor.background': '#262335',
+                      'editor.foreground': '#ffffff',
+                      'editorCursor.foreground': '#f97e72',
+                      'editor.selectionBackground': '#5f4c72',
+                      'editor.lineHighlightBackground': '#2b213a'
+                  }
+              }
           }
         ];
 
-        const GAME_DEV_LESSON = {
-          title: "Intro to Game Dev",
-          description: "Learn to build a simple bouncing box loop.",
-          level: "Beginner",
-          total_sections: 4,
-          sections: [
+        const LESSONS = [
             {
-              section_id: 1,
-              title: "1. Setup Canvas",
-              objective: "Get the drawing context from the HTML element.",
-              theory: "We need to select the <canvas> element and get its '2d' context, which gives us tools to draw.",
-              steps: [
-                "Select the canvas element by ID.",
-                "Get the '2d' context.",
-                "Set canvas size to window size."
-              ],
-              code_snippet: `const canvas = document.getElementById('gameCanvas');
+                id: 'game-dev',
+                title: "Intro to Game Dev",
+                description: "Build a simple game loop and bouncing box physics using HTML5 Canvas.",
+                level: "Beginner",
+                total_sections: 4,
+                tags: ['Canvas', 'JS', 'Graphics'],
+                sections: [
+                {
+                    section_id: 1,
+                    title: "Setup Canvas",
+                    objective: "Get the drawing context from the HTML element.",
+                    theory: "We need to select the <canvas> element and get its '2d' context, which gives us tools to draw.",
+                    steps: [
+                    "Select the canvas element by ID.",
+                    "Get the '2d' context.",
+                    "Set canvas size to window size."
+                    ],
+                    code_snippet: `const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;`
-            },
-            {
-              section_id: 2,
-              title: "2. Draw a Box",
-              objective: "Draw a simple colored rectangle.",
-              theory: "The coordinate system starts at top-left (0,0). Positive Y goes down.",
-              steps: [
-                "Set a fill color.",
-                "Draw a rectangle at (x, y, width, height)."
-              ],
-              code_snippet: `// Set Color
+                },
+                {
+                    section_id: 2,
+                    title: "Draw a Box",
+                    objective: "Draw a simple colored rectangle.",
+                    theory: "The coordinate system starts at top-left (0,0). Positive Y goes down.",
+                    steps: [
+                    "Set a fill color.",
+                    "Draw a rectangle at (x, y, width, height)."
+                    ],
+                    code_snippet: `// Set Color
 ctx.fillStyle = 'cyan';
 
 // Draw Rectangle: x=100, y=100, w=50, h=50
 ctx.fillRect(100, 100, 50, 50);`
-            },
-            {
-              section_id: 3,
-              title: "3. The Game Loop",
-              objective: "Make things change over time.",
-              theory: "A game loop clears the screen and redraws everything multiple times a second.",
-              steps: [
-                "Create a loop function.",
-                "Clear the screen.",
-                "Draw.",
-                "Request next frame."
-              ],
-              code_snippet: `let x = 100;
+                },
+                {
+                    section_id: 3,
+                    title: "The Game Loop",
+                    objective: "Make things change over time.",
+                    theory: "A game loop clears the screen and redraws everything multiple times a second.",
+                    steps: [
+                    "Create a loop function.",
+                    "Clear the screen.",
+                    "Draw.",
+                    "Request next frame."
+                    ],
+                    code_snippet: `let x = 100;
 
 function loop() {
   // 1. Clear Screen
@@ -762,18 +797,18 @@ function loop() {
 }
 
 loop();`
-            },
-            {
-              section_id: 4,
-              title: "4. Bouncing Logic",
-              objective: "Make the box bounce off walls.",
-              theory: "We use a velocity variable. If the box hits a wall, we flip the velocity direction.",
-              steps: [
-                "Add velocity variable.",
-                "Check boundary collisions.",
-                "Reverse velocity if hit."
-              ],
-              code_snippet: `let x = 100;
+                },
+                {
+                    section_id: 4,
+                    title: "Bouncing Logic",
+                    objective: "Make the box bounce off walls.",
+                    theory: "We use a velocity variable. If the box hits a wall, we flip the velocity direction.",
+                    steps: [
+                    "Add velocity variable.",
+                    "Check boundary collisions.",
+                    "Reverse velocity if hit."
+                    ],
+                    code_snippet: `let x = 100;
 let speed = 5;
 
 function loop() {
@@ -793,9 +828,10 @@ function loop() {
 }
 
 loop();`
+                }
+                ]
             }
-          ]
-        };
+        ];
 
         // --- UTILS ---
 
@@ -810,18 +846,13 @@ loop();`
         };
 
         const findItemByPath = (path, currentDir, fs) => {
-          // Normalize path separators
           path = path.replace(/\\/g, '/');
-          
-          // Handle absolute paths
           let absolutePath = '';
           if (path.startsWith('/')) {
               absolutePath = path;
           } else {
-              // Resolve relative path
               const dirParts = currentDir === '/' ? [] : currentDir.split('/').filter(Boolean);
               const pathParts = path.split('/').filter(Boolean);
-              
               for (const part of pathParts) {
                   if (part === '.') continue;
                   if (part === '..') {
@@ -832,14 +863,11 @@ loop();`
               }
               absolutePath = '/' + dirParts.join('/');
           }
-
-          // Search in FileSystem
           for (const key in fs) {
               if (getPath(key, fs) === absolutePath) {
                   return fs[key];
               }
           }
-
           return null;
         };
 
@@ -854,10 +882,7 @@ loop();`
             case 'tsx': return FileType.JAVASCRIPT;
             case 'json': return FileType.JSON;
             case 'md': return FileType.MARKDOWN;
-            case 'png':
-            case 'jpg':
-            case 'jpeg':
-            case 'gif': return FileType.PNG;
+            case 'png': return FileType.PNG;
             default: return FileType.UNKNOWN;
           }
         };
@@ -866,11 +891,10 @@ loop();`
           try {
             let parser = '';
             let plugins = [];
-
             switch (language) {
               case FileType.HTML:
                 parser = 'html';
-                plugins = [parserHtml, parserPostcss, parserBabel]; // Babel needed for inline scripts
+                plugins = [parserHtml, parserPostcss, parserBabel];
                 break;
               case FileType.CSS:
                 parser = 'css';
@@ -879,12 +903,11 @@ loop();`
               case FileType.JAVASCRIPT:
               case FileType.JSON:
                 parser = 'babel';
-                plugins = [parserBabel, pluginEstree]; // estree is critical for babel
+                plugins = [parserBabel, pluginEstree];
                 break;
               default:
                 return code;
             }
-
             return await format(code, {
               parser,
               plugins,
@@ -901,12 +924,10 @@ loop();`
 
         const exportProjectToZip = async (fs) => {
           const zip = new JSZip();
-
           Object.values(fs).forEach(item => {
             if (item.type === ItemType.FILE && item.content !== undefined) {
               const path = getPath(item.id, fs);
               const zipPath = path.startsWith('/') ? path.slice(1) : path;
-              
               if (item.language === FileType.PNG) {
                  zip.file(zipPath, item.content, { base64: true });
               } else {
@@ -914,7 +935,6 @@ loop();`
               }
             }
           });
-
           const content = await zip.generateAsync({ type: 'blob' });
           const url = window.URL.createObjectURL(content);
           const a = document.createElement('a');
@@ -930,22 +950,16 @@ loop();`
                 const newFS = {
                     'root': { id: 'root', name: 'project', parentId: null, type: ItemType.FOLDER, isOpen: true }
                 };
-
                 const promises = [];
-
                 zip.forEach((relativePath, zipEntry) => {
                     promises.push(new Promise(async (resolve) => {
                         if (zipEntry.dir) {
-                            // Create folders path
                             const parts = relativePath.split('/').filter(Boolean);
                             let currentParentId = 'root';
-                            
                             parts.forEach((part, index) => {
-                                // Check if exists
                                 const existingId = Object.keys(newFS).find(key => 
                                     newFS[key].name === part && newFS[key].parentId === currentParentId
                                 );
-
                                 if (existingId) {
                                     currentParentId = existingId;
                                 } else {
@@ -955,19 +969,16 @@ loop();`
                                         name: part,
                                         parentId: currentParentId,
                                         type: ItemType.FOLDER,
-                                        isOpen: true // Open by default
+                                        isOpen: true
                                     };
                                     currentParentId = newId;
                                 }
                             });
                         } else {
-                            // Handle File
-                            const content = await zipEntry.async('string'); // Assuming text for now, could detect binary
+                            const content = await zipEntry.async('string');
                             const parts = relativePath.split('/');
                             const fileName = parts.pop() || 'unknown';
                             const dirParts = parts.filter(Boolean);
-                            
-                            // Recreate directory structure if it doesn't exist
                              let currentParentId = 'root';
                              dirParts.forEach((part) => {
                                  const existingId = Object.keys(newFS).find(key => 
@@ -981,10 +992,8 @@ loop();`
                                      currentParentId = newId;
                                  }
                              });
-
                             const fileId = `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
                             const language = resolveLanguage(fileName);
-                            
                             newFS[fileId] = {
                                 id: fileId,
                                 name: fileName,
@@ -997,10 +1006,8 @@ loop();`
                         resolve();
                     }));
                 });
-
                 await Promise.all(promises);
                 return newFS;
-
             } catch (error) {
                 console.error("Failed to import zip", error);
                 alert("Failed to read the ZIP file.");
@@ -1068,7 +1075,6 @@ loop();`
           const isRoot = item.id === 'root';
           const isActive = activeFileId === item.id;
           
-          // Root usually isn't shown in list, but we handle it in parent
           if (isRoot) return null; 
 
           return (
@@ -1078,7 +1084,7 @@ loop();`
               `}
               style={{ paddingLeft: `${level * 12 + 10}px` }}
               onClick={(e) => {
-                  e.stopPropagation(); // Important!
+                  e.stopPropagation(); 
                   if (!isEditing) isFolder ? onToggleFolder(item.id) : onSelectFile(item.id);
               }}
               draggable={!isEditing}
@@ -1349,59 +1355,43 @@ loop();`
         };
 
         // Preview
-        const Preview = ({ fileSystem, refreshTrigger }) => {
+        const Preview = ({ fileSystem, refreshTrigger, url }) => {
           const iframeRef = useRef(null);
-          const containerRef = useRef(null);
           const [logs, setLogs] = useState([]);
           const [showConsole, setShowConsole] = useState(false);
-          const [isFullscreen, setIsFullscreen] = useState(false);
 
           useEffect(() => {
              setLogs([]);
-          }, [refreshTrigger]);
-
-          const toggleFullscreen = () => {
-            if (!containerRef.current) return;
-
-            if (!document.fullscreenElement) {
-                containerRef.current.requestFullscreen().catch(err => {
-                    console.error(`Error attempting to enable fullscreen: ${err.message}`);
-                });
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
-            }
-          };
-
-          useEffect(() => {
-            const handleFsChange = () => {
-                setIsFullscreen(document.fullscreenElement === containerRef.current);
-            };
-            document.addEventListener('fullscreenchange', handleFsChange);
-            return () => document.removeEventListener('fullscreenchange', handleFsChange);
-          }, []);
+          }, [refreshTrigger, url]);
 
           const srcDoc = useMemo(() => {
+            const cleanUrl = url.replace(/\/$/, '') || '/';
+            const targetPath = cleanUrl === '/' ? '/index.html' : `${cleanUrl}/index.html`;
+
+            let rootHtmlFile = null;
             const items = Object.values(fileSystem);
-            const rootHtmlFile = items.find(
-              (item) => item.type === ItemType.FILE && item.name.toLowerCase() === 'index.html' && item.parentId === 'root'
-            ) || items.find(
-                (item) => item.type === ItemType.FILE && item.name.toLowerCase() === 'index.html'
-            );
+            for (const item of items) {
+                if (item.type === ItemType.FILE && item.name === 'index.html') {
+                    const itemPath = getPath(item.id, fileSystem);
+                    if (itemPath === targetPath) {
+                        rootHtmlFile = item;
+                        break;
+                    }
+                }
+            }
 
             if (!rootHtmlFile || typeof rootHtmlFile.content !== 'string') {
               return `<html><body style="background:#1e1e1e;color:#888;font-family:sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;">
                 <div style="text-align:center">
-                    <h3>No index.html found</h3>
-                    <p>Create an index.html file to start previewing.</p>
+                    <h3>404 Not Found</h3>
+                    <p>No index.html found at <strong>${targetPath}</strong></p>
+                    <p style="font-size:0.8em; margin-top:10px; color:#666">Try navigating to <strong>/src</strong></p>
                 </div>
               </body></html>`;
             }
 
             let content = rootHtmlFile.content;
-            const rootPath = getPath(rootHtmlFile.id, fileSystem);
-            const currentDir = rootPath.substring(0, rootPath.lastIndexOf('/')) || '/';
+            const currentDir = cleanUrl;
 
             const consoleInterceptor = `
               <script>
@@ -1457,7 +1447,7 @@ loop();`
             });
 
             return content.replace('<head>', `<head>${consoleInterceptor}`);
-          }, [fileSystem, refreshTrigger]);
+          }, [fileSystem, refreshTrigger, url]);
 
           useEffect(() => {
               const handler = (event) => {
@@ -1474,17 +1464,7 @@ loop();`
           }, []);
 
           return (
-            <div ref={containerRef} className="h-full w-full flex flex-col bg-white relative group">
-              <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <button
-                    onClick={toggleFullscreen}
-                    className="p-2 bg-[#252526] text-white rounded-md shadow-lg hover:bg-[#007acc] transition-colors border border-[#3e3e42]"
-                    title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Preview"}
-                >
-                    {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
-                </button>
-              </div>
-
+            <div className="h-full w-full flex flex-col bg-white relative group">
               <iframe
                 ref={iframeRef}
                 srcDoc={srcDoc}
@@ -1494,10 +1474,10 @@ loop();`
               />
               
               <div 
-                className={`absolute bottom-0 left-0 right-0 bg-vs-sidebar border-t border-vs-border transition-all duration-300 ease-in-out flex flex-col ${showConsole ? 'h-48' : 'h-8'}`}
+                className={`bg-vs-sidebar border-t border-vs-border transition-all duration-300 ease-in-out flex flex-col shrink-0 ${showConsole ? 'h-48' : 'h-8'}`}
               >
                 <div 
-                    className="h-8 bg-vs-activityBar flex items-center px-4 justify-between cursor-pointer hover:bg-[#3e3e42]"
+                    className="h-8 bg-vs-activityBar flex items-center px-4 justify-between cursor-pointer hover:bg-vs-itemHover"
                     onClick={() => setShowConsole(!showConsole)}
                 >
                     <div className="flex items-center space-x-2 text-xs font-bold text-neutral-300">
@@ -1517,12 +1497,12 @@ loop();`
                 </div>
                 
                 {showConsole && (
-                    <div className="flex-1 overflow-y-auto p-2 font-mono text-xs space-y-1 custom-scrollbar bg-[#1e1e1e]">
+                    <div className="flex-1 overflow-y-auto p-2 font-mono text-xs space-y-1 custom-scrollbar bg-vs-bg">
                         {logs.length === 0 ? (
                             <div className="text-neutral-500 italic px-2">No output to display</div>
                         ) : (
                             logs.map((log, i) => (
-                                <div key={i} className={`flex items-start space-x-2 px-2 py-0.5 border-b border-[#2d2d2d] ${
+                                <div key={i} className={`flex items-start space-x-2 px-2 py-0.5 border-b border-vs-border/50 ${
                                     log.type === 'error' ? 'text-red-400 bg-red-900/10' : 
                                     log.type === 'warn' ? 'text-yellow-400 bg-yellow-900/10' : 
                                     'text-neutral-300'
@@ -1813,134 +1793,231 @@ loop();`
         };
 
         // Lesson Modal
-        const LessonModal = ({ isOpen, onClose, onTryCode, lesson }) => {
-          const [activeSectionId, setActiveSectionId] = useState(1);
+        const LessonModal = ({ isOpen, onClose, onTryCode, lesson, lessons }) => {
+            // Support multiple lessons or single lesson prop
+            const lessonList = lessons || (lesson ? [lesson] : LESSONS);
+            const [activeLesson, setActiveLesson] = useState(lesson ? lesson : null);
+            const [activeSectionId, setActiveSectionId] = useState(1);
 
-          if (!isOpen) return null;
+            if (!isOpen) return null;
 
-          const activeSection = lesson.sections.find(s => s.section_id === activeSectionId) || lesson.sections[0];
-
-          return (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in p-4">
-              <div className="bg-vs-bg border border-vs-border w-full max-w-4xl max-h-[85vh] rounded-lg shadow-2xl flex flex-col overflow-hidden animate-slide-in">
-                
-                <div className="bg-vs-activityBar border-b border-vs-border px-6 py-4 flex items-center justify-between shrink-0">
-                  <div>
-                    <h2 className="text-lg font-bold text-white flex items-center">
-                      <BookOpen className="mr-3 text-vs-accent" size={20} />
-                      {lesson.title}
-                    </h2>
-                  </div>
-                  <button 
-                    onClick={onClose}
-                    className="p-1 hover:bg-white/10 rounded-full transition-colors text-neutral-400 hover:text-white"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-
-                <div className="flex flex-1 overflow-hidden">
-                  
-                  <div className="w-1/4 min-w-[200px] bg-vs-sidebar border-r border-vs-border overflow-y-auto custom-scrollbar flex flex-col">
-                    <div className="flex-1 space-y-0.5 py-2">
-                      {lesson.sections.map((section) => (
-                        <button
-                          key={section.section_id}
-                          onClick={() => setActiveSectionId(section.section_id)}
-                          className={`w-full text-left px-4 py-3 flex items-center space-x-3 transition-all border-l-2
-                            ${activeSectionId === section.section_id 
-                              ? 'bg-vs-activeTab border-vs-accent text-white' 
-                              : 'border-transparent text-neutral-400 hover:text-white hover:bg-vs-itemHover'
-                            }`}
+            // View: Library (List of Lessons) - Show only if we have multiple lessons and no active one selected (unless forced via prop)
+            if (!activeLesson && lessonList.length > 0) {
+                return (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in p-4" onClick={onClose}>
+                        <div 
+                            className="bg-vs-bg border border-vs-border w-full max-w-5xl max-h-[85vh] rounded-lg shadow-2xl flex flex-col overflow-hidden animate-slide-in"
+                            onClick={e => e.stopPropagation()}
                         >
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0 
-                            ${activeSectionId === section.section_id ? 'bg-vs-accent text-white' : 'bg-vs-activityBar text-neutral-500'}`}>
-                            {section.section_id}
-                          </div>
-                          <span className="text-sm truncate">{section.title}</span>
+                            <div className="bg-vs-activityBar border-b border-vs-border px-6 py-6 flex items-center justify-between shrink-0">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-vs-text flex items-center">
+                                        <GraduationCap className="mr-3 text-vs-accent" size={28} />
+                                        Learning Library
+                                    </h2>
+                                    <p className="text-neutral-400 mt-1 ml-10">Select a topic to start mastering web development.</p>
+                                </div>
+                                <button onClick={onClose} className="p-2 hover:bg-vs-itemHover rounded-full transition-colors text-neutral-400 hover:text-vs-text">
+                                    <X size={24} />
+                                </button>
+                            </div>
+
+                            <div className="p-8 overflow-y-auto custom-scrollbar bg-vs-bg">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {lessonList.map(l => (
+                                        <div 
+                                            key={l.id}
+                                            onClick={() => { setActiveLesson(l); setActiveSectionId(1); }}
+                                            className="group bg-vs-sidebar border border-vs-border rounded-lg p-5 cursor-pointer hover:border-vs-accent hover:shadow-[0_0_15px_rgba(0,0,0,0.2)] transition-all flex flex-col h-full"
+                                        >
+                                            <div className="flex items-start justify-between mb-4">
+                                                <div className="bg-vs-activityBar p-2 rounded-md text-vs-accent group-hover:bg-vs-accent group-hover:text-white transition-colors">
+                                                    <BookOpen size={20} />
+                                                </div>
+                                                <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-full border 
+                                                    ${l.level === 'Beginner' ? 'border-green-800 text-green-400 bg-green-900/20' : 
+                                                    l.level === 'Intermediate' ? 'border-yellow-800 text-yellow-400 bg-yellow-900/20' : 
+                                                    'border-red-800 text-red-400 bg-red-900/20'}`}>
+                                                    {l.level}
+                                                </span>
+                                            </div>
+                                            <h3 className="text-lg font-bold text-vs-text mb-2 group-hover:text-vs-accent transition-colors">{l.title}</h3>
+                                            <p className="text-sm text-neutral-400 mb-6 flex-1 leading-relaxed">{l.description}</p>
+                                            
+                                            <div className="flex items-center justify-between mt-auto pt-4 border-t border-vs-border/50">
+                                                <div className="flex space-x-2">
+                                                    {l.tags?.map(tag => (
+                                                        <span key={tag} className="text-[10px] text-neutral-500 bg-vs-activityBar px-1.5 py-0.5 rounded">#{tag}</span>
+                                                    ))}
+                                                </div>
+                                                <div className="flex items-center text-xs text-neutral-400">
+                                                    <Layers size={12} className="mr-1" />
+                                                    {l.total_sections} Sections
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const activeSection = activeLesson.sections.find(s => s.section_id === activeSectionId) || activeLesson.sections[0];
+
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in p-4" onClick={onClose}>
+                <div className="bg-vs-bg border border-vs-border w-full max-w-6xl max-h-[90vh] rounded-lg shadow-2xl flex flex-col overflow-hidden animate-slide-in" onClick={e => e.stopPropagation()}>
+                    
+                    <div className="bg-vs-activityBar border-b border-vs-border px-6 py-3 flex items-center justify-between shrink-0">
+                    <div className="flex items-center">
+                        <button 
+                            onClick={() => setActiveLesson(null)}
+                            className="mr-4 p-1.5 hover:bg-vs-itemHover rounded text-neutral-400 hover:text-vs-text flex items-center text-xs uppercase font-bold tracking-wider transition-colors"
+                        >
+                            <ArrowLeft size={14} className="mr-1" />
+                            Library
                         </button>
-                      ))}
+                        <div className="h-6 w-px bg-vs-border mx-2"></div>
+                        <h2 className="text-lg font-bold text-vs-text flex items-center ml-2">
+                            <BookOpen className="mr-3 text-vs-accent" size={18} />
+                            {activeLesson.title}
+                        </h2>
                     </div>
-                  </div>
+                    <button onClick={onClose} className="p-1.5 hover:bg-vs-itemHover rounded-full transition-colors text-neutral-400 hover:text-vs-text">
+                        <X size={20} />
+                    </button>
+                    </div>
 
-                  <div className="flex-1 overflow-y-auto custom-scrollbar bg-vs-bg p-8">
-                    <div className="max-w-2xl mx-auto space-y-6">
-                      
-                      <div>
-                        <h1 className="text-2xl font-bold text-white mb-2">{activeSection.title}</h1>
-                        <p className="text-sm text-neutral-400">{activeSection.objective}</p>
-                      </div>
-
-                      <div className="bg-vs-activityBar/50 rounded-lg p-4 text-sm text-neutral-300 leading-relaxed border border-vs-border/50">
-                         {activeSection.theory}
-                      </div>
-
-                      <div className="space-y-2">
-                         <h3 className="text-sm font-bold uppercase text-neutral-500">Steps</h3>
-                         <ul className="space-y-2">
-                            {activeSection.steps.map((step, idx) => (
-                              <li key={idx} className="flex items-start space-x-2 text-sm text-neutral-300">
-                                <CheckCircle2 size={16} className="text-vs-accent mt-0.5 shrink-0" />
-                                <span>{step}</span>
-                              </li>
-                            ))}
-                         </ul>
-                      </div>
-
-                      <div className="space-y-2 pt-2">
-                         <div className="flex items-center justify-between">
-                            <h3 className="text-sm font-bold uppercase text-neutral-500 flex items-center">
-                              <Code className="mr-2" size={14} />
-                              Code
-                            </h3>
-                            <button 
-                              onClick={() => onTryCode(activeSection.code_snippet)}
-                              className="flex items-center space-x-2 text-xs bg-vs-accent hover:bg-blue-600 text-white px-3 py-1.5 rounded transition-all shadow-lg shadow-blue-900/20"
+                    <div className="flex flex-1 overflow-hidden">
+                    
+                    <div className="w-64 bg-vs-sidebar border-r border-vs-border overflow-y-auto custom-scrollbar flex flex-col shrink-0">
+                        <div className="p-4 border-b border-vs-border">
+                            <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Course Outline</div>
+                            <div className="w-full bg-vs-activityBar h-1.5 rounded-full overflow-hidden">
+                                <div className="bg-vs-accent h-full transition-all duration-300" style={{ width: `${(activeSectionId / activeLesson.total_sections) * 100}%`}}></div>
+                            </div>
+                        </div>
+                        <div className="flex-1 space-y-0.5 py-2">
+                        {activeLesson.sections.map((section) => (
+                            <button
+                            key={section.section_id}
+                            onClick={() => setActiveSectionId(section.section_id)}
+                            className={`w-full text-left px-4 py-3 flex items-start space-x-3 transition-all border-l-2 group
+                                ${activeSectionId === section.section_id 
+                                ? 'bg-vs-activeTab border-vs-accent text-vs-text' 
+                                : 'border-transparent text-neutral-500 hover:text-vs-textHover hover:bg-vs-itemHover'
+                                }`}
                             >
-                              <Play size={12} fill="currentColor" />
-                              <span>Try This</span>
+                            <div className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 transition-colors
+                                ${activeSectionId === section.section_id ? 'bg-vs-accent text-white' : 'bg-vs-activityBar text-neutral-500 group-hover:bg-vs-border'}`}>
+                                {section.section_id}
+                            </div>
+                            <div>
+                                <span className="text-sm font-medium block leading-tight">{section.title}</span>
+                            </div>
                             </button>
-                         </div>
-                         
-                         <pre className="bg-[#1e1e1e] border border-vs-border rounded-lg p-4 overflow-x-auto text-xs font-mono leading-5 text-neutral-300 shadow-inner">
-                           <code>{activeSection.code_snippet}</code>
-                         </pre>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-6 border-t border-vs-border">
-                         <button 
-                            disabled={activeSectionId === 1}
-                            onClick={() => setActiveSectionId(prev => Math.max(1, prev - 1))}
-                            className={`text-sm ${activeSectionId === 1 ? 'text-neutral-600' : 'text-neutral-400 hover:text-white'}`}
-                         >
-                           Previous
-                         </button>
-                         
-                         {activeSectionId < lesson.total_sections ? (
-                           <button 
-                              onClick={() => setActiveSectionId(prev => Math.min(lesson.total_sections, prev + 1))}
-                              className="flex items-center text-sm text-white bg-vs-activityBar hover:bg-vs-border px-3 py-1.5 rounded"
-                           >
-                             Next
-                             <ChevronRight size={14} className="ml-1" />
-                           </button>
-                 ) : (
-                           <button 
-                              onClick={onClose}
-                              className="flex items-center text-sm text-green-400 hover:text-green-300"
-                           >
-                             Complete
-                             <CheckCircle2 size={14} className="ml-1" />
-                           </button>
-                         )}
-                      </div>
-
+                        ))}
+                        </div>
                     </div>
-                  </div>
+
+                    <div className="flex-1 overflow-y-auto custom-scrollbar bg-vs-bg p-8">
+                        <div className="max-w-3xl mx-auto space-y-8 pb-10">
+                        
+                        <div className="border-b border-vs-border pb-6">
+                            <div className="flex items-center space-x-2 mb-2">
+                                <span className="text-vs-accent text-sm font-bold uppercase tracking-wide">Section {activeSection.section_id}</span>
+                            </div>
+                            <h1 className="text-3xl font-bold text-vs-text mb-2">{activeSection.title}</h1>
+                            <p className="text-lg text-neutral-400 leading-relaxed">{activeSection.objective}</p>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-bold uppercase text-neutral-500 flex items-center">
+                                <BookOpen size={14} className="mr-2" /> 
+                                Concept
+                            </h3>
+                            <div className="bg-vs-activityBar/30 rounded-lg p-5 text-sm text-vs-text leading-relaxed border border-vs-border">
+                                {activeSection.theory}
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-bold uppercase text-neutral-500 flex items-center">
+                                <CheckCircle2 size={14} className="mr-2" />
+                                Steps
+                            </h3>
+                            <ul className="space-y-3">
+                                {activeSection.steps.map((step, idx) => (
+                                <li key={idx} className="flex items-start space-x-3 text-sm text-neutral-300 bg-vs-sidebar p-3 rounded border border-vs-border/50">
+                                    <div className="w-5 h-5 rounded-full bg-vs-activityBar flex items-center justify-center text-xs font-mono shrink-0 text-vs-accent mt-0.5">{idx + 1}</div>
+                                    <span className="leading-relaxed">{step}</span>
+                                </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div className="space-y-3 pt-2">
+                            <div className="flex items-center justify-between bg-vs-sidebar px-4 py-2 rounded-t-lg border border-vs-border border-b-0">
+                                <h3 className="text-xs font-bold uppercase text-neutral-400 flex items-center">
+                                <Code className="mr-2" size={14} />
+                                Example Code
+                                </h3>
+                                <button 
+                                onClick={() => onTryCode(activeSection.code_snippet)}
+                                className="flex items-center space-x-2 text-xs bg-vs-accent hover:bg-opacity-90 text-white px-3 py-1.5 rounded transition-all shadow-md"
+                                >
+                                <Play size={12} fill="currentColor" />
+                                <span>Try This Code</span>
+                                </button>
+                            </div>
+                            
+                            <div className="relative group">
+                                <pre className="bg-vs-inputBg border border-vs-border rounded-b-lg p-4 overflow-x-auto text-xs font-mono leading-5 text-vs-text shadow-inner">
+                                    <code>{activeSection.code_snippet}</code>
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-8 border-t border-vs-border mt-10">
+                            <button 
+                                disabled={activeSectionId === 1}
+                                onClick={() => setActiveSectionId(prev => Math.max(1, prev - 1))}
+                                className={`flex items-center px-4 py-2 rounded text-sm font-medium transition-colors
+                                    ${activeSectionId === 1 
+                                        ? 'text-neutral-600 cursor-not-allowed' 
+                                        : 'text-neutral-400 hover:text-vs-text hover:bg-vs-activityBar'}`}
+                            >
+                            <ArrowLeft size={16} className="mr-2" />
+                            Previous
+                            </button>
+                            
+                            {activeSectionId < activeLesson.total_sections ? (
+                            <button 
+                                onClick={() => setActiveSectionId(prev => Math.min(activeLesson.total_sections, prev + 1))}
+                                className="flex items-center text-sm font-bold text-white bg-vs-accent hover:bg-opacity-90 px-6 py-2 rounded transition-all shadow-lg hover:shadow-vs-accent/20"
+                            >
+                                Next Section
+                                <ChevronRight size={16} className="ml-2" />
+                            </button>
+                            ) : (
+                            <button 
+                                onClick={onClose}
+                                className="flex items-center text-sm font-bold text-green-500 bg-green-500/10 hover:bg-green-500/20 px-6 py-2 rounded border border-green-500/50 transition-all"
+                            >
+                                Complete Lesson
+                                <CheckCircle2 size={16} className="ml-2" />
+                            </button>
+                            )}
+                        </div>
+
+                        </div>
+                    </div>
+                    </div>
                 </div>
-              </div>
-            </div>
-          );
+                </div>
+            );
         };
 
         // Help Modal
@@ -2016,7 +2093,7 @@ loop();`
                                 </p>
                             </div>
                             <div className="text-xs text-neutral-500 text-center">
-                                Built with ❤️ by 015x.dev
+                                Built with ❤️ by tailor
                             </div>
                         </div>
                     )}
@@ -2061,6 +2138,10 @@ loop();`
           const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
           const [isFullscreen, setIsFullscreen] = useState(false);
           
+          const [previewUrl, setPreviewUrl] = useState('/src');
+          const [urlInputValue, setUrlInputValue] = useState('/src');
+          const previewContainerRef = useRef(null);
+
           const [isResizing, setIsResizing] = useState(false);
           
           const [ghostText, setGhostText] = useState(null);
@@ -2172,8 +2253,10 @@ loop();`
           }, [activeSidebarView, sidebarWidth]);
 
           const toggleFullscreen = () => {
+              if (!previewContainerRef.current) return;
+              
               if (!document.fullscreenElement) {
-                  document.documentElement.requestFullscreen().then(() => setIsFullscreen(true));
+                  previewContainerRef.current.requestFullscreen().then(() => setIsFullscreen(true));
               } else {
                   if (document.exitFullscreen) {
                       document.exitFullscreen().then(() => setIsFullscreen(false));
@@ -2385,50 +2468,108 @@ loop();`
               return activeFile.content.split('\n').length;
           }, [activeFile]);
 
+          // Updated Non-Destructive Lesson Logic
           const handleTryCode = (code) => {
               setIsLessonModalOpen(false);
               
               const isHtml = code.trim().startsWith('<!DOCTYPE') || code.trim().startsWith('<html');
+              const isCss = !isHtml && code.trim().includes('{') && !code.includes('function') && !code.includes('const') && !code.includes('var') && !code.includes('let');
+              const isJs = !isHtml && !isCss;
 
-              const newLessonFS = {
-                'root': { id: 'root', name: 'lesson-project', parentId: null, type: ItemType.FOLDER, isOpen: true },
-                'src': { id: 'src', name: 'src', parentId: 'root', type: ItemType.FOLDER, isOpen: true },
-                'index.html': { 
-                    id: 'index.html', 
-                    name: 'index.html', 
-                    parentId: 'root',
-                    type: ItemType.FILE,
-                    language: FileType.HTML,
-                    content: isHtml ? '' : `<!DOCTYPE html>
+              let targetFolderId = null;
+              if (activeFileId) {
+                  const file = fileSystem[activeFileId];
+                  if (file && file.parentId && fileSystem[file.parentId].name.startsWith('lesson-')) {
+                      targetFolderId = file.parentId;
+                  }
+              }
+
+              if (targetFolderId) {
+                  let targetFileId = null;
+                  setFileSystem(prev => {
+                      const newFiles = { ...prev };
+                      const children = Object.values(newFiles).filter(f => f.parentId === targetFolderId);
+                      
+                      const htmlFile = children.find(f => f.name === 'index.html');
+                      const jsFile = children.find(f => f.name === 'script.js');
+                      const cssFile = children.find(f => f.name === 'style.css');
+
+                      if (isHtml && htmlFile) {
+                          newFiles[htmlFile.id] = { ...htmlFile, content: code };
+                          targetFileId = htmlFile.id;
+                      } else if (isCss && cssFile) {
+                          const newContent = cssFile.content ? `${cssFile.content}\n\n${code}` : code;
+                          newFiles[cssFile.id] = { ...cssFile, content: newContent };
+                          targetFileId = cssFile.id;
+                      } else if (isJs && jsFile) {
+                          const newContent = jsFile.content ? `${jsFile.content}\n\n${code}` : code;
+                          newFiles[jsFile.id] = { ...jsFile, content: newContent };
+                          targetFileId = jsFile.id;
+                      }
+                      return newFiles;
+                  });
+
+                  if (targetFileId) {
+                      setActiveFileId(targetFileId);
+                      setGhostText(null); 
+                      setOpenFiles(prev => prev.includes(targetFileId) ? prev : [...prev, targetFileId]);
+                  }
+              } else {
+                  // Create new lesson folder
+                  const timestamp = Date.now();
+                  const folderName = `lesson-${timestamp.toString().slice(-4)}`;
+                  const folderId = `folder_${timestamp}`;
+                  const htmlId = `file_${timestamp}_html`;
+                  const jsId = `file_${timestamp}_js`;
+                  const cssId = `file_${timestamp}_css`;
+
+                  setFileSystem(prev => {
+                      const newFiles = { ...prev };
+                      newFiles[folderId] = { id: folderId, name: folderName, parentId: 'root', type: ItemType.FOLDER, isOpen: true };
+                      newFiles[htmlId] = { id: htmlId, name: 'index.html', parentId: folderId, type: ItemType.FILE, language: FileType.HTML, content: isHtml ? code : `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Lesson</title>
-    <style>body { margin: 0; overflow: hidden; background: #111; }</style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="container">
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+    </div>
     <canvas id="gameCanvas"></canvas>
-    <script src="src/script.js"><\/script>
+    <script src="script.js"><\/script>
 </body>
-</html>`
-                },
-                'script.js': {
-                    id: 'script.js',
-                    name: 'script.js',
-                    parentId: 'src',
-                    type: ItemType.FILE,
-                    language: FileType.JAVASCRIPT,
-                    content: '' 
-                }
-              };
+</html>` };
+                      newFiles[jsId] = { id: jsId, name: 'script.js', parentId: folderId, type: ItemType.FILE, language: FileType.JAVASCRIPT, content: isJs ? code : '// Write your script here' };
+                      newFiles[cssId] = { id: cssId, name: 'style.css', parentId: folderId, type: ItemType.FILE, language: FileType.CSS, content: isCss ? code : '/* Add styles here */' };
+                      return newFiles;
+                  });
 
-              setFileSystem(newLessonFS);
+                  let targetId = jsId;
+                  if (isHtml) targetId = htmlId;
+                  else if (isCss) targetId = cssId;
 
-              const targetId = isHtml ? 'index.html' : 'script.js';
-              
-              setActiveFileId(targetId);
-              setOpenFiles(['index.html', 'script.js']); 
-              setGhostText({ fileId: targetId, content: code });
+                  setActiveFileId(targetId);
+                  setOpenFiles(prev => {
+                      const next = [...prev];
+                      if (!next.includes(htmlId)) next.push(htmlId);
+                      if (!next.includes(jsId)) next.push(jsId);
+                      if (!next.includes(cssId)) next.push(cssId);
+                      return next;
+                  });
+                  setGhostText({ fileId: targetId, content: code });
+              }
+          };
+
+          const handleUrlSubmit = (e) => {
+              e.preventDefault();
+              let newUrl = urlInputValue.trim();
+              if (!newUrl.startsWith('/')) newUrl = '/' + newUrl;
+              setPreviewUrl(newUrl);
+              setUrlInputValue(newUrl);
           };
 
           const MenuDropdown = ({ label, items, isOpen, onClick }) => (
@@ -2472,7 +2613,7 @@ loop();`
                   isOpen={isLessonModalOpen} 
                   onClose={() => setIsLessonModalOpen(false)} 
                   onTryCode={handleTryCode}
-                  lesson={GAME_DEV_LESSON} 
+                  lessons={LESSONS} 
                 />
                 <HelpModal 
                   isOpen={isHelpModalOpen} 
@@ -2538,13 +2679,6 @@ loop();`
                          >
                             <GraduationCap size={14} fill="currentColor" />
                             <span>Learn</span>
-                         </button>
-                         <button
-                            onClick={toggleFullscreen}
-                            className="p-1.5 hover:bg-white/10 rounded text-neutral-400 hover:text-white transition-colors"
-                            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-                         >
-                             {isFullscreen ? <Minimize size={14} /> : <Maximize size={14} />}
                          </button>
                     </div>
                 </div>
@@ -2619,33 +2753,73 @@ loop();`
                     )}
 
                     <div className="flex-1 flex flex-col min-w-0 bg-vs-bg">
-                        <div className="flex bg-vs-activityBar overflow-x-auto custom-scrollbar shrink-0 h-9">
-                            {openFiles.map(id => {
-                                const file = fileSystem[id];
-                                if (!file) return null;
-                                const isActive = activeFileId === id;
-                                return (
-                                    <div 
-                                        key={id}
-                                        className={`
-                                            group flex items-center px-3 text-xs border-r border-vs-border cursor-pointer min-w-[120px] max-w-[200px] select-none
-                                            ${isActive ? 'bg-vs-bg text-vs-text border-t-2 border-t-vs-accent' : 'bg-transparent text-neutral-500 hover:bg-vs-itemHover'}
-                                        `}
-                                        onClick={() => setActiveFileId(id)}
-                                    >
-                                        <span className={`mr-2 ${isActive ? 'text-vs-accent' : ''}`}>
-                                            {file.language === 'html' ? '<>' : '#'}
-                                        </span>
-                                        <span className="truncate flex-1">{file.name}</span>
-                                        <button 
-                                            className={`ml-2 p-0.5 rounded-sm hover:bg-neutral-600 ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-                                            onClick={(e) => handleCloseFile(e, id)}
+                        <div className="flex h-9 bg-vs-activityBar border-b border-vs-border shrink-0">
+                            <div style={{ width: editorWidth }} className="h-full flex overflow-x-auto custom-scrollbar border-r border-vs-border shrink-0 bg-vs-inactive-tab">
+                                {openFiles.map(id => {
+                                    const file = fileSystem[id];
+                                    if (!file) return null;
+                                    const isActive = activeFileId === id;
+                                    return (
+                                        <div 
+                                            key={id}
+                                            className={`
+                                                group flex items-center px-3 text-xs border-r border-vs-border cursor-pointer min-w-[120px] max-w-[200px] select-none h-full
+                                                ${isActive ? 'bg-vs-bg text-vs-text border-t-2 border-t-vs-accent' : 'bg-transparent text-neutral-500 hover:bg-vs-itemHover'}
+                                            `}
+                                            onClick={() => setActiveFileId(id)}
                                         >
-                                            <X size={12} />
-                                        </button>
+                                            <span className={`mr-2 ${isActive ? 'text-vs-accent' : ''}`}>
+                                                {file.language === 'html' ? '<>' : '#'}
+                                            </span>
+                                            <span className="truncate flex-1">{file.name}</span>
+                                            <button 
+                                                className={`ml-2 p-0.5 rounded-sm hover:bg-neutral-600 ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+                                                onClick={(e) => handleCloseFile(e, id)}
+                                            >
+                                                <X size={12} />
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            
+                            <div className="flex-1 h-full flex items-center px-2 space-x-2 min-w-0 bg-vs-bg select-none">
+                                <button 
+                                    onClick={() => setRefreshTrigger(t => t + 1)} 
+                                    title="Reload Frame" 
+                                    className="p-1.5 rounded-sm hover:bg-vs-itemHover text-vs-text opacity-70 hover:opacity-100 transition-colors shrink-0"
+                                >
+                                    <RefreshCw size={14} />
+                                </button>
+
+                                <form onSubmit={handleUrlSubmit} className="flex-1 flex items-center relative group min-w-0 mt-1">
+                                    <div className="absolute left-2 top-1/2 -translate-y-1/2 text-vs-text opacity-50 pointer-events-none z-10">
+                                        <Globe size={12} />
                                     </div>
-                                );
-                            })}
+                                    <input 
+                                        type="text" 
+                                        value={urlInputValue}
+                                        onChange={(e) => setUrlInputValue(e.target.value)}
+                                        className="w-full pl-7 pr-7 text-xs bg-vs-input-bg border border-vs-border rounded-sm focus:border-vs-accent focus:outline-none text-vs-text transition-all font-mono shadow-sm h-6"
+                                        spellCheck={false}
+                                    />
+                                    <button 
+                                        type="submit" 
+                                        className="absolute right-1 top-1/2 -translate-y-1/2 p-0.5 rounded-sm hover:bg-vs-itemHover text-vs-text opacity-60 hover:opacity-100 transition-colors"
+                                        title="Go"
+                                    >
+                                        <ArrowRight size={12} />
+                                    </button>
+                                </form>
+
+                                <button
+                                    onClick={toggleFullscreen}
+                                    className="p-1.5 rounded-sm hover:bg-vs-itemHover text-vs-text opacity-70 hover:opacity-100 transition-colors shrink-0"
+                                    title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Preview"}
+                                >
+                                    {isFullscreen ? <Minimize size={14} /> : <Maximize size={14} />}
+                                </button>
+                            </div>
                         </div>
 
                         <div className="flex-1 flex overflow-hidden" ref={splitPaneRef}>
@@ -2669,8 +2843,12 @@ loop();`
                                 onMouseDown={startEditorResizing}
                             />
 
-                            <div className={`flex-1 h-full bg-white relative min-w-0`}>
-                                <Preview fileSystem={debouncedFileSystem} refreshTrigger={refreshTrigger} />
+                            <div ref={previewContainerRef} className={`flex-1 h-full bg-white relative min-w-0`}>
+                                <Preview 
+                                    fileSystem={debouncedFileSystem} 
+                                    refreshTrigger={refreshTrigger}
+                                    url={previewUrl}
+                                />
                             </div>
                         </div>
                     </div>
