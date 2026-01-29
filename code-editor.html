@@ -190,7 +190,7 @@
           'index.html': { 
             id: 'index.html', 
             name: 'index.html', 
-            parentId: 'root',
+            parentId: 'src',
             type: ItemType.FILE,
             language: FileType.HTML,
             content: `<!DOCTYPE html>
@@ -199,16 +199,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>015x.dev Editor</title>
-    <link rel="stylesheet" href="src/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Hello World!</h1>
+        <h1>Welcome to 015x.dev Editor</h1>
         <p>Edit files, format code, and download your project!</p>
         <button id="actionBtn">Click Me</button>
         <div id="output"></div>
     </div>
-    <script src="src/script.js"><\/script>
+    <script src="script.js"><\/script>
 </body>
 </html>`
           },
@@ -1422,7 +1422,7 @@ loop();`
               <\/script>
             `;
 
-            content = content.replace(/<link\s+.*?href="([^"]+)"[^>]*>/g, (match, href) => {
+            content = content.replace(/<link\s+[^>]*href=["']([^"']+)["'][^>]*>/gi, (match, href) => {
               const cssFile = findItemByPath(href, currentDir, fileSystem);
               if (cssFile && cssFile.content) {
                 return `<style>${cssFile.content}</style>`;
@@ -1430,7 +1430,7 @@ loop();`
               return match;
             });
 
-            content = content.replace(/<script\s+.*?src="([^"]+)"[^>]*><\/script>/g, (match, src) => {
+            content = content.replace(/<script\s+[^>]*src=["']([^"']+)["'][^>]*><\/script>/gi, (match, src) => {
               const jsFile = findItemByPath(src, currentDir, fileSystem);
               if (jsFile && jsFile.content) {
                 return `<script>${jsFile.content}<\/script>`;
@@ -1438,7 +1438,7 @@ loop();`
               return match;
             });
             
-            content = content.replace(/<img\s+.*?src="([^"]+)"[^>]*>/g, (match, src) => {
+            content = content.replace(/<img\s+[^>]*src=["']([^"']+)["'][^>]*>/gi, (match, src) => {
                  const imgFile = findItemByPath(src, currentDir, fileSystem);
                  if (imgFile && imgFile.content && imgFile.language === FileType.PNG) {
                      return match.replace(src, `data:image/png;base64,${imgFile.content}`);
@@ -2093,7 +2093,7 @@ loop();`
                                 </p>
                             </div>
                             <div className="text-xs text-neutral-500 text-center">
-                                Built with ❤️ by tailor
+                                Built with ❤️ by 015x.dev
                             </div>
                         </div>
                     )}
@@ -2363,34 +2363,34 @@ loop();`
           const deleteItem = useCallback((id) => {
               if (!window.confirm('Are you sure you want to delete this?')) return;
               
+              // 1. Calculate ids to delete using current fileSystem state
+              const toDelete = new Set([id]);
+              const queue = [id];
+              const items = Object.values(fileSystem);
+              
+              while(queue.length > 0) {
+                  const currentId = queue.shift();
+                  const children = items.filter(i => i.parentId === currentId);
+                  children.forEach(c => {
+                      toDelete.add(c.id);
+                      if (c.type === ItemType.FOLDER) queue.push(c.id);
+                  });
+              }
+
+              // 2. Synchronously update all states to avoid inconsistencies
               setFileSystem(prev => {
-                  const toDelete = new Set([id]);
-                  const queue = [id];
-                  const items = Object.values(prev);
-                  
-                  while (queue.length > 0) {
-                      const currentId = queue.shift();
-                      items.forEach(item => {
-                          if (item.parentId === currentId) {
-                              toDelete.add(item.id);
-                              if (item.type === ItemType.FOLDER) {
-                                  queue.push(item.id);
-                              }
-                          }
-                      });
-                  }
-
                   const newFS = { ...prev };
-                  toDelete.forEach(itemId => delete newFS[itemId]);
-                  
-                  setTimeout(() => {
-                      setOpenFiles(currentOpen => currentOpen.filter(fid => !toDelete.has(fid)));
-                      setActiveFileId(currentActive => toDelete.has(currentActive || '') ? null : currentActive);
-                  }, 0);
-
+                  toDelete.forEach(x => delete newFS[x]);
                   return newFS;
               });
-          }, []);
+              
+              setOpenFiles(prev => prev.filter(fid => !toDelete.has(fid)));
+              
+              // If the active file is being deleted, deselect it
+              if (activeFileId && toDelete.has(activeFileId)) {
+                  setActiveFileId(null);
+              }
+          }, [fileSystem, activeFileId]);
 
           const renameItem = useCallback((id, name) => {
               setFileSystem(prev => ({
@@ -2461,7 +2461,7 @@ loop();`
               setSettings(prev => ({ ...prev, ...newSettings }));
           };
 
-          const activeFile = activeFileId ? fileSystem[activeFileId] : null;
+          const activeFile = activeFileId && fileSystem[activeFileId] ? fileSystem[activeFileId] : null;
 
           const lineCount = useMemo(() => {
               if (!activeFile || typeof activeFile.content !== 'string') return 0;
@@ -2477,7 +2477,7 @@ loop();`
               const isJs = !isHtml && !isCss;
 
               let targetFolderId = null;
-              if (activeFileId) {
+              if (activeFileId && fileSystem[activeFileId]) {
                   const file = fileSystem[activeFileId];
                   if (file && file.parentId && fileSystem[file.parentId].name.startsWith('lesson-')) {
                       targetFolderId = file.parentId;
