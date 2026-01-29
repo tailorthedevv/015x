@@ -232,6 +232,7 @@
                       </span>
                    </div>
                    <a 
+                     id="open"
                      href="/code-editor"
                      onMouseEnter={playHoverSfx}
                      onClick={(e) => { e.preventDefault(); playClickSfx(); }}
@@ -248,6 +249,8 @@
           </nav>
         );
       };
+
+        document.getElementById("open").addEventListener("click", function(){window.location.href = "/code-editor"})
 
       const StatsGrid = () => {
         const [activeStat, setActiveStat] = useState(null);
