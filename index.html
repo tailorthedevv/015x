@@ -6,10 +6,6 @@
     <title>015x.dev | Free Frontend Development</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-setTimeout(function(){    document.getElementById("open").addEventListener("click", function(){window.location.href = "/code-editor"})
-}, 1000)
-    </script>
-    <script>
       tailwind.config = {
         darkMode: 'class',
         theme: {
@@ -239,7 +235,11 @@ setTimeout(function(){    document.getElementById("open").addEventListener("clic
                      id="open"
                      href="/code-editor"
                      onMouseEnter={playHoverSfx}
-                     onClick={(e) => { e.preventDefault(); playClickSfx(); }}
+                     onClick={(e) => { 
+                     e.preventDefault(); 
+                     playClickSfx();
+                     setTimeout(() => window.location.href = "/code-editor", 150);
+                     }}
                      className="group bg-white text-black px-4 py-2 md:px-6 md:py-2.5 transition-all duration-300 hover:bg-transparent hover:text-white hover:border hover:border-white no-underline"
                    >
                      <span className="flex items-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]">
