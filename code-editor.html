@@ -37,8 +37,8 @@
               xxs: '0.65rem'
             },
             fontFamily: {
-              sans: ['"Segoe UI"', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif'],
-              mono: ['"Fira Code"', '"Consolas"', '"Monaco"', 'monospace']
+              sans:['"Segoe UI"', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif'],
+              mono:['"Fira Code"', '"Consolas"', '"Monaco"', 'monospace']
             },
             animation: {
                 'slide-in': 'slideIn 0.2s ease-out forwards',
@@ -181,7 +181,8 @@
             Code2, LayoutTemplate, MoreVertical, Terminal, XCircle, AlertTriangle, 
             Info, Maximize, Minimize, Palette, Type, Layout, Code, Zap, BookOpen, 
             CheckCircle2, FilePlus, FolderPlus, GraduationCap, Globe, ArrowRight,
-            ExternalLink, Lightbulb, Command, ArrowLeft
+            ExternalLink, Lightbulb, Command, ArrowLeft, GitBranch, Blocks,
+            Clipboard, Check
         } from 'lucide-react';
         import JSZip from 'jszip';
         import { format } from 'prettier';
@@ -343,7 +344,7 @@ This is a sample project created with the 015x.dev Editor.
           cursorSmoothCaretAnimation: 'on'
         };
 
-        const THEMES = [
+        const THEMES =[
           {
             id: 'vs-dark',
             name: 'Visual Studio Dark',
@@ -390,7 +391,7 @@ This is a sample project created with the 015x.dev Editor.
             monaco: { 
                 base: 'vs', 
                 inherit: true, 
-                rules: [], 
+                rules:[], 
                 colors: { 'editor.background': '#ffffff' } 
             }
           },
@@ -415,7 +416,7 @@ This is a sample project created with the 015x.dev Editor.
             monaco: {
               base: 'vs-dark',
               inherit: true,
-              rules: [
+              rules:[
                   { token: 'comment', foreground: '8b949e', fontStyle: 'italic' },
                   { token: 'keyword', foreground: 'ff7b72' },
                   { token: 'string', foreground: 'a5d6ff' },
@@ -455,7 +456,7 @@ This is a sample project created with the 015x.dev Editor.
             monaco: {
               base: 'vs-dark',
               inherit: true,
-              rules: [
+              rules:[
                   { token: 'comment', foreground: '75715e' },
                   { token: 'keyword', foreground: 'f92672' },
                   { token: 'string', foreground: 'e6db74' },
@@ -494,7 +495,7 @@ This is a sample project created with the 015x.dev Editor.
             monaco: {
               base: 'vs-dark',
               inherit: true,
-              rules: [
+              rules:[
                   { token: 'comment', foreground: '6272a4' },
                   { token: 'keyword', foreground: 'ff79c6' },
                   { token: 'string', foreground: 'f1fa8c' },
@@ -535,7 +536,7 @@ This is a sample project created with the 015x.dev Editor.
             monaco: {
               base: 'vs-dark',
               inherit: true,
-              rules: [
+              rules:[
                   { token: 'comment', foreground: '616e88' },
                   { token: 'keyword', foreground: '81a1c1' },
                   { token: 'string', foreground: 'a3be8c' },
@@ -574,7 +575,7 @@ This is a sample project created with the 015x.dev Editor.
               monaco: {
                   base: 'vs-dark',
                   inherit: true,
-                  rules: [
+                  rules:[
                       { token: 'comment', foreground: '586e75', fontStyle: 'italic' },
                       { token: 'keyword', foreground: '859900' },
                       { token: 'string', foreground: '2aa198' },
@@ -613,7 +614,7 @@ This is a sample project created with the 015x.dev Editor.
               monaco: {
                   base: 'vs',
                   inherit: true,
-                  rules: [
+                  rules:[
                       { token: 'comment', foreground: '93a1a1', fontStyle: 'italic' },
                       { token: 'keyword', foreground: '859900' },
                       { token: 'string', foreground: '2aa198' },
@@ -651,7 +652,7 @@ This is a sample project created with the 015x.dev Editor.
               monaco: {
                   base: 'vs-dark',
                   inherit: true,
-                  rules: [
+                  rules:[
                       { token: 'comment', foreground: '637777', fontStyle: 'italic' },
                       { token: 'keyword', foreground: 'c792ea', fontStyle: 'italic' },
                       { token: 'string', foreground: 'ecc48d' },
@@ -691,7 +692,7 @@ This is a sample project created with the 015x.dev Editor.
               monaco: {
                   base: 'vs-dark',
                   inherit: true,
-                  rules: [
+                  rules:[
                       { token: 'comment', foreground: '5c6370', fontStyle: 'italic' },
                       { token: 'keyword', foreground: 'c678dd' },
                       { token: 'string', foreground: '98c379' },
@@ -732,7 +733,7 @@ This is a sample project created with the 015x.dev Editor.
               monaco: {
                   base: 'vs-dark',
                   inherit: true,
-                  rules: [
+                  rules:[
                       { token: 'comment', foreground: '848bbd', fontStyle: 'italic' },
                       { token: 'keyword', foreground: 'fede5d' },
                       { token: 'string', foreground: 'ff8b39' },
@@ -753,97 +754,169 @@ This is a sample project created with the 015x.dev Editor.
           }
         ];
 
-        const LESSONS = [
+        const LESSONS =[
+            {
+                id: 'todo-app',
+                title: "Build a To-Do App",
+                description: "Learn essential DOM manipulation, event listeners, and array state management in Vanilla JS.",
+                level: "Beginner",
+                total_sections: 3,
+                tags: ['JS', 'DOM', 'HTML'],
+                sections:[
+                    {
+                        section_id: 1,
+                        title: "Basic UI Structure",
+                        objective: "Create the input field and a list container.",
+                        theory: "Every interactive app starts with standard semantic HTML. We need an input box, a button, and a UL element.",
+                        steps:["Add an <input> with id 'taskInput'", "Add a <button> to add tasks", "Add a <ul> with id 'taskList'"],
+                        code_snippet: `<!DOCTYPE html>
+<html>
+<body>
+    <h2>My Tasks</h2>
+    <input type="text" id="taskInput" placeholder="New Task..." />
+    <button id="addBtn">Add</button>
+    <ul id="taskList"></ul>
+</body>
+</html>`
+                    },
+                    {
+                        section_id: 2,
+                        title: "Reading Input",
+                        objective: "Capture the text typed into the input field.",
+                        theory: "We attach a click event listener to the button. When clicked, we read the input's .value property.",
+                        steps:["Select elements using document.getElementById", "Add an Event Listener to the button", "Log the input value"],
+                        code_snippet: `const input = document.getElementById('taskInput');
+const btn = document.getElementById('addBtn');
+
+btn.addEventListener('click', () => {
+    const taskText = input.value;
+    if (taskText.trim() === '') return;
+    
+    console.log("New Task:", taskText);
+    
+    // Clear input after capturing
+    input.value = '';
+});`
+                    },
+                    {
+                        section_id: 3,
+                        title: "Modifying the DOM",
+                        objective: "Add new items into the unordered list dynamically.",
+                        theory: "Using document.createElement we construct a new <li> element, assign its text, and append it to the list.",
+                        steps:["Create an <li> element", "Set the textContent", "Append to the <ul>"],
+                        code_snippet: `const input = document.getElementById('taskInput');
+const btn = document.getElementById('addBtn');
+const list = document.getElementById('taskList');
+
+btn.addEventListener('click', () => {
+    const taskText = input.value;
+    if (taskText.trim() === '') return;
+    
+    const li = document.createElement('li');
+    li.textContent = taskText;
+    
+    // Feature: click to remove
+    li.addEventListener('click', () => li.remove());
+    
+    list.appendChild(li);
+    input.value = '';
+});`
+                    }
+                ]
+            },
+            {
+                id: 'css-grid',
+                title: "CSS Grid Gallery",
+                description: "Master modern CSS Grid layout by building a responsive image gallery system.",
+                level: "Intermediate",
+                total_sections: 2,
+                tags:['CSS', 'Grid', 'Layout'],
+                sections:[
+                    {
+                        section_id: 1,
+                        title: "Defining the Grid",
+                        objective: "Setup a responsive grid container.",
+                        theory: "display: grid turns the element into a grid container. grid-template-columns defines the columns dynamically.",
+                        steps:["Create a container div", "Apply display: grid", "Use repeat() and minmax() for responsiveness"],
+                        code_snippet: `.gallery {
+    display: grid;
+    /* Automatically fit columns of minimum 150px */
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.item {
+    background: #3498db;
+    height: 150px;
+    border-radius: 8px;
+}`
+                    },
+                    {
+                        section_id: 2,
+                        title: "Adding HTML & Spanning",
+                        objective: "Apply the grid and span items across multiple columns.",
+                        theory: "grid-column allows a child item to span multiple columns or rows, creating dynamic masonry-like layouts.",
+                        steps:["Add div.gallery and div.item", "Create a .wide class", "Set grid-column: span 2"],
+                        code_snippet: `<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+        }
+        .item { background: #e74c3c; height: 100px; }
+        .wide { grid-column: span 2; background: #9b59b6; }
+    </style>
+</head>
+<body>
+    <div class="gallery">
+        <div class="item"></div>
+        <div class="item wide"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+    </div>
+</body>
+</html>`
+                    }
+                ]
+            },
             {
                 id: 'game-dev',
                 title: "Intro to Game Dev",
                 description: "Build a simple game loop and bouncing box physics using HTML5 Canvas.",
                 level: "Beginner",
-                total_sections: 4,
-                tags: ['Canvas', 'JS', 'Graphics'],
-                sections: [
-                {
-                    section_id: 1,
-                    title: "Setup Canvas",
-                    objective: "Get the drawing context from the HTML element.",
-                    theory: "We need to select the <canvas> element and get its '2d' context, which gives us tools to draw.",
-                    steps: [
-                    "Select the canvas element by ID.",
-                    "Get the '2d' context.",
-                    "Set canvas size to window size."
-                    ],
-                    code_snippet: `const canvas = document.getElementById('gameCanvas');
+                total_sections: 2,
+                tags:['Canvas', 'JS', 'Graphics'],
+                sections:[
+                    {
+                        section_id: 1,
+                        title: "Setup Canvas",
+                        objective: "Get the drawing context from the HTML element.",
+                        theory: "We select the <canvas> element and get its '2d' context, granting tools to draw.",
+                        steps:["Select canvas by ID", "Get 2d context", "Set width/height"],
+                        code_snippet: `const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-
 canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;`
-                },
-                {
-                    section_id: 2,
-                    title: "Draw a Box",
-                    objective: "Draw a simple colored rectangle.",
-                    theory: "The coordinate system starts at top-left (0,0). Positive Y goes down.",
-                    steps: [
-                    "Set a fill color.",
-                    "Draw a rectangle at (x, y, width, height)."
-                    ],
-                    code_snippet: `// Set Color
+canvas.height = window.innerHeight;
 ctx.fillStyle = 'cyan';
-
-// Draw Rectangle: x=100, y=100, w=50, h=50
 ctx.fillRect(100, 100, 50, 50);`
-                },
-                {
-                    section_id: 3,
-                    title: "The Game Loop",
-                    objective: "Make things change over time.",
-                    theory: "A game loop clears the screen and redraws everything multiple times a second.",
-                    steps: [
-                    "Create a loop function.",
-                    "Clear the screen.",
-                    "Draw.",
-                    "Request next frame."
-                    ],
-                    code_snippet: `let x = 100;
-
-function loop() {
-  // 1. Clear Screen
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // 2. Update Position
-  x = x + 2;
-
-  // 3. Draw
-  ctx.fillStyle = 'cyan';
-  ctx.fillRect(x, 100, 50, 50);
-
-  // 4. Repeat
-  requestAnimationFrame(loop);
-}
-
-loop();`
-                },
-                {
-                    section_id: 4,
-                    title: "Bouncing Logic",
-                    objective: "Make the box bounce off walls.",
-                    theory: "We use a velocity variable. If the box hits a wall, we flip the velocity direction.",
-                    steps: [
-                    "Add velocity variable.",
-                    "Check boundary collisions.",
-                    "Reverse velocity if hit."
-                    ],
-                    code_snippet: `let x = 100;
+                    },
+                    {
+                        section_id: 2,
+                        title: "Bouncing Logic",
+                        objective: "Make the box bounce off walls using a game loop.",
+                        theory: "A game loop constantly clears the screen and recalculates position based on speed.",
+                        steps:["Create requestAnimationFrame loop", "Check boundary collisions", "Reverse velocity on hit"],
+                        code_snippet: `let x = 100;
 let speed = 5;
 
 function loop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Check boundaries
-  if (x > canvas.width || x < 0) {
-     speed = -speed;
-  }
-
+  if (x > canvas.width || x < 0) speed = -speed;
   x += speed;
 
   ctx.fillStyle = 'cyan';
@@ -851,9 +924,8 @@ function loop() {
   
   requestAnimationFrame(loop);
 }
-
 loop();`
-                }
+                    }
                 ]
             }
         ];
@@ -876,7 +948,7 @@ loop();`
           if (path.startsWith('/')) {
               absolutePath = path;
           } else {
-              const dirParts = currentDir === '/' ? [] : currentDir.split('/').filter(Boolean);
+              const dirParts = currentDir === '/' ?[] : currentDir.split('/').filter(Boolean);
               const pathParts = path.split('/').filter(Boolean);
               for (const part of pathParts) {
                   if (part === '.') continue;
@@ -915,11 +987,11 @@ loop();`
         const formatCode = async (code, language) => {
           try {
             let parser = '';
-            let plugins = [];
+            let plugins =[];
             switch (language) {
               case FileType.HTML:
                 parser = 'html';
-                plugins = [parserHtml, parserPostcss, parserBabel];
+                plugins =[parserHtml, parserPostcss, parserBabel];
                 break;
               case FileType.CSS:
                 parser = 'css';
@@ -928,7 +1000,7 @@ loop();`
               case FileType.JAVASCRIPT:
               case FileType.JSON:
                 parser = 'babel';
-                plugins = [parserBabel, pluginEstree];
+                plugins =[parserBabel, pluginEstree];
                 break;
               default:
                 return code;
@@ -975,7 +1047,7 @@ loop();`
                 const newFS = {
                     'root': { id: 'root', name: 'project', parentId: null, type: ItemType.FOLDER, isOpen: true }
                 };
-                const promises = [];
+                const promises =[];
                 zip.forEach((relativePath, zipEntry) => {
                     promises.push(new Promise(async (resolve) => {
                         if (zipEntry.dir) {
@@ -1070,7 +1142,7 @@ loop();`
         }) => {
           const [isEditing, setIsEditing] = useState(false);
           const [name, setName] = useState(item.name);
-          const [isHovered, setIsHovered] = useState(false);
+          const[isHovered, setIsHovered] = useState(false);
 
           const handleRename = () => {
             if (name.trim() && name !== item.name) {
@@ -1237,357 +1309,112 @@ loop();`
           );
         };
 
-        // Code Editor
-        const CodeEditor = ({ 
-          file, 
-          settings, 
-          theme,
-          ghostText,
-          onChange, 
-          onFormat,
-          onSave
-        }) => {
-          const editorRef = React.useRef(null);
-          const monacoRef = React.useRef(null);
-          const [contentLeft, setContentLeft] = useState(62);
+        // Source Control Pane (New Feature)
+        const SourceControlPane = ({ fileSystem, initialFileSystem, onSelectFile }) => {
+            const changes = useMemo(() => {
+                const result =[];
+                const currentItems = Object.values(fileSystem);
+                const initialItems = Object.values(initialFileSystem || INITIAL_FILE_SYSTEM);
 
-          const handleEditorDidMount = (editor, monaco) => {
-            editorRef.current = editor;
-            monacoRef.current = monaco;
+                currentItems.forEach(item => {
+                    if (item.type !== ItemType.FILE) return;
+                    const initItem = initialItems.find(i => i.id === item.id);
+                    if (!initItem) result.push({ ...item, status: 'U' }); // Untracked/Added
+                    else if (initItem.content !== item.content) result.push({ ...item, status: 'M' }); // Modified
+                });
 
-            monaco.editor.defineTheme(theme.id, {
-                base: theme.monaco.base,
-                inherit: theme.monaco.inherit,
-                rules: theme.monaco.rules,
-                colors: theme.monaco.colors
-            });
-            monaco.editor.setTheme(theme.id);
+                initialItems.forEach(initItem => {
+                    if (initItem.type !== ItemType.FILE) return;
+                    if (!currentItems.find(i => i.id === initItem.id)) result.push({ ...initItem, status: 'D' }); // Deleted
+                });
+                return result;
+            },[fileSystem, initialFileSystem]);
 
-            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, () => {
-              onFormat();
-            });
-            
-            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-               onSave();
-            });
-
-            editor.onDidLayoutChange((e) => {
-                setContentLeft(e.contentLeft);
-            });
-            setContentLeft(editor.getLayoutInfo().contentLeft);
-          };
-
-          useEffect(() => {
-              if (monacoRef.current && theme) {
-                  monacoRef.current.editor.defineTheme(theme.id, {
-                      base: theme.monaco.base,
-                      inherit: theme.monaco.inherit,
-                      rules: theme.monaco.rules,
-                      colors: theme.monaco.colors
-                  });
-                  monacoRef.current.editor.setTheme(theme.id);
-              }
-          }, [theme]);
-
-          useEffect(() => {
-            if (editorRef.current) {
-                editorRef.current.layout();
-            }
-          }, [settings.fontSize, settings.minimap, settings.wordWrap]);
-
-          if (!file) {
             return (
-              <div className="h-full w-full bg-vs-bg flex flex-col items-center justify-center text-vs-text select-none animate-fade-in relative overflow-hidden">
-                <div className="absolute opacity-[0.02] pointer-events-none transform -rotate-12 scale-150 select-none">
-                     <LayoutTemplate size={400} />
-                </div>
-                
-                <div className="z-10 flex flex-col items-center max-w-md w-full px-6">
-                    <div className="mb-8 flex flex-col items-center text-center">
-                         <div className="p-4 bg-vs-activityBar rounded-full mb-4 shadow-lg border border-vs-border">
-                            <Lightbulb size={32} className="text-vs-accent" />
-                         </div>
-                         <h2 className="text-2xl font-bold tracking-tight text-vs-text mb-2">Ready to create?</h2>
-                         <p className="text-neutral-500 max-w-sm">
-                            Open a file from the explorer on the left, or create a new one to get started. 
-                         </p>
+                <div className="h-full flex flex-col bg-vs-sidebar text-vs-text border-r border-vs-border">
+                    <div className="h-9 px-3 flex items-center justify-between text-xs font-bold tracking-wide uppercase text-neutral-400 shrink-0 border-b border-vs-border">
+                        <span>Source Control</span>
+                        <span className="bg-vs-activityBar text-[10px] px-2 py-0.5 rounded-full text-white">{changes.length}</span>
                     </div>
-
-                    <div className="w-full bg-vs-sidebar border border-vs-border rounded-lg p-4 shadow-lg">
-                         <div className="flex items-center justify-between text-sm group mb-3 last:mb-0">
-                              <span className="text-neutral-400 font-medium">Command Palette</span>
-                              <div className="flex items-center space-x-1 font-mono text-xs text-neutral-500">
-                                  <span className="bg-vs-activityBar border border-vs-border px-1.5 py-0.5 rounded shadow-sm">F1</span>
-                              </div>
-                         </div>
-                         <div className="flex items-center justify-between text-sm group mb-3 last:mb-0">
-                              <span className="text-neutral-400 font-medium">Quick Open</span>
-                              <div className="flex items-center space-x-1 font-mono text-xs text-neutral-500">
-                                  <span className="bg-vs-activityBar border border-vs-border px-1.5 py-0.5 rounded shadow-sm">Ctrl</span>
-                                  <span className="bg-vs-activityBar border border-vs-border px-1.5 py-0.5 rounded shadow-sm">P</span>
-                              </div>
-                         </div>
-                         <div className="flex items-center justify-between text-sm group">
-                              <span className="text-neutral-400 font-medium">New File</span>
-                              <div className="flex items-center space-x-1 font-mono text-xs text-neutral-500">
-                                  <span className="bg-vs-activityBar border border-vs-border px-1.5 py-0.5 rounded shadow-sm">Ctrl</span>
-                                  <span className="bg-vs-activityBar border border-vs-border px-1.5 py-0.5 rounded shadow-sm">N</span>
-                              </div>
-                         </div>
-                    </div>
-                    
-                    <div className="mt-8 text-xs text-neutral-600 font-mono">
-                        Pro Tip: Use the 'Learn' button to practice.
-                    </div>
-                </div>
-              </div>
-            );
-          }
-
-          const overlayStyle = {
-              fontFamily: "'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace",
-              fontSize: `${settings.fontSize}px`,
-              lineHeight: '21px', 
-              paddingTop: '16px', 
-              paddingLeft: `${contentLeft}px`, 
-              tabSize: settings.tabSize,
-              whiteSpace: settings.wordWrap === 'on' ? 'pre-wrap' : 'pre',
-              width: '100%',
-              boxSizing: 'border-box'
-          };
-
-          return (
-            <div className="h-full w-full bg-vs-bg relative group animate-fade-in overflow-hidden">
-              {ghostText && (
-                  <div 
-                    className="absolute inset-0 z-10 pointer-events-none text-vs-text opacity-40 select-none overflow-hidden"
-                    style={overlayStyle}
-                  >
-                      {ghostText}
-                  </div>
-              )}
-
-              <Editor
-                height="100%"
-                language={file.language || 'plaintext'}
-                value={file.content || ''}
-                onChange={(value) => onChange(value || '')}
-                onMount={handleEditorDidMount}
-                options={{
-                  minimap: { enabled: settings.minimap, scale: 0.75 },
-                  fontSize: settings.fontSize,
-                  lineHeight: 21,
-                  fontFamily: "'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace",
-                  fontLigatures: settings.fontLigatures,
-                  wordWrap: settings.wordWrap,
-                  tabSize: settings.tabSize,
-                  lineNumbers: settings.lineNumbers,
-                  cursorStyle: settings.cursorStyle,
-                  cursorBlinking: settings.cursorBlinking,
-                  smoothScrolling: settings.smoothScrolling,
-                  cursorSmoothCaretAnimation: settings.cursorSmoothCaretAnimation,
-                  scrollBeyondLastLine: false,
-                  padding: { top: 16 },
-                  renderLineHighlight: 'all',
-                  automaticLayout: true,
-                  formatOnPaste: true,
-                  formatOnType: true,
-                }}
-              />
-              <button 
-                onClick={onFormat}
-                className="absolute top-4 right-6 z-20 p-2 bg-vs-activityBar text-vs-text hover:text-white rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity border border-vs-border"
-                title="Format Document"
-              >
-                <RefreshCw size={14} />
-              </button>
-            </div>
-          );
-        };
-
-        // Preview
-        const Preview = ({ fileSystem, refreshTrigger, url }) => {
-          const iframeRef = useRef(null);
-          const [logs, setLogs] = useState([]);
-          const [showConsole, setShowConsole] = useState(false);
-
-          useEffect(() => {
-             setLogs([]);
-          }, [refreshTrigger, url]);
-
-          const srcDoc = useMemo(() => {
-            const cleanUrl = url.replace(/\/$/, '') || '/';
-            const targetPath = cleanUrl === '/' ? '/index.html' : `${cleanUrl}/index.html`;
-
-            let rootHtmlFile = null;
-            const items = Object.values(fileSystem);
-            for (const item of items) {
-                if (item.type === ItemType.FILE && item.name === 'index.html') {
-                    const itemPath = getPath(item.id, fileSystem);
-                    if (itemPath === targetPath) {
-                        rootHtmlFile = item;
-                        break;
-                    }
-                }
-            }
-
-            if (!rootHtmlFile || typeof rootHtmlFile.content !== 'string') {
-              return `<html><body style="background:#1e1e1e;color:#888;font-family:sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;">
-                <div style="text-align:center">
-                    <h3>404 Not Found</h3>
-                    <p>No index.html found at <strong>${targetPath}</strong></p>
-                    <p style="font-size:0.8em; margin-top:10px; color:#666">Try navigating to <strong>/src</strong></p>
-                </div>
-              </body></html>`;
-            }
-
-            let content = rootHtmlFile.content;
-            const currentDir = cleanUrl;
-
-            const consoleInterceptor = `
-              <script>
-                (function(){
-                    const oldLog = console.log;
-                    const oldError = console.error;
-                    const oldWarn = console.warn;
-                    const oldInfo = console.info;
-
-                    function send(type, args) {
-                        try {
-                            const message = args.map(arg => 
-                                typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-                            ).join(' ');
-                            window.parent.postMessage({ type: 'CONSOLE_LOG', logType: type, message, timestamp: Date.now() }, '*');
-                        } catch(e) {}
-                    }
-
-                    console.log = function(...args) { oldLog.apply(console, args); send('log', args); };
-                    console.error = function(...args) { oldError.apply(console, args); send('error', args); };
-                    console.warn = function(...args) { oldWarn.apply(console, args); send('warn', args); };
-                    console.info = function(...args) { oldInfo.apply(console, args); send('info', args); };
-                    
-                    window.onerror = function(msg, url, line) {
-                       send('error', [msg + " (" + line + ")"]);
-                    }
-                })();
-              <\/script>
-            `;
-
-            content = content.replace(/<link\s+(?:[^>]*?\s+)?href\s*=\s*["']([^"']+)["']/gi, (match, href) => {
-              const cssFile = findItemByPath(href, currentDir, fileSystem);
-              if (cssFile && cssFile.content) {
-                return `<style>${cssFile.content}</style>`;
-              }
-              return match;
-            });
-
-            content = content.replace(/<script\s+(?:[^>]*?\s+)?src\s*=\s*["']([^"']+)["'][^>]*><\/script>/gi, (match, src) => {
-              const jsFile = findItemByPath(src, currentDir, fileSystem);
-              if (jsFile && jsFile.content) {
-                return `<script>${jsFile.content}<\/script>`;
-              }
-              return match;
-            });
-            
-            content = content.replace(/<img\s+(?:[^>]*?\s+)?src\s*=\s*["']([^"']+)["']/gi, (match, src) => {
-                 const imgFile = findItemByPath(src, currentDir, fileSystem);
-                 if (imgFile && imgFile.content && imgFile.language === FileType.PNG) {
-                     return match.replace(src, `data:image/png;base64,${imgFile.content}`);
-                 }
-                 return match;
-            });
-
-            return content.replace('<head>', `<head>${consoleInterceptor}`);
-          }, [fileSystem, refreshTrigger, url]);
-
-          useEffect(() => {
-              const handler = (event) => {
-                  if (event.data && event.data.type === 'CONSOLE_LOG') {
-                      setLogs(prev => [...prev, {
-                          type: event.data.logType,
-                          message: event.data.message,
-                          timestamp: event.data.timestamp
-                      }]);
-                  }
-              };
-              window.addEventListener('message', handler);
-              return () => window.removeEventListener('message', handler);
-          }, []);
-
-          return (
-            <div className="h-full w-full flex flex-col bg-white relative group">
-              <iframe
-                ref={iframeRef}
-                srcDoc={srcDoc}
-                title="preview"
-                sandbox="allow-scripts allow-modals allow-forms allow-same-origin"
-                className="flex-1 w-full h-full border-none bg-white"
-              />
-              
-              <div 
-                className={`bg-vs-sidebar border-t border-vs-border transition-all duration-300 ease-in-out flex flex-col shrink-0 ${showConsole ? 'h-48' : 'h-8'}`}
-              >
-                <div 
-                    className="h-8 bg-vs-activityBar flex items-center px-4 justify-between cursor-pointer hover:bg-vs-itemHover"
-                    onClick={() => setShowConsole(!showConsole)}
-                >
-                    <div className="flex items-center space-x-2 text-xs font-bold text-neutral-300">
-                        <Terminal size={14} />
-                        <span>Console</span>
-                        <span className="bg-neutral-600 px-1.5 rounded-full text-[10px]">{logs.length}</span>
-                    </div>
-                    {logs.length > 0 && (
-                        <button 
-                            className="p-1 hover:bg-neutral-600 rounded text-neutral-400 hover:text-white"
-                            onClick={(e) => { e.stopPropagation(); setLogs([]); }}
-                            title="Clear Console"
-                        >
-                            <XCircle size={14} />
-                        </button>
-                    )}
-                </div>
-                
-                {showConsole && (
-                    <div className="flex-1 overflow-y-auto p-2 font-mono text-xs space-y-1 custom-scrollbar bg-vs-bg">
-                        {logs.length === 0 ? (
-                            <div className="text-neutral-500 italic px-2">No output to display</div>
+                    <div className="flex-1 overflow-y-auto custom-scrollbar py-2">
+                        {changes.length === 0 ? (
+                            <div className="text-xs text-neutral-500 text-center mt-4 px-4">No active changes</div>
                         ) : (
-                            logs.map((log, i) => (
-                                <div key={i} className={`flex items-start space-x-2 px-2 py-0.5 border-b border-vs-border/50 ${
-                                    log.type === 'error' ? 'text-red-400 bg-red-900/10' : 
-                                    log.type === 'warn' ? 'text-yellow-400 bg-yellow-900/10' : 
-                                    'text-neutral-300'
-                                }`}>
-                                     <span className="mt-0.5 shrink-0">
-                                         {log.type === 'error' ? <XCircle size={12} /> : 
-                                          log.type === 'warn' ? <AlertTriangle size={12} /> : 
-                                          <Info size={12} />}
-                                     </span>
-                                     <span className="break-all whitespace-pre-wrap">{log.message}</span>
-                                     <span className="ml-auto text-neutral-600 text-[10px] shrink-0">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                            changes.map(file => (
+                                <div key={file.id} className="flex items-center px-3 py-1 cursor-pointer hover:bg-vs-itemHover text-xs group" onClick={() => file.status !== 'D' && onSelectFile(file.id)}>
+                                    <div className="mr-2 opacity-80">{getFileIcon(file.language)}</div>
+                                    <span className={`truncate flex-1 ${file.status === 'D' ? 'line-through text-neutral-500' : 'text-neutral-300 group-hover:text-white'}`}>{file.name}</span>
+                                    <span className={`ml-2 font-bold ${file.status === 'M' ? 'text-yellow-500' : file.status === 'U' ? 'text-green-500' : 'text-red-500'}`}>{file.status}</span>
                                 </div>
                             ))
                         )}
                     </div>
-                )}
-              </div>
-            </div>
-          );
+                </div>
+            );
+        };
+
+        // Snippets Pane (New Feature)
+        const SnippetsPane = () => {
+            const [copied, setCopied] = useState(null);
+            const copyToClipboard = (text, id) => {
+                navigator.clipboard.writeText(text);
+                setCopied(id);
+                setTimeout(() => setCopied(null), 2000);
+            };
+
+            const snippets =[
+                { id: 'html-boiler', name: 'HTML5 Boilerplate', lang: 'HTML', code: `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Document</title>\n</head>\n<body>\n  \n</body>\n</html>` },
+                { id: 'css-reset', name: 'CSS Universal Reset', lang: 'CSS', code: `* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\n\nbody {\n  font-family: system-ui, sans-serif;\n}` },
+                { id: 'css-center', name: 'Flex Center Wrapper', lang: 'CSS', code: `.center {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-height: 100vh;\n}` },
+                { id: 'js-fetch', name: 'Fetch API Promise', lang: 'JS', code: `fetch('https://jsonplaceholder.typicode.com/todos/1')\n  .then(response => response.json())\n  .then(json => console.log(json))\n  .catch(error => console.error(error));` },
+                { id: 'js-async', name: 'Async/Await Fetch', lang: 'JS', code: `async function fetchData() {\n  try {\n    const res = await fetch('https://api.example.com/data');\n    const data = await res.json();\n    console.log(data);\n  } catch (err) {\n    console.error(err);\n  }\n}` },
+                { id: 'js-query', name: 'DOM Query Template', lang: 'JS', code: `const el = document.querySelector('.my-class');\nel.addEventListener('click', () => {\n  console.log('Clicked!');\n});` }
+            ];
+
+            return (
+                <div className="h-full flex flex-col bg-vs-sidebar text-vs-text border-r border-vs-border">
+                    <div className="h-9 px-3 flex items-center text-xs font-bold tracking-wide uppercase text-neutral-400 shrink-0 border-b border-vs-border">
+                        <span>Snippets Library</span>
+                    </div>
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
+                        {snippets.map(s => (
+                            <div key={s.id} className="bg-vs-activityBar border border-vs-border rounded p-2 group hover:border-vs-accent transition-colors">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs font-bold text-neutral-300">{s.name}</span>
+                                    <span className="text-[10px] text-neutral-500 bg-vs-bg px-1 rounded">{s.lang}</span>
+                                </div>
+                                <div className="relative">
+                                    <pre className="text-[10px] bg-vs-bg p-2 rounded text-neutral-400 overflow-x-auto max-h-24 custom-scrollbar">
+                                        <code>{s.code}</code>
+                                    </pre>
+                                    <button 
+                                        onClick={() => copyToClipboard(s.code, s.id)}
+                                        className="absolute top-1 right-1 p-1 bg-vs-sidebar border border-vs-border rounded text-neutral-400 hover:text-white hover:border-vs-accent opacity-0 group-hover:opacity-100 transition-all"
+                                        title="Copy to Clipboard"
+                                    >
+                                        {copied === s.id ? <Check size={12} className="text-green-500" /> : <Clipboard size={12} />}
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
         };
 
         // Search Pane
         const SearchPane = ({ fileSystem, onSelectFile }) => {
-          const [query, setQuery] = useState('');
+          const[query, setQuery] = useState('');
 
           const results = useMemo(() => {
             if (!query.trim()) return [];
             
-            const results = [];
+            const results =[];
             const lowerQuery = query.toLowerCase();
 
             Object.values(fileSystem).forEach(item => {
                 if (item.type === ItemType.FILE && item.content) {
-                    const matches = [];
+                    const matches =[];
                     
                     const lines = item.content.split('\n');
                     lines.forEach((line, index) => {
@@ -1845,14 +1672,12 @@ loop();`
 
         // Lesson Modal
         const LessonModal = ({ isOpen, onClose, onTryCode, lesson, lessons }) => {
-            // Support multiple lessons or single lesson prop
             const lessonList = lessons || (lesson ? [lesson] : LESSONS);
             const [activeLesson, setActiveLesson] = useState(lesson ? lesson : null);
             const [activeSectionId, setActiveSectionId] = useState(1);
 
             if (!isOpen) return null;
 
-            // View: Library (List of Lessons) - Show only if we have multiple lessons and no active one selected (unless forced via prop)
             if (!activeLesson && lessonList.length > 0) {
                 return (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in p-4" onClick={onClose}>
@@ -2132,12 +1957,12 @@ loop();`
                         <div className="space-y-6 text-neutral-300">
                             <div className="text-center">
                                 <h1 className="text-xl font-bold text-white mb-2">015x.dev Editor</h1>
-                                <p className="text-sm text-neutral-400">Version 1.4.0</p>
+                                <p className="text-sm text-neutral-400">Version 1.5.0</p>
                             </div>
                             <div className="text-sm leading-relaxed bg-vs-activityBar p-4 rounded border border-vs-border">
                                 <p className="mb-2">
                                     A powerful, lightweight web-based code editor built with React and Monaco Editor.
-                                    It features a full file system, live preview, themes, and interactive lessons.
+                                    It features a full file system, live preview, themes, source control, snippets, and interactive lessons.
                                 </p>
                                 <p>
                                     Designed for rapid prototyping and learning.
@@ -2167,26 +1992,242 @@ loop();`
             </div>
         );
 
+        // Advanced Code Editor
+        const CodeEditor = ({ file, settings, theme, ghostText, onChange, onFormat, onSave }) => {
+          const editorRef = React.useRef(null);
+          const monacoRef = React.useRef(null);
+          const [contentLeft, setContentLeft] = useState(62);
+
+          const handleEditorDidMount = (editor, monaco) => {
+            editorRef.current = editor;
+            monacoRef.current = monaco;
+            monaco.editor.defineTheme(theme.id, { base: theme.monaco.base, inherit: theme.monaco.inherit, rules: theme.monaco.rules, colors: theme.monaco.colors });
+            monaco.editor.setTheme(theme.id);
+            
+            // FIX: Safely wrap commands to prevent passing 'undefined' to Monaco
+            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, () => {
+                if (onFormat) onFormat();
+            });
+            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+                if (onSave) onSave();
+            });
+            
+            editor.onDidLayoutChange((e) => setContentLeft(e.contentLeft));
+            setContentLeft(editor.getLayoutInfo().contentLeft);
+          };
+
+          useEffect(() => {
+              if (monacoRef.current && theme) {
+                  monacoRef.current.editor.defineTheme(theme.id, { base: theme.monaco.base, inherit: theme.monaco.inherit, rules: theme.monaco.rules, colors: theme.monaco.colors });
+                  monacoRef.current.editor.setTheme(theme.id);
+              }
+          }, [theme]);
+
+          useEffect(() => {
+            if (editorRef.current) {
+                editorRef.current.layout();
+            }
+          }, [settings.fontSize, settings.minimap, settings.wordWrap]);
+
+          if (!file) return (
+             <div className="h-full w-full bg-vs-bg flex flex-col items-center justify-center text-vs-text select-none animate-fade-in relative overflow-hidden">
+                <div className="absolute opacity-[0.02] pointer-events-none transform -rotate-12 scale-150 select-none"><LayoutTemplate size={400} /></div>
+                <div className="z-10 flex flex-col items-center max-w-md w-full px-6">
+                    <div className="mb-8 flex flex-col items-center text-center">
+                         <div className="p-4 bg-vs-activityBar rounded-full mb-4 shadow-lg border border-vs-border"><Lightbulb size={32} className="text-vs-accent" /></div>
+                         <h2 className="text-2xl font-bold tracking-tight text-vs-text mb-2">Ready to create?</h2>
+                         <p className="text-neutral-500 max-w-sm">Open a file from the explorer on the left, or create a new one to get started.</p>
+                    </div>
+                </div>
+              </div>
+          );
+
+          const overlayStyle = {
+              fontFamily: "'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace",
+              fontSize: `${settings.fontSize}px`,
+              lineHeight: '21px', paddingTop: '16px', paddingLeft: `${contentLeft}px`, 
+              tabSize: settings.tabSize, whiteSpace: settings.wordWrap === 'on' ? 'pre-wrap' : 'pre',
+              width: '100%', boxSizing: 'border-box'
+          };
+
+          return (
+            <div className="h-full w-full bg-vs-bg relative group animate-fade-in overflow-hidden">
+              {ghostText && <div className="absolute inset-0 z-10 pointer-events-none text-vs-text opacity-40 select-none overflow-hidden" style={overlayStyle}>{ghostText}</div>}
+              <Editor
+                height="100%" language={file.language || 'plaintext'} value={file.content || ''}
+                onChange={(value) => onChange(value || '')} onMount={handleEditorDidMount}
+                options={{
+                  minimap: { enabled: settings.minimap, scale: 0.75 }, fontSize: settings.fontSize, lineHeight: 21,
+                  fontFamily: "'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace", fontLigatures: settings.fontLigatures,
+                  wordWrap: settings.wordWrap, tabSize: settings.tabSize, lineNumbers: settings.lineNumbers,
+                  cursorStyle: settings.cursorStyle, cursorBlinking: settings.cursorBlinking, smoothScrolling: settings.smoothScrolling,
+                  cursorSmoothCaretAnimation: settings.cursorSmoothCaretAnimation, padding: { top: 16 }, formatOnPaste: true, formatOnType: true,
+                }}
+              />
+              <button 
+                onClick={onFormat}
+                className="absolute top-4 right-6 z-20 p-2 bg-vs-activityBar text-vs-text hover:text-white rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity border border-vs-border"
+                title="Format Document"
+              >
+                <RefreshCw size={14} />
+              </button>
+            </div>
+          );
+        };
+
+        // Perfected Preview System (DOMParser)
+        const Preview = ({ fileSystem, refreshTrigger, url }) => {
+          const iframeRef = useRef(null);
+          const [logs, setLogs] = useState([]);
+          const [showConsole, setShowConsole] = useState(false);
+
+          useEffect(() => { setLogs([]); }, [refreshTrigger, url]);
+
+          const srcDoc = useMemo(() => {
+            const cleanUrl = url.replace(/\/$/, '') || '/';
+            const targetPath = cleanUrl === '/' ? '/index.html' : `${cleanUrl}/index.html`;
+
+            let rootHtmlFile = null;
+            for (const item of Object.values(fileSystem)) {
+                if (item.type === ItemType.FILE && item.name === 'index.html' && getPath(item.id, fileSystem) === targetPath) {
+                    rootHtmlFile = item; break;
+                }
+            }
+
+            if (!rootHtmlFile || typeof rootHtmlFile.content !== 'string') {
+              return `<html><body style="background:#1e1e1e;color:#888;font-family:sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;">
+                <div style="text-align:center"><h3>404 Not Found</h3><p>No index.html found at <strong>${targetPath}</strong></p><p style="font-size:0.8em; margin-top:10px; color:#666">Try navigating to <strong>/src</strong></p></div>
+              </body></html>`;
+            }
+
+            const currentDir = cleanUrl;
+            const consoleInterceptor = `
+                (function(){
+                    const oldLog = console.log; const oldError = console.error; const oldWarn = console.warn; const oldInfo = console.info;
+                    function send(type, args) {
+                        try {
+                            const message = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' ');
+                            window.parent.postMessage({ type: 'CONSOLE_LOG', logType: type, message, timestamp: Date.now() }, '*');
+                        } catch(e) {}
+                    }
+                    console.log = function(...args) { oldLog.apply(console, args); send('log', args); };
+                    console.error = function(...args) { oldError.apply(console, args); send('error', args); };
+                    console.warn = function(...args) { oldWarn.apply(console, args); send('warn', args); };
+                    console.info = function(...args) { oldInfo.apply(console, args); send('info', args); };
+                    window.onerror = function(msg, url, line) { send('error',[msg + " (" + line + ")"]); }
+                })();
+            `;
+
+            try {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(rootHtmlFile.content, 'text/html');
+
+                // 1. Inject Console Interceptor First
+                const interceptorScript = doc.createElement('script');
+                interceptorScript.innerHTML = consoleInterceptor;
+                if (doc.head) doc.head.insertBefore(interceptorScript, doc.head.firstChild);
+                else doc.documentElement.insertBefore(interceptorScript, doc.documentElement.firstChild);
+
+                // 2. Resolve CSS Links
+                doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (!href || href.startsWith('http')) return;
+                    const cssFile = findItemByPath(href, currentDir, fileSystem);
+                    if (cssFile && cssFile.content) {
+                        const style = doc.createElement('style');
+                        style.innerHTML = cssFile.content;
+                        link.replaceWith(style);
+                    }
+                });
+
+                // 3. Resolve JS Scripts
+                doc.querySelectorAll('script[src]').forEach(script => {
+                    const src = script.getAttribute('src');
+                    if (!src || src.startsWith('http')) return;
+                    const jsFile = findItemByPath(src, currentDir, fileSystem);
+                    if (jsFile && jsFile.content) {
+                        const newScript = doc.createElement('script');
+                        newScript.innerHTML = jsFile.content;
+                        Array.from(script.attributes).forEach(attr => {
+                            if (attr.name !== 'src') newScript.setAttribute(attr.name, attr.value);
+                        });
+                        script.replaceWith(newScript);
+                    }
+                });
+
+                // 4. Resolve Images
+                doc.querySelectorAll('img[src]').forEach(img => {
+                    const src = img.getAttribute('src');
+                    if (!src || src.startsWith('http') || src.startsWith('data:')) return;
+                    const imgFile = findItemByPath(src, currentDir, fileSystem);
+                    if (imgFile && imgFile.content && imgFile.language === FileType.PNG) {
+                        img.setAttribute('src', `data:image/png;base64,${imgFile.content}`);
+                    }
+                });
+
+                return `<!DOCTYPE html>\n${doc.documentElement.outerHTML}`;
+            } catch (err) {
+                console.error("DOM Parsing failed:", err);
+                return rootHtmlFile.content; // Fallback
+            }
+          },[fileSystem, refreshTrigger, url]);
+
+          useEffect(() => {
+              const handler = (event) => {
+                  if (event.data && event.data.type === 'CONSOLE_LOG') {
+                      setLogs(prev =>[...prev, { type: event.data.logType, message: event.data.message, timestamp: event.data.timestamp }]);
+                  }
+              };
+              window.addEventListener('message', handler);
+              return () => window.removeEventListener('message', handler);
+          },[]);
+
+          return (
+            <div className="h-full w-full flex flex-col bg-white relative group">
+              <iframe ref={iframeRef} srcDoc={srcDoc} title="preview" sandbox="allow-scripts allow-modals allow-forms allow-same-origin" className="flex-1 w-full h-full border-none bg-white" />
+              <div className={`bg-vs-sidebar border-t border-vs-border transition-all duration-300 ease-in-out flex flex-col shrink-0 ${showConsole ? 'h-48' : 'h-8'}`}>
+                <div className="h-8 bg-vs-activityBar flex items-center px-4 justify-between cursor-pointer hover:bg-vs-itemHover" onClick={() => setShowConsole(!showConsole)}>
+                    <div className="flex items-center space-x-2 text-xs font-bold text-neutral-300">
+                        <Terminal size={14} /><span>Console</span><span className="bg-neutral-600 px-1.5 rounded-full text-[10px]">{logs.length}</span>
+                    </div>
+                    {logs.length > 0 && (
+                        <button className="p-1 hover:bg-neutral-600 rounded text-neutral-400 hover:text-white" onClick={(e) => { e.stopPropagation(); setLogs([]); }} title="Clear Console"><XCircle size={14} /></button>
+                    )}
+                </div>
+                {showConsole && (
+                    <div className="flex-1 overflow-y-auto p-2 font-mono text-xs space-y-1 custom-scrollbar bg-vs-bg">
+                        {logs.length === 0 ? <div className="text-neutral-500 italic px-2">No output to display</div> : logs.map((log, i) => (
+                                <div key={i} className={`flex items-start space-x-2 px-2 py-0.5 border-b border-vs-border/50 ${log.type === 'error' ? 'text-red-400 bg-red-900/10' : log.type === 'warn' ? 'text-yellow-400 bg-yellow-900/10' : 'text-neutral-300'}`}>
+                                     <span className="mt-0.5 shrink-0">{log.type === 'error' ? <XCircle size={12} /> : log.type === 'warn' ? <AlertTriangle size={12} /> : <Info size={12} />}</span>
+                                     <span className="break-all whitespace-pre-wrap">{log.message}</span>
+                                     <span className="ml-auto text-neutral-600 text-[10px] shrink-0">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                                </div>
+                            ))}
+                    </div>
+                )}
+              </div>
+            </div>
+          );
+        };
+
+        // App Component
         function useDebounce(value, delay) {
           const [debouncedValue, setDebouncedValue] = useState(value);
-          useEffect(() => {
-            const handler = setTimeout(() => setDebouncedValue(value), delay);
-            return () => clearTimeout(handler);
-          }, [value, delay]);
+          useEffect(() => { const handler = setTimeout(() => setDebouncedValue(value), delay); return () => clearTimeout(handler); }, [value, delay]);
           return debouncedValue;
         }
 
         const App = () => {
           const [fileSystem, setFileSystem] = useState(INITIAL_FILE_SYSTEM);
           const [activeFileId, setActiveFileId] = useState('index.html');
-          const [openFiles, setOpenFiles] = useState(['index.html']);
+          const[openFiles, setOpenFiles] = useState(['index.html']);
           const [sidebarWidth, setSidebarWidth] = useState(240);
           const [editorWidth, setEditorWidth] = useState(600);
           const [activeSidebarView, setActiveSidebarView] = useState('explorer');
-          const [refreshTrigger, setRefreshTrigger] = useState(0);
+          const[refreshTrigger, setRefreshTrigger] = useState(0);
           const [activeMenu, setActiveMenu] = useState(null);
           const [isLessonModalOpen, setIsLessonModalOpen] = useState(false);
-          const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+          const[isHelpModalOpen, setIsHelpModalOpen] = useState(false);
           const [isFullscreen, setIsFullscreen] = useState(false);
           
           const [previewUrl, setPreviewUrl] = useState('/src');
@@ -2194,8 +2235,7 @@ loop();`
           const previewContainerRef = useRef(null);
 
           const [isResizing, setIsResizing] = useState(false);
-          
-          const [ghostText, setGhostText] = useState(null);
+          const[ghostText, setGhostText] = useState(null);
           
           const [settings, setSettings] = useState(DEFAULT_SETTINGS);
           const [currentThemeId, setCurrentThemeId] = useState('vs-dark');
@@ -2205,9 +2245,7 @@ loop();`
           
           const debouncedFileSystem = useDebounce(fileSystem, 800);
 
-          const currentTheme = useMemo(() => {
-              return THEMES.find(t => t.id === currentThemeId) || THEMES[0];
-          }, [currentThemeId]);
+          const currentTheme = useMemo(() => THEMES.find(t => t.id === currentThemeId) || THEMES[0], [currentThemeId]);
 
           useEffect(() => {
             const root = document.documentElement;
@@ -2233,7 +2271,6 @@ loop();`
                 document.head.appendChild(styleRef.current);
             }
             styleRef.current.innerHTML = currentTheme.customCss || '';
-
           }, [currentTheme]);
 
           useEffect(() => {
@@ -2277,7 +2314,7 @@ loop();`
             
             document.addEventListener('mousemove', handleMouseMove);
             document.addEventListener('mouseup', handleMouseUp);
-          }, []);
+          },[]);
 
           const startEditorResizing = useCallback((e) => {
             e.preventDefault();
@@ -2287,7 +2324,6 @@ loop();`
             const handleMouseMove = (e) => {
                const sidebarOffset = activeSidebarView === 'hidden' ? 0 : sidebarWidth;
                const offset = 48 + sidebarOffset;
-               
                const newWidth = Math.max(200, e.clientX - offset);
                setEditorWidth(newWidth);
             };
@@ -2305,7 +2341,6 @@ loop();`
 
           const toggleFullscreen = () => {
               if (!previewContainerRef.current) return;
-              
               if (!document.fullscreenElement) {
                   previewContainerRef.current.requestFullscreen().then(() => setIsFullscreen(true));
               } else {
@@ -2319,7 +2354,7 @@ loop();`
               const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
               document.addEventListener('fullscreenchange', handleFsChange);
               return () => document.removeEventListener('fullscreenchange', handleFsChange);
-          }, []);
+          },[]);
 
           const handleSelectFile = (id) => {
             if (!openFiles.includes(id)) {
@@ -2346,17 +2381,11 @@ loop();`
           };
 
           const updateFileContent = (id, content) => {
-            setFileSystem(prev => ({
-                ...prev,
-                [id]: { ...prev[id], content }
-            }));
+            setFileSystem(prev => ({ ...prev, [id]: { ...prev[id], content } }));
           };
 
           const toggleFolder = (id) => {
-            setFileSystem(prev => ({
-                ...prev,
-                [id]: { ...prev[id], isOpen: !prev[id].isOpen }
-            }));
+            setFileSystem(prev => ({ ...prev, [id]: { ...prev[id], isOpen: !prev[id].isOpen } }));
           };
 
           const createItem = useCallback((type, parentId) => {
@@ -2370,7 +2399,6 @@ loop();`
                   const siblingExists = Object.values(prev).some(
                       item => item.parentId === parentId && item.name === name
                   );
-                  
                   if (siblingExists) {
                       alert("A file or folder with this name already exists in this location.");
                       return prev;
@@ -2387,10 +2415,7 @@ loop();`
                   }
 
                   const newItem = {
-                      id,
-                      name,
-                      parentId, 
-                      type,
+                      id, name, parentId, type,
                       content: type === ItemType.FILE ? '' : undefined,
                       language,
                       isOpen: type === ItemType.FOLDER ? true : undefined
@@ -2409,12 +2434,10 @@ loop();`
                       setActiveFileId(id);
                   }, 0);
               }
-          }, []);
+          },[]);
 
           const deleteItem = useCallback((id) => {
               if (!window.confirm('Are you sure you want to delete this?')) return;
-              
-              // 1. Calculate ids to delete using current fileSystem state
               const toDelete = new Set([id]);
               const queue = [id];
               const items = Object.values(fileSystem);
@@ -2428,7 +2451,6 @@ loop();`
                   });
               }
 
-              // 2. Synchronously update all states to avoid inconsistencies
               setFileSystem(prev => {
                   const newFS = { ...prev };
                   toDelete.forEach(x => delete newFS[x]);
@@ -2436,19 +2458,12 @@ loop();`
               });
               
               setOpenFiles(prev => prev.filter(fid => !toDelete.has(fid)));
-              
-              // If the active file is being deleted, deselect it
-              if (activeFileId && toDelete.has(activeFileId)) {
-                  setActiveFileId(null);
-              }
-          }, [fileSystem, activeFileId]);
+              if (activeFileId && toDelete.has(activeFileId)) setActiveFileId(null);
+          },[fileSystem, activeFileId]);
 
           const renameItem = useCallback((id, name) => {
-              setFileSystem(prev => ({
-                  ...prev,
-                  [id]: { ...prev[id], name }
-              }));
-          }, []);
+              setFileSystem(prev => ({ ...prev, [id]: { ...prev[id], name } }));
+          },[]);
 
           const moveItem = useCallback((draggedId, targetId) => {
               if (draggedId === targetId) return;
@@ -2464,14 +2479,11 @@ loop();`
                 const newParentId = target.type === ItemType.FOLDER ? targetId : target.parentId;
                 
                 if (newParentId) {
-                    return {
-                        ...prev,
-                        [draggedId]: { ...prev[draggedId], parentId: newParentId }
-                    };
+                    return { ...prev, [draggedId]: { ...prev[draggedId], parentId: newParentId } };
                 }
                 return prev;
               });
-          }, []);
+          },[]);
 
           const handleFormat = async () => {
               setActiveMenu(null);
@@ -2515,12 +2527,10 @@ loop();`
           const activeFile = activeFileId && fileSystem[activeFileId] ? fileSystem[activeFileId] : null;
 
           const lineCount = useMemo(() => {
-              // Fix: Added safety check for null activeFile to prevent crashes during render
               if (!activeFile || typeof activeFile.content !== 'string') return 0;
               return activeFile.content.split('\n').length;
           }, [activeFile]);
 
-          // Updated Non-Destructive Lesson Logic
           const handleTryCode = (code) => {
               setIsLessonModalOpen(false);
               
@@ -2567,7 +2577,6 @@ loop();`
                       setOpenFiles(prev => prev.includes(targetFileId) ? prev : [...prev, targetFileId]);
                   }
               } else {
-                  // Create new lesson folder
                   const timestamp = Date.now();
                   const folderName = `lesson-${timestamp.toString().slice(-4)}`;
                   const folderId = `folder_${timestamp}`;
@@ -2578,23 +2587,7 @@ loop();`
                   setFileSystem(prev => {
                       const newFiles = { ...prev };
                       newFiles[folderId] = { id: folderId, name: folderName, parentId: 'root', type: ItemType.FOLDER, isOpen: true };
-                      newFiles[htmlId] = { id: htmlId, name: 'index.html', parentId: folderId, type: ItemType.FILE, language: FileType.HTML, content: isHtml ? code : `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Lesson</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="container">
-      <div class="box"></div>
-      <div class="box"></div>
-      <div class="box"></div>
-    </div>
-    <canvas id="gameCanvas"></canvas>
-    <script src="script.js"><\/script>
-</body>
-</html>` };
+                      newFiles[htmlId] = { id: htmlId, name: 'index.html', parentId: folderId, type: ItemType.FILE, language: FileType.HTML, content: isHtml ? code : `<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <title>Lesson</title>\n    <link rel="stylesheet" href="style.css">\n</head>\n<body>\n    <div class="container">\n      <div class="box"></div>\n      <div class="box"></div>\n      <div class="box"></div>\n    </div>\n    <canvas id="gameCanvas"></canvas>\n    <script src="script.js"><\/script>\n</body>\n</html>` };
                       newFiles[jsId] = { id: jsId, name: 'script.js', parentId: folderId, type: ItemType.FILE, language: FileType.JAVASCRIPT, content: isJs ? code : '// Write your script here' };
                       newFiles[cssId] = { id: cssId, name: 'style.css', parentId: folderId, type: ItemType.FILE, language: FileType.CSS, content: isCss ? code : '/* Add styles here */' };
                       return newFiles;
@@ -2653,24 +2646,10 @@ loop();`
             <div className="flex flex-col h-screen bg-vs-bg text-vs-text overflow-hidden font-sans transition-colors duration-300" onClick={() => setActiveMenu(null)}>
                 {isResizing && <div className="fixed inset-0 z-50 cursor-col-resize bg-transparent"></div>}
                 
-                <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    onChange={handleImportFile} 
-                    accept=".zip" 
-                    className="hidden" 
-                />
+                <input type="file" ref={fileInputRef} onChange={handleImportFile} accept=".zip" className="hidden" />
                 
-                <LessonModal 
-                  isOpen={isLessonModalOpen} 
-                  onClose={() => setIsLessonModalOpen(false)} 
-                  onTryCode={handleTryCode}
-                  lessons={LESSONS} 
-                />
-                <HelpModal 
-                  isOpen={isHelpModalOpen} 
-                  onClose={() => setIsHelpModalOpen(false)}
-                />
+                <LessonModal isOpen={isLessonModalOpen} onClose={() => setIsLessonModalOpen(false)} onTryCode={handleTryCode} lessons={LESSONS} />
+                <HelpModal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} />
 
                 <div className="h-10 bg-vs-activityBar flex items-center justify-between px-4 border-b border-vs-border z-30 shrink-0">
                     <div className="flex items-center space-x-4">
@@ -2707,6 +2686,8 @@ loop();`
                                 items={[
                                     { label: 'Explorer', action: () => setActiveSidebarView('explorer'), shortcut: 'Ctrl+Shift+E' },
                                     { label: 'Search', action: () => setActiveSidebarView('search'), shortcut: 'Ctrl+Shift+F' },
+                                    { label: 'Source Control', action: () => setActiveSidebarView('source-control') },
+                                    { label: 'Snippets', action: () => setActiveSidebarView('snippets') },
                                     { label: 'Settings', action: () => setActiveSidebarView('settings') },
                                     { label: 'Toggle Sidebar', action: () => setActiveSidebarView(prev => prev === 'hidden' ? 'explorer' : 'hidden'), shortcut: 'Ctrl+B' }
                                 ]}
@@ -2754,6 +2735,22 @@ loop();`
                              {activeSidebarView === 'search' && <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-vs-accent shadow-[0_0_8px_var(--vs-accent)]"></div>}
                         </div>
                         <div 
+                             className={`p-2 rounded cursor-pointer transition-all duration-200 relative group ${activeSidebarView === 'source-control' ? 'text-vs-text' : 'text-neutral-500 hover:text-white'}`}
+                             onClick={() => setActiveSidebarView(activeSidebarView === 'source-control' ? 'hidden' : 'source-control')}
+                             title="Source Control"
+                        >
+                            <GitBranch size={24} strokeWidth={1.5} color={activeSidebarView === 'source-control' ? 'var(--vs-accent)' : 'currentColor'} />
+                             {activeSidebarView === 'source-control' && <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-vs-accent shadow-[0_0_8px_var(--vs-accent)]"></div>}
+                        </div>
+                        <div 
+                             className={`p-2 rounded cursor-pointer transition-all duration-200 relative group ${activeSidebarView === 'snippets' ? 'text-vs-text' : 'text-neutral-500 hover:text-white'}`}
+                             onClick={() => setActiveSidebarView(activeSidebarView === 'snippets' ? 'hidden' : 'snippets')}
+                             title="Snippets Library"
+                        >
+                            <Blocks size={24} strokeWidth={1.5} color={activeSidebarView === 'snippets' ? 'var(--vs-accent)' : 'currentColor'} />
+                             {activeSidebarView === 'snippets' && <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-vs-accent shadow-[0_0_8px_var(--vs-accent)]"></div>}
+                        </div>
+                        <div 
                             className={`mt-auto p-2 rounded cursor-pointer transition-all duration-200 relative group ${activeSidebarView === 'settings' ? 'text-vs-text' : 'text-neutral-500 hover:text-white'}`}
                             onClick={() => setActiveSidebarView(activeSidebarView === 'settings' ? 'hidden' : 'settings')}
                             title="Settings"
@@ -2767,16 +2764,7 @@ loop();`
                         <div style={{ width: sidebarWidth }} className="flex flex-col shrink-0 relative border-r border-vs-border bg-vs-sidebar overflow-hidden">
                             {activeSidebarView === 'explorer' && (
                                 <div className="h-full animate-slide-in">
-                                     <Explorer 
-                                        fileSystem={fileSystem}
-                                        activeFileId={activeFileId}
-                                        onSelectFile={handleSelectFile}
-                                        onToggleFolder={toggleFolder}
-                                        onCreateItem={createItem}
-                                        onDeleteItem={deleteItem}
-                                        onRenameItem={renameItem}
-                                        onMoveItem={moveItem}
-                                    />
+                                     <Explorer fileSystem={fileSystem} activeFileId={activeFileId} onSelectFile={handleSelectFile} onToggleFolder={toggleFolder} onCreateItem={createItem} onDeleteItem={deleteItem} onRenameItem={renameItem} onMoveItem={moveItem} />
                                 </div>
                             )}
                             {activeSidebarView === 'search' && (
@@ -2784,23 +2772,22 @@ loop();`
                                     <SearchPane fileSystem={fileSystem} onSelectFile={handleSelectFile} />
                                 </div>
                             )}
-                            {activeSidebarView === 'settings' && (
+                            {activeSidebarView === 'source-control' && (
                                 <div className="h-full animate-slide-in">
-                                    <SettingsPane 
-                                        settings={settings} 
-                                        currentThemeId={currentThemeId} 
-                                        customTheme={null}
-                                        onUpdateSettings={updateSettings} 
-                                        onUpdateTheme={setCurrentThemeId} 
-                                        onUpdateCustomTheme={() => {}}
-                                    />
+                                    <SourceControlPane fileSystem={fileSystem} initialFileSystem={INITIAL_FILE_SYSTEM} onSelectFile={handleSelectFile} />
                                 </div>
                             )}
-                            
-                            <div 
-                                className="absolute top-0 right-0 w-2 h-full cursor-col-resize hover:bg-vs-accent transition-colors z-20 opacity-0 hover:opacity-100"
-                                onMouseDown={startSidebarResizing}
-                            />
+                            {activeSidebarView === 'snippets' && (
+                                <div className="h-full animate-slide-in">
+                                    <SnippetsPane />
+                                </div>
+                            )}
+                            {activeSidebarView === 'settings' && (
+                                <div className="h-full animate-slide-in">
+                                    <SettingsPane settings={settings} currentThemeId={currentThemeId} onUpdateSettings={updateSettings} onUpdateTheme={setCurrentThemeId} />
+                                </div>
+                            )}
+                            <div className="absolute top-0 right-0 w-2 h-full cursor-col-resize hover:bg-vs-accent transition-colors z-20 opacity-0 hover:opacity-100" onMouseDown={startSidebarResizing} />
                         </div>
                     )}
 
@@ -2836,72 +2823,42 @@ loop();`
                             </div>
                             
                             <div className="flex-1 h-full flex items-center px-2 space-x-2 min-w-0 bg-vs-bg select-none">
-                                <button 
-                                    onClick={() => setRefreshTrigger(t => t + 1)} 
-                                    title="Reload Frame" 
-                                    className="p-1.5 rounded-sm hover:bg-vs-itemHover text-vs-text opacity-70 hover:opacity-100 transition-colors shrink-0"
-                                >
+                                <button onClick={() => setRefreshTrigger(t => t + 1)} title="Reload Frame" className="p-1.5 rounded-sm hover:bg-vs-itemHover text-vs-text opacity-70 hover:opacity-100 transition-colors shrink-0">
                                     <RefreshCw size={14} />
                                 </button>
-
                                 <form onSubmit={handleUrlSubmit} className="flex-1 flex items-center relative group min-w-0 mt-1">
                                     <div className="absolute left-2 top-1/2 -translate-y-1/2 text-vs-text opacity-50 pointer-events-none z-10">
                                         <Globe size={12} />
                                     </div>
                                     <input 
-                                        type="text" 
-                                        value={urlInputValue}
-                                        onChange={(e) => setUrlInputValue(e.target.value)}
+                                        type="text" value={urlInputValue} onChange={(e) => setUrlInputValue(e.target.value)}
                                         className="w-full pl-7 pr-7 text-xs bg-vs-input-bg border border-vs-border rounded-sm focus:border-vs-accent focus:outline-none text-vs-text transition-all font-mono shadow-sm h-6"
                                         spellCheck={false}
                                     />
-                                    <button 
-                                        type="submit" 
-                                        className="absolute right-1 top-1/2 -translate-y-1/2 p-0.5 rounded-sm hover:bg-vs-itemHover text-vs-text opacity-60 hover:opacity-100 transition-colors"
-                                        title="Go"
-                                    >
+                                    <button type="submit" className="absolute right-1 top-1/2 -translate-y-1/2 p-0.5 rounded-sm hover:bg-vs-itemHover text-vs-text opacity-60 hover:opacity-100 transition-colors" title="Go">
                                         <ArrowRight size={12} />
                                     </button>
                                 </form>
-
-                                <button
-                                    onClick={toggleFullscreen}
-                                    className="p-1.5 rounded-sm hover:bg-vs-itemHover text-vs-text opacity-70 hover:opacity-100 transition-colors shrink-0"
-                                    title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Preview"}
-                                >
+                                <button onClick={toggleFullscreen} className="p-1.5 rounded-sm hover:bg-vs-itemHover text-vs-text opacity-70 hover:opacity-100 transition-colors shrink-0" title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Preview"}>
                                     {isFullscreen ? <Minimize size={14} /> : <Maximize size={14} />}
                                 </button>
                             </div>
                         </div>
 
                         <div className="flex-1 flex overflow-hidden" ref={splitPaneRef}>
-                            <div 
-                                style={{ width: editorWidth }}
-                                className="h-full relative border-r border-vs-border"
-                            >
+                            <div style={{ width: editorWidth }} className="h-full relative border-r border-vs-border">
                                 <CodeEditor 
-                                    file={activeFile} 
-                                    settings={settings}
-                                    theme={currentTheme}
-                                    /* FIX: Added check to ensure activeFile exists before checking ID equality to prevent undefined === undefined crash */
+                                    file={activeFile} settings={settings} theme={currentTheme}
                                     ghostText={(activeFile && ghostText && ghostText.fileId === activeFile.id) ? ghostText.content : null}
                                     onChange={(val) => activeFileId && updateFileContent(activeFileId, val)} 
-                                    onFormat={handleFormat}
-                                    onSave={() => console.log('Saved!')}
+                                    onFormat={handleFormat} onSave={() => console.log('Saved!')}
                                 />
                             </div>
                             
-                            <div 
-                                className="w-2 -ml-1 h-full cursor-col-resize hover:bg-vs-accent transition-colors z-30 bg-transparent hover:opacity-100"
-                                onMouseDown={startEditorResizing}
-                            />
+                            <div className="w-2 -ml-1 h-full cursor-col-resize hover:bg-vs-accent transition-colors z-30 bg-transparent hover:opacity-100" onMouseDown={startEditorResizing} />
 
                             <div ref={previewContainerRef} className={`flex-1 h-full bg-white relative min-w-0`}>
-                                <Preview 
-                                    fileSystem={debouncedFileSystem} 
-                                    refreshTrigger={refreshTrigger}
-                                    url={previewUrl}
-                                />
+                                <Preview fileSystem={debouncedFileSystem} refreshTrigger={refreshTrigger} url={previewUrl} />
                             </div>
                         </div>
                     </div>
@@ -2911,16 +2868,13 @@ loop();`
                      <div className="flex items-center space-x-3">
                          <span className="flex items-center"><div className="w-2 h-2 rounded-full bg-white mr-1 animate-pulse"></div> Ready</span>
                          {activeFile && (
-                             <>
-                                <span>{activeFile.language?.toUpperCase()}</span>
-                                <span>UTF-8</span>
-                             </>
+                             <><span className="uppercase">{activeFile.language}</span><span>UTF-8</span></>
                          )}
                      </div>
                      <div className="flex items-center space-x-4">
                          <span>Ln {lineCount}</span>
                          <span>{settings.tabSize} Spaces</span>
-                         <span>015x.dev Editor v1.4.0</span>
+                         <span>015x.dev Editor v1.5.0</span>
                      </div>
                 </div>
             </div>
@@ -2929,12 +2883,7 @@ loop();`
 
         const rootElement = document.getElementById('root');
         const root = ReactDOM.createRoot(rootElement);
-        root.render(
-          <React.StrictMode>
-            <App />
-          </React.StrictMode>
-        );
+        root.render(<React.StrictMode><App /></React.StrictMode>);
     </script>
 </body>
-
 </html>
