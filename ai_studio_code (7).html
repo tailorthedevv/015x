@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Warming & Greenhouse Effect Simulator</title>
+    <style>
+        :root {
+            --primary: #00ffcc;
+            --danger: #ff3333;
+            --bg-panel: rgba(10, 15, 25, 0.75);
+        }
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        #webgl-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Sleek UI Overlay */
+        #ui-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 350px;
+        }
+
+        .panel {
+            background: var(--bg-panel);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            color: white;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            transition: border-color 0.3s;
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary);
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .data-value {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        #temp-value { color: #ffaa00; }
+        #sea-value { color: #00aaff; }
+
+        #info-panel {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #ddd;
+            border-left: 3px solid var(--primary);
+            padding-left: 10px;
+            transition: border-color 0.3s, color 0.3s;
+        }
+
+        .legend {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot.yellow { background: #ffffaa; box-shadow: 0 0 5px #ffffaa; }
+        .dot.red { background: #ff3333; box-shadow: 0 0 5px #ff3333; }
+        .dot.gas { background: rgba(150, 255, 150, 0.8); box-shadow: 0 0 5px #96ff96; }
+
+    </style>
+
+    <!-- Import maps polyfill -->
+    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+    
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+                "lil-gui": "https://unpkg.com/lil-gui@0.19.1/dist/lil-gui.esm.min.js"
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div id="webgl-container"></div>
+
+    <div id="ui-overlay">
+        <div class="panel" id="main-panel">
+            <h1>Planetary Status</h1>
+            
+            <div class="data-row">
+                <span>Global Avg Temp</span>
+                <span class="data-value" id="temp-value">14.0°C</span>
+            </div>
+            
+            <div class="data-row">
+                <span>Sea Level Rise</span>
+                <span class="data-value" id="sea-value">+0.00m</span>
+            </div>
+
+            <div id="info-panel">
+                Stable Holocene levels. The natural greenhouse effect maintains habitable temperatures by trapping a small amount of heat.
+            </div>
+
+            <div class="legend">
+                <div class="legend-item"><div class="dot yellow"></div> Shortwave Solar Radiation</div>
+                <div class="legend-item"><div class="dot red"></div> Longwave Infrared (Heat)</div>
+                <div class="legend-item"><div class="dot gas"></div> Greenhouse Gas Particles</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import GUI from 'lil-gui';
+
+        /**
+         * GLOBAL CONFIGURATION & STATE
+         */
+        const CONFIG = {
+            earthRadius: 5,
+            atmosphereRadius: 5.4,
+            sunDirection: new THREE.Vector3(1, 0.2, 0.5).normalize(),
+            textures: {
+                diffuse: 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg',
+                specular: 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_specular_2048.jpg',
+                clouds: 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png'
+            }
+        };
+
+        const STATE = {
+            ppm: 280, // Parts per million of CO2 equivalent
+            get severityRatio() { return Math.max(0, Math.min(1, (this.ppm - 280) / 720)); } // 0.0 to 1.0
+        };
+
+        /**
+         * DOM ELEMENTS
+         */
+        const domElements = {
+            temp: document.getElementById('temp-value'),
+            sea: document.getElementById('sea-value'),
+            info: document.getElementById('info-panel'),
+            panel: document.getElementById('main-panel')
+        };
+
+        /**
+         * MAIN SIMULATION CLASS
+         */
+        class GreenhouseSimulation {
+            constructor() {
+                this.initScene();
+                this.createStars();
+                this.createEarth();
+                this.createAtmosphere();
+                this.createClouds();
+                this.createGasParticles();
+                this.setupRadiationSystem();
+                this.setupGUI();
+                this.bindEvents();
+
+                this.clock = new THREE.Clock();
+                this.animate();
+            }
+
+            initScene() {
+                // Renderer Setup
+                this.container = document.getElementById('webgl-container');
+                this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Performance optimize
+                this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+                this.renderer.shadowMap.enabled = true;
+                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                this.container.appendChild(this.renderer.domElement);
+
+                // Scene & Camera
+                this.scene = new THREE.Scene();
+                this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+                this.camera.position.set(0, 4, 14);
+
+                // Controls
+                this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+                this.controls.enableDamping = true;
+                this.controls.dampingFactor = 0.05;
+                this.controls.minDistance = 6.5; // Prevent clipping into atmosphere
+                this.controls.maxDistance = 25;  // Prevent losing the earth
+                this.controls.enablePan = false;
+
+                // Lighting
+                this.ambientLight = new THREE.AmbientLight(0xffffff, 0.05); // Just enough to see dark side
+                this.scene.add(this.ambientLight);
+
+                this.sunLight = new THREE.DirectionalLight(0xffffff, 3.5);
+                this.sunLight.position.copy(CONFIG.sunDirection).multiplyScalar(50);
+                this.sunLight.castShadow = true;
+                this.sunLight.shadow.mapSize.width = 2048;
+                this.sunLight.shadow.mapSize.height = 2048;
+                this.scene.add(this.sunLight);
+            }
+
+            createStars() {
+                const starGeo = new THREE.BufferGeometry();
+                const starCount = 3000;
+                const starPos = new Float32Array(starCount * 3);
+                for(let i=0; i < starCount * 3; i++) {
+                    starPos[i] = (Math.random() - 0.5) * 200;
+                }
+                starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+                const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.1, transparent: true, opacity: 0.8 });
+                this.stars = new THREE.Points(starGeo, starMat);
+                this.scene.add(this.stars);
+            }
+
+            createEarth() {
+                this.earthGroup = new THREE.Group();
+                this.scene.add(this.earthGroup);
+
+                const textureLoader = new THREE.TextureLoader();
+                const diffuseMap = textureLoader.load(CONFIG.textures.diffuse);
+                const specularMap = textureLoader.load(CONFIG.textures.specular);
+                diffuseMap.colorSpace = THREE.SRGBColorSpace;
+
+                const geometry = new THREE.SphereGeometry(CONFIG.earthRadius, 64, 64);
+                
+                // We use MeshStandardMaterial with onBeforeCompile to inject our procedural desertification and ice-melt.
+                this.earthMaterial = new THREE.MeshStandardMaterial({
+                    map: diffuseMap,
+                    roughnessMap: specularMap,
+                    roughness: 0.8,
+                    metalness: 0.1,
+                });
+
+                this.earthUniforms = {
+                    mixAmount: { value: 0.0 }
+                };
+
+                this.earthMaterial.onBeforeCompile = (shader) => {
+                    shader.uniforms.mixAmount = this.earthUniforms.mixAmount;
+                    
+                    // Inject uniform
+                    shader.fragmentShader = `
+                        uniform float mixAmount;
+                        ${shader.fragmentShader}
+                    `;
+
+                    // Replace map_fragment to apply procedural climate change effects
+                    shader.fragmentShader = shader.fragmentShader.replace(
+                        '#include <map_fragment>',
+                        `
+                        #include <map_fragment>
+                        
+                        // Procedural Desertification (Shift greens to brown/yellow)
+                        vec3 desertColor = vec3(diffuseColor.r * 1.3, diffuseColor.g * 0.95, diffuseColor.b * 0.6);
+                        
+                        // Identify Ice Caps (high brightness regions near poles)
+                        float isWhite = clamp((diffuseColor.r * diffuseColor.g * diffuseColor.b - 0.3) * 3.0, 0.0, 1.0);
+                        float isPole = smoothstep(0.55, 0.8, abs(vMapUv.y - 0.5) * 2.0); 
+                        float iceMeltMask = isWhite * isPole;
+                        
+                        // Ocean color to replace melted ice
+                        vec3 oceanBlue = vec3(0.02, 0.1, 0.25);
+
+                        // Apply Desertification based on mixAmount
+                        vec3 modifiedColor = mix(diffuseColor.rgb, desertColor, mixAmount * 0.8);
+
+                        // Apply Ice Melt based on mixAmount
+                        modifiedColor = mix(modifiedColor, oceanBlue, iceMeltMask * mixAmount * 1.2);
+
+                        diffuseColor = vec4(modifiedColor, diffuseColor.a);
+                        `
+                    );
+                };
+
+                this.earthMesh = new THREE.Mesh(geometry, this.earthMaterial);
+                this.earthMesh.receiveShadow = true;
+                this.earthMesh.castShadow = true;
+                this.earthGroup.add(this.earthMesh);
+            }
+
+            createAtmosphere() {
+                const geometry = new THREE.SphereGeometry(CONFIG.atmosphereRadius, 64, 64);
+                
+                this.atmosphereUniforms = {
+                    colorBlue: { value: new THREE.Color(0x3388ff) },
+                    colorSmog: { value: new THREE.Color(0xaabb55) }, // Murky yellow/brown
+                    smogRatio: { value: 0.0 }
+                };
+
+                // Custom GLSL Shader for Atmospheric Scattering and Smog transition
+                const vertexShader = `
+                    varying vec3 vNormal;
+                    varying vec3 vPositionNormal;
+                    void main() {
+                        vNormal = normalize(normalMatrix * normal);
+                        vPositionNormal = normalize((modelViewMatrix * vec4(position, 1.0)).xyz);
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `;
+
+                const fragmentShader = `
+                    uniform vec3 colorBlue;
+                    uniform vec3 colorSmog;
+                    uniform float smogRatio;
+                    
+                    varying vec3 vNormal;
+                    varying vec3 vPositionNormal;
+                    
+                    void main() {
+                        // Calculate Fresnel effect based on view angle
+                        float intensity = pow(0.65 - dot(vNormal, vec3(0, 0, 1.0)), 3.5);
+                        
+                        // Blend between clean atmosphere and smog
+                        vec3 finalColor = mix(colorBlue, colorSmog, smogRatio);
+                        
+                        gl_FragColor = vec4(finalColor, intensity * (1.0 + smogRatio * 0.5)); // Smog makes it slightly thicker
+                    }
+                `;
+
+                const material = new THREE.ShaderMaterial({
+                    vertexShader,
+                    fragmentShader,
+                    uniforms: this.atmosphereUniforms,
+                    side: THREE.BackSide,
+                    blending: THREE.AdditiveBlending,
+                    transparent: true,
+                    depthWrite: false
+                });
+
+                this.atmosphereMesh = new THREE.Mesh(geometry, material);
+                this.earthGroup.add(this.atmosphereMesh);
+            }
+
+            createClouds() {
+                const textureLoader = new THREE.TextureLoader();
+                const cloudsMap = textureLoader.load(CONFIG.textures.clouds);
+                
+                const geometry = new THREE.SphereGeometry(CONFIG.earthRadius + 0.05, 64, 64);
+                this.cloudsMaterial = new THREE.MeshLambertMaterial({
+                    map: cloudsMap,
+                    transparent: true,
+                    opacity: 0.8,
+                    blending: THREE.NormalBlending,
+                    depthWrite: false
+                });
+
+                this.cloudsMesh = new THREE.Mesh(geometry, this.cloudsMaterial);
+                this.cloudsMesh.receiveShadow = true;
+                this.earthGroup.add(this.cloudsMesh);
+            }
+
+            createGasParticles() {
+                // Represents CO2 and CH4 accumulation in the atmosphere
+                const particleCount = 8000;
+                const geometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(particleCount * 3);
+                const colors = new Float32Array(particleCount * 3);
+
+                const colorCO2 = new THREE.Color(0x888888);
+                const colorCH4 = new THREE.Color(0x66ff66);
+
+                for(let i = 0; i < particleCount; i++) {
+                    // Distribute particles in the atmospheric shell
+                    const r = CONFIG.earthRadius + 0.1 + Math.random() * (CONFIG.atmosphereRadius - CONFIG.earthRadius - 0.1);
+                    const pos = new THREE.Vector3().randomDirection().multiplyScalar(r);
+                    
+                    positions[i*3] = pos.x;
+                    positions[i*3+1] = pos.y;
+                    positions[i*3+2] = pos.z;
+
+                    // Mix of CO2 (grey) and Methane (green)
+                    const c = Math.random() > 0.2 ? colorCO2 : colorCH4;
+                    colors[i*3] = c.r;
+                    colors[i*3+1] = c.g;
+                    colors[i*3+2] = c.b;
+                }
+
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+                // Create a soft glowing particle texture programmatically
+                const canvas = document.createElement('canvas');
+                canvas.width = 32; canvas.height = 32;
+                const ctx = canvas.getContext('2d');
+                const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+                gradient.addColorStop(0, 'rgba(255,255,255,1)');
+                gradient.addColorStop(1, 'rgba(255,255,255,0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0,0,32,32);
+                const tex = new THREE.CanvasTexture(canvas);
+
+                this.gasMaterial = new THREE.PointsMaterial({
+                    size: 0.08,
+                    vertexColors: true,
+                    map: tex,
+                    transparent: true,
+                    opacity: 0.0, // Starts invisible at 280ppm
+                    depthWrite: false,
+                    blending: THREE.AdditiveBlending
+                });
+
+                this.gasParticles = new THREE.Points(geometry, this.gasMaterial);
+                this.earthGroup.add(this.gasParticles);
+            }
+
+            setupRadiationSystem() {
+                this.radiationBeams =[];
+                const maxBeams = 150;
+                
+                // Cylinder pointing along Z axis
+                const geom = new THREE.CylinderGeometry(0.015, 0.015, 0.5, 5);
+                geom.rotateX(Math.PI / 2);
+
+                this.matIncoming = new THREE.MeshBasicMaterial({ color: 0xffffaa, transparent: true, opacity: 0.8 });
+                this.matOutgoing = new THREE.MeshBasicMaterial({ color: 0xff3333, transparent: true, opacity: 0.8 });
+
+                for(let i = 0; i < maxBeams; i++) {
+                    const mesh = new THREE.Mesh(geom, this.matIncoming);
+                    this.scene.add(mesh);
+                    
+                    this.radiationBeams.push({
+                        mesh: mesh,
+                        type: 'incoming', // 'incoming', 'outgoing', 'trapped'
+                        velocity: new THREE.Vector3(),
+                        speed: 3.0 + Math.random() * 2.0,
+                        bounces: 0
+                    });
+
+                    this.resetBeam(this.radiationBeams[i], true);
+                }
+            }
+
+            resetBeam(beam, initial = false) {
+                beam.type = 'incoming';
+                beam.mesh.material = this.matIncoming;
+                beam.bounces = 0;
+                
+                // Spawn on a spherical cap facing the sun
+                const spawnDistance = initial ? 6 + Math.random() * 10 : 15;
+                let pos = new THREE.Vector3().randomDirection();
+                if (pos.dot(CONFIG.sunDirection) < 0) pos.negate(); // Ensure it faces sun
+                
+                pos.multiplyScalar(spawnDistance);
+                beam.mesh.position.copy(pos);
+
+                // Velocity straight towards Earth center
+                beam.velocity.copy(pos).negate().normalize().multiplyScalar(beam.speed);
+                this.orientBeam(beam);
+            }
+
+            orientBeam(beam) {
+                // Orient the cylinder to point along its velocity
+                const target = beam.mesh.position.clone().add(beam.velocity);
+                beam.mesh.lookAt(target);
+            }
+
+            updateRadiation(dt) {
+                // Trap probability based on PPM (10% at 280ppm up to 90% at 1000ppm)
+                const trapProbability = 0.1 + (STATE.severityRatio * 0.8);
+
+                for(let beam of this.radiationBeams) {
+                    // Move beam
+                    beam.mesh.position.addScaledVector(beam.velocity, dt);
+                    
+                    const dist = beam.mesh.position.length();
+
+                    if (beam.type === 'incoming') {
+                        // Solar radiation penetrates atmosphere and hits earth
+                        if (dist <= CONFIG.earthRadius) {
+                            beam.type = 'outgoing';
+                            beam.mesh.material = this.matOutgoing;
+                            // Re-emit outwards as infrared
+                            beam.mesh.position.normalize().multiplyScalar(CONFIG.earthRadius + 0.01);
+                            beam.velocity.copy(beam.mesh.position).normalize().multiplyScalar(beam.speed * 0.8);
+                            this.orientBeam(beam);
+                        }
+                    } 
+                    else if (beam.type === 'outgoing') {
+                        // Infrared hitting the atmospheric boundary
+                        if (dist >= CONFIG.atmosphereRadius) {
+                            if (Math.random() < trapProbability && beam.bounces < 5) {
+                                // Trapped by Greenhouse Gases! Bounce back.
+                                beam.type = 'trapped';
+                                beam.bounces++;
+                                beam.velocity.negate(); // Simple bounce straight back
+                                this.orientBeam(beam);
+                            } else {
+                                // Escapes to space. Reset once far away to keep loop going.
+                                if (dist > 15) {
+                                    this.resetBeam(beam);
+                                }
+                            }
+                        }
+                    }
+                    else if (beam.type === 'trapped') {
+                        // Trapped infrared hits earth again and bounces back out
+                        if (dist <= CONFIG.earthRadius) {
+                            beam.type = 'outgoing';
+                            beam.mesh.position.normalize().multiplyScalar(CONFIG.earthRadius + 0.01);
+                            beam.velocity.negate();
+                            this.orientBeam(beam);
+                        }
+                    }
+                }
+            }
+
+            setupGUI() {
+                const gui = new GUI({ title: 'Climate Control Panel' });
+                
+                gui.add(STATE, 'ppm', 280, 1000).name('CO2 Levels (PPM)').step(1).onChange(() => {
+                    this.updateUI();
+                });
+
+                // Ensure initial UI state matches
+                this.updateUI();
+            }
+
+            updateUI() {
+                const r = STATE.severityRatio; // 0 to 1
+                
+                // Math approximations for visualization
+                const temp = (14.0 + r * 6.5).toFixed(1);
+                const seaLevel = (r * 5.0).toFixed(2);
+
+                domElements.temp.innerText = `${temp}°C`;
+                domElements.sea.innerText = `+${seaLevel}m`;
+
+                // Update text and panel color based on severity thresholds
+                if (STATE.ppm < 350) {
+                    domElements.info.innerText = "Stable Holocene levels. The natural greenhouse effect maintains habitable temperatures by trapping a small amount of heat.";
+                    domElements.info.style.borderColor = "var(--primary)";
+                    domElements.panel.style.borderColor = "rgba(255, 255, 255, 0.1)";
+                } else if (STATE.ppm < 500) {
+                    domElements.info.innerText = "Elevated CO2. Increased thermal trapping begins altering climate patterns, accelerating ice melt and warming oceans.";
+                    domElements.info.style.borderColor = "#ffaa00";
+                    domElements.panel.style.borderColor = "rgba(255, 170, 0, 0.3)";
+                } else if (STATE.ppm < 700) {
+                    domElements.info.innerText = "Danger Zone. High greenhouse gas concentrations are trapping significant outgoing infrared radiation. Severe coastal flooding and desertification occurring.";
+                    domElements.info.style.borderColor = "#ff6600";
+                    domElements.panel.style.borderColor = "rgba(255, 102, 0, 0.5)";
+                } else {
+                    domElements.info.innerText = "CRITICAL THRESHOLD: Extreme concentrations of CO2 and CH4 are absorbing and re-emitting nearly all outgoing longwave radiation. Catastrophic thermal trapping.";
+                    domElements.info.style.borderColor = "var(--danger)";
+                    domElements.panel.style.borderColor = "rgba(255, 51, 51, 0.7)";
+                }
+
+                // Update Shader Uniforms
+                if (this.earthUniforms) this.earthUniforms.mixAmount.value = r;
+                if (this.atmosphereUniforms) this.atmosphereUniforms.smogRatio.value = r;
+                
+                // Update Gas Particles Opacity
+                if (this.gasMaterial) this.gasMaterial.opacity = r * 0.8;
+            }
+
+            bindEvents() {
+                window.addEventListener('resize', () => {
+                    this.camera.aspect = window.innerWidth / window.innerHeight;
+                    this.camera.updateProjectionMatrix();
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+
+            animate() {
+                requestAnimationFrame(this.animate.bind(this));
+
+                const dt = this.clock.getDelta();
+                const r = STATE.severityRatio;
+
+                // Rotations
+                this.earthGroup.rotation.y += 0.05 * dt;
+                
+                // Clouds move faster and become more opaque with higher warming
+                const cloudSpeed = 0.02 + r * 0.08;
+                this.cloudsMesh.rotation.y += cloudSpeed * dt;
+                this.cloudsMaterial.opacity = 0.8 + r * 0.2;
+
+                // Gas particles slowly drift
+                this.gasParticles.rotation.y += 0.03 * dt;
+                this.gasParticles.rotation.x += 0.01 * dt;
+
+                // Physics Simulation
+                this.updateRadiation(dt);
+
+                this.controls.update();
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
+
+        // Initialize Simulation
+        window.onload = () => {
+            const sim = new GreenhouseSimulation();
+        };
+
+    </script>
+</body>
+</html>
