@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Vision Tracker</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --primary: #00ffcc;
+            --alert: #ff3366;
+            --bg-panel: rgba(10, 15, 20, 0.7);
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--primary);
+            user-select: none;
+        }
+
+        #webgl-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+        }
+
+        #hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 10;
+            pointer-events: none;
+            display: flex;
+            justify-content: space-between;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        .panel {
+            background: var(--bg-panel);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            pointer-events: auto;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #left-panel {
+            width: 320px;
+        }
+
+        .header {
+            border-bottom: 1px solid var(--primary);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        #tracker-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
+            border: 1px solid var(--primary);
+            background: #111;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        #tracker-container::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 204, 0.1) 3px, rgba(0, 255, 204, 0.1) 3px);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        canvas#tracker-canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        video {
+            display: none;
+        }
+
+        .telemetry-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(0, 255, 204, 0.1);
+            padding: 5px 0;
+        }
+
+        .data-val {
+            text-shadow: 0 0 5px var(--primary);
+        }
+
+        #right-panel {
+            width: 280px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 8px;
+            border-radius: 2px;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: rgba(0, 255, 204, 0.2);
+            border-radius: 2px;
+        }
+
+        #status-indicator {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-panel);
+            padding: 10px 30px;
+            border-radius: 20px;
+            border: 1px solid var(--primary);
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--primary);
+            backdrop-filter: blur(10px);
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .status-lost {
+            color: var(--alert) !important;
+            border-color: var(--alert) !important;
+            text-shadow: 0 0 10px var(--alert) !important;
+        }
+
+        .center-mark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            pointer-events: none;
+            opacity: 0.3;
+            z-index: 5;
+        }
+
+        .center-mark::before,
+        .center-mark::after {
+            content: '';
+            position: absolute;
+            background: var(--primary);
+        }
+
+        .center-mark::before {
+            top: 24px;
+            left: 0;
+            width: 50px;
+            height: 1px;
+        }
+
+        .center-mark::after {
+            top: 0;
+            left: 24px;
+            width: 1px;
+            height: 50px;
+        }
+    </style>
+
+    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+    <script type="importmap">
+        {
+        "imports": {
+          "three": "https://unpkg.com/three@0.150.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.150.0/examples/jsm/"
+        }
+      }
+    </script>
+</head>
+
+<body>
+
+    <div class="center-mark"></div>
+
+    <div id="hud">
+        <div class="panel" id="left-panel">
+            <div class="header">
+                <h1>AEON STAGE</h1>
+                <p>AI VISION TRACKING NODE v2.2</p>
+            </div>
+
+            <div id="tracker-container">
+                <video id="video" width="640" height="480" autoplay playsinline muted></video>
+                <canvas id="tracker-canvas" width="640" height="480"></canvas>
+            </div>
+
+            <div>
+                <div class="telemetry-row"><span>TARGET LOCK</span> <span class="data-val" id="ui-lock">SCANNING</span>
+                </div>
+                <div class="telemetry-row"><span>POS X</span> <span class="data-val" id="ui-x">0.00</span></div>
+                <div class="telemetry-row"><span>POS Z</span> <span class="data-val" id="ui-z">0.00</span></div>
+                <div class="telemetry-row"><span>PIXEL MASS</span> <span class="data-val" id="ui-mass">0</span></div>
+            </div>
+        </div>
+
+        <div id="status-indicator">INITIALIZING SYSTEM...</div>
+
+        <div class="panel" id="right-panel">
+            <div class="header">
+                <h1>PARAMETERS</h1>
+                <p>FIXTURE CONTROL LINK</p>
+            </div>
+
+            <div class="control-group">
+                <label>Tracking Smoothness (Lag)</label>
+                <input type="range" id="ctrl-smooth" min="0.01" max="0.2" step="0.01" value="0.05">
+            </div>
+            <div class="control-group">
+                <label>Beam Intensity</label>
+                <input type="range" id="ctrl-intensity" min="1" max="15" step="0.5" value="8">
+            </div>
+            <div class="control-group">
+                <label>Red Sensitivity</label>
+                <input type="range" id="ctrl-red" min="50" max="255" step="1" value="110">
+            </div>
+        </div>
+    </div>
+
+    <div id="webgl-container"></div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+        const container = document.getElementById('webgl-container');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x050a0f, 0.015);
+
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 30, 45);
+        camera.lookAt(0, -5, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        const renderScene = new RenderPass(scene, camera);
+        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2.0, 0.5, 0.2);
+        const composer = new EffectComposer(renderer);
+        composer.addPass(renderScene);
+        composer.addPass(bloomPass);
+
+        const floorGeo = new THREE.PlaneGeometry(200, 200);
+        const floorMat = new THREE.MeshStandardMaterial({ color: 0x0a1118, roughness: 0.1, metalness: 0.9 });
+        const floor = new THREE.Mesh(floorGeo, floorMat);
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        scene.add(floor);
+
+        const gridHelper = new THREE.GridHelper(100, 50, 0x00ffcc, 0x003322);
+        gridHelper.position.y = 0.05;
+        gridHelper.material.transparent = true;
+        gridHelper.material.opacity = 0.5;
+        scene.add(gridHelper);
+
+        const boxGeo = new THREE.BoxGeometry(2, 15, 2);
+        const boxMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.3, metalness: 0.8 });
+        for(let i = 0; i < 15; i++) {
+            const box = new THREE.Mesh(boxGeo, boxMat);
+            box.position.set((Math.random() - 0.5) * 80, 7.5, (Math.random() - 0.5) * 40 - 10);
+            box.castShadow = true;
+            box.receiveShadow = true;
+            scene.add(box);
+        }
+
+        const particlesGeo = new THREE.BufferGeometry();
+        const particlesCount = 1000;
+        const posArray = new Float32Array(particlesCount * 3);
+        for(let i = 0; i < particlesCount * 3; i++) { posArray[i] = (Math.random() - 0.5) * 100; }
+        particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particleMat = new THREE.PointsMaterial({ size: 0.1, color: 0x00ffcc, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending });
+        const particleMesh = new THREE.Points(particlesGeo, particleMat);
+        scene.add(particleMesh);
+
+        scene.add(new THREE.AmbientLight(0x001122, 1.0));
+
+        const spotLight = new THREE.SpotLight(0x00ffcc, 8);
+        spotLight.position.set(0, 40, 0);
+        spotLight.angle = Math.PI / 10;
+        spotLight.penumbra = 0.4;
+        spotLight.decay = 1.5;
+        spotLight.distance = 150;
+        spotLight.castShadow = true;
+        spotLight.shadow.mapSize.width = 1024;
+        spotLight.shadow.mapSize.height = 1024;
+        scene.add(spotLight);
+
+        const spotTarget = new THREE.Object3D();
+        scene.add(spotTarget);
+        spotLight.target = spotTarget;
+
+        const beamGeo = new THREE.CylinderGeometry(0.5, 10, 45, 32, 1, true);
+        beamGeo.translate(0, -22.5, 0); 
+        beamGeo.rotateX(-Math.PI / 2); 
+        const beamMat = new THREE.MeshBasicMaterial({
+            color: 0x00ffcc, transparent: true, opacity: 0.08,
+            blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide
+        });
+        const beamMesh = new THREE.Mesh(beamGeo, beamMat);
+        beamMesh.position.copy(spotLight.position);
+        scene.add(beamMesh);
+
+        const ringGeo = new THREE.RingGeometry(2, 2.5, 32);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x00ffcc, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
+        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+        ringMesh.rotation.x = -Math.PI / 2;
+        ringMesh.position.y = 0.1;
+        scene.add(ringMesh);
+
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('tracker-canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        
+        const uiLock = document.getElementById('ui-lock');
+        const uiX = document.getElementById('ui-x');
+        const uiZ = document.getElementById('ui-z');
+        const uiMass = document.getElementById('ui-mass');
+        const statusInd = document.getElementById('status-indicator');
+        
+        const ctrlSmooth = document.getElementById('ctrl-smooth');
+        const ctrlIntensity = document.getElementById('ctrl-intensity');
+        const ctrlRed = document.getElementById('ctrl-red');
+
+        let desiredTargetX = 0, desiredTargetZ = 0, isTracking = false;
+
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            .then((stream) => {
+                video.srcObject = stream;
+                video.onloadedmetadata = () => { video.play(); };
+                video.addEventListener('play', () => { 
+                    statusInd.innerText = "CAMERA ONLINE. AWAITING TARGET."; 
+                    statusInd.classList.remove("status-lost");
+                });
+            })
+            .catch((err) => {
+                console.error(err);
+                statusInd.innerText = "ERROR: CAMERA BLOCKED";
+                statusInd.classList.add("status-lost");
+            });
+
+        function processVision() {
+            if (video.paused || video.ended) return;
+
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = frame.data;
+
+            let sumX = 0, sumY = 0, count = 0;
+            let minX = canvas.width, maxX = 0;
+            let minY = canvas.height, maxY = 0;
+            
+
+            const redThreshold = parseInt(ctrlRed.value);
+
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i], g = data[i + 1], b = data[i + 2];
+                
+                if (r > redThreshold && g < 80 && b < 80) {
+                    const pixelIndex = i / 4;
+                    const x = pixelIndex % canvas.width;
+                    const y = Math.floor(pixelIndex / canvas.width);
+
+                    sumX += x; sumY += y; count++;
+                    if(x < minX) minX = x; if(x > maxX) maxX = x;
+                    if(y < minY) minY = y; if(y > maxY) maxY = y;
+                }
+            }
+            if (count > 30) {
+                isTracking = true;
+                const avgX = sumX / count;
+                const avgY = sumY / count;
+
+                ctx.strokeStyle = '#00ffcc';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(minX, minY, maxX - minX, maxY - minY);
+                
+                ctx.beginPath();
+                ctx.arc(avgX, avgY, 5, 0, Math.PI * 2);
+                ctx.fillStyle = '#00ffcc';
+                ctx.fill();
+
+                const len = 10;
+                ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.moveTo(minX, minY+len); ctx.lineTo(minX, minY); ctx.lineTo(minX+len, minY); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(maxX, maxY-len); ctx.lineTo(maxX, maxY); ctx.lineTo(maxX-len, maxY); ctx.stroke();
+
+                const normalizedX = -((avgX / canvas.width) * 2 - 1); 
+                const normalizedY = (avgY / canvas.height) * 2 - 1;
+
+                desiredTargetX = normalizedX * 40;  
+                desiredTargetZ = normalizedY * 30;
+
+                uiLock.innerText = "LOCKED";
+                uiLock.style.color = "#00ffcc";
+                uiX.innerText = desiredTargetX.toFixed(2);
+                uiZ.innerText = desiredTargetZ.toFixed(2);
+                uiMass.innerText = count; 
+                
+                statusInd.innerText = "TARGET TRACKING ACTIVE";
+                statusInd.classList.remove("status-lost");
+
+                spotLight.color.setHex(0x00ffcc);
+                beamMat.color.setHex(0x00ffcc);
+                ringMat.color.setHex(0x00ffcc);
+                spotLight.intensity = parseFloat(ctrlIntensity.value);
+            } else {
+                isTracking = false;
+                uiLock.innerText = "SEARCHING...";
+                uiLock.style.color = "#ff3366";
+                uiMass.innerText = "0";
+
+                statusInd.innerText = "TARGET LOST";
+                statusInd.classList.add("status-lost");
+
+                const time = Date.now() * 0.0005;
+                desiredTargetX = Math.sin(time) * 20;
+                desiredTargetZ = Math.cos(time * 0.7) * 15;
+
+                spotLight.color.setHex(0xff3366);
+                beamMat.color.setHex(0xff3366);
+                ringMat.color.setHex(0xff3366);
+                spotLight.intensity = parseFloat(ctrlIntensity.value) * 0.5;
+            }
+        }
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+            const time = clock.getElapsedTime();
+
+            processVision();
+
+            const lerpFactor = parseFloat(ctrlSmooth.value);
+            spotTarget.position.x += (desiredTargetX - spotTarget.position.x) * lerpFactor;
+            spotTarget.position.z += (desiredTargetZ - spotTarget.position.z) * lerpFactor;
+
+            ringMesh.position.x = spotTarget.position.x;
+            ringMesh.position.z = spotTarget.position.z;
+            ringMesh.scale.setScalar(1 + Math.sin(time * 5) * 0.1);
+
+            beamMesh.lookAt(spotTarget.position);
+            particleMesh.rotation.y += 0.05 * delta;
+            
+            composer.render();
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+
+</html>
