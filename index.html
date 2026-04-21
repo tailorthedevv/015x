@@ -233,12 +233,12 @@
                    </div>
                    <a 
                      id="open"
-                     href="/code-editor"
+                     href="/dashboard"
                      onMouseEnter={playHoverSfx}
                      onClick={(e) => { 
                      e.preventDefault(); 
                      playClickSfx();
-                     setTimeout(() => window.location.href = "/code-editor", 150);
+                     setTimeout(() => window.location.href = "/dashboard", 150);
                      }}
                      className="group bg-white text-black px-4 py-2 md:px-6 md:py-2.5 transition-all duration-300 hover:bg-transparent hover:text-white hover:border hover:border-white no-underline"
                    >
@@ -401,7 +401,7 @@
         
         const openDemo = (url) => {
           playClickSfx();
-          window.open("/code-editor");
+          window.open("/dashboard");
         };
 
         return (
