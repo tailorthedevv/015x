@@ -182,7 +182,7 @@
             Info, Maximize, Minimize, Palette, Type, Layout, Code, Zap, BookOpen, 
             CheckCircle2, FilePlus, FolderPlus, GraduationCap, Globe, ArrowRight,
             ExternalLink, Lightbulb, Command, ArrowLeft, GitBranch, Blocks,
-            Clipboard, Check
+            Clipboard, Check, Database
         } from 'lucide-react';
         import JSZip from 'jszip';
         import { format } from 'prettier';
@@ -761,7 +761,7 @@ This is a sample project created with the 015x.dev Editor.
                 description: "Learn essential DOM manipulation, event listeners, and array state management in Vanilla JS.",
                 level: "Beginner",
                 total_sections: 3,
-                tags: ['JS', 'DOM', 'HTML'],
+                tags:['JS', 'DOM', 'HTML'],
                 sections:[
                     {
                         section_id: 1,
@@ -1112,6 +1112,106 @@ loop();`
             }
         };
 
+        // --- VFS BRIDGE (DASHBOARD INTEGRATION) ---
+        
+        const convertDashboardFsToEditorFs = (nestedFiles, rootName) => {
+            const flatFs = {
+                'root': { id: 'root', name: rootName || 'project', parentId: null, type: ItemType.FOLDER, isOpen: true }
+            };
+            
+            const traverse = (node, parentId) => {
+                for (const[name, data] of Object.entries(node)) {
+                    const id = `item_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                    if (data.type === 'dir') {
+                        flatFs[id] = { id, name, parentId, type: ItemType.FOLDER, isOpen: true };
+                        if (data.children) traverse(data.children, id);
+                    } else {
+                        flatFs[id] = { 
+                            id, name, parentId, type: ItemType.FILE, 
+                            language: resolveLanguage(name), 
+                            content: data.content || '' 
+                        };
+                    }
+                }
+            };
+            traverse(nestedFiles, 'root');
+            return flatFs;
+        };
+
+        const convertEditorFsToDashboardFs = (flatFs) => {
+            const nested = {};
+            const nodeMap = {};
+
+            for (const[id, item] of Object.entries(flatFs)) {
+                if (id === 'root') continue;
+                nodeMap[id] = {
+                    type: item.type === ItemType.FOLDER ? 'dir' : 'file',
+                    name: item.name,
+                    parentId: item.parentId,
+                    ...(item.type === ItemType.FILE ? { content: item.content } : { children: {} })
+                };
+            }
+
+            for (const [id, node] of Object.entries(nodeMap)) {
+                if (node.parentId === 'root') {
+                    nested[node.name] = node;
+                } else if (nodeMap[node.parentId]) {
+                    if(!nodeMap[node.parentId].children) nodeMap[node.parentId].children = {};
+                    nodeMap[node.parentId].children[node.name] = node;
+                }
+            }
+            
+            const clean = (obj) => {
+                for (const key in obj) {
+                    delete obj[key].name;
+                    delete obj[key].parentId;
+                    if (obj[key].children) clean(obj[key].children);
+                }
+                return obj;
+            };
+            
+            return clean(nested);
+        };
+
+        const loadProjectFromVFS = async (repoId) => {
+            return new Promise((resolve) => {
+                const req = indexedDB.open('015X_CORE_FS', 1);
+                req.onsuccess = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('repositories')) return resolve(null);
+                    const tx = db.transaction('repositories', 'readonly');
+                    const store = tx.objectStore('repositories');
+                    const getReq = store.get(repoId);
+                    getReq.onsuccess = () => resolve(getReq.result);
+                    getReq.onerror = () => resolve(null);
+                };
+                req.onerror = () => resolve(null);
+            });
+        };
+
+        const saveToVFS = async (repoId, currentFs) => {
+            return new Promise((resolve) => {
+                const req = indexedDB.open('015X_CORE_FS', 1);
+                req.onsuccess = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('repositories')) return resolve(null);
+                    const tx = db.transaction('repositories', 'readwrite');
+                    const store = tx.objectStore('repositories');
+                    const getReq = store.get(repoId);
+                    
+                    getReq.onsuccess = () => {
+                        const repo = getReq.result;
+                        if (repo) {
+                            repo.files = convertEditorFsToDashboardFs(currentFs);
+                            repo.updatedAt = Date.now();
+                            store.put(repo);
+                        }
+                        resolve();
+                    };
+                };
+            });
+        };
+
         // --- COMPONENTS ---
 
         // Icon Helper
@@ -1309,7 +1409,7 @@ loop();`
           );
         };
 
-        // Source Control Pane (New Feature)
+        // Source Control Pane
         const SourceControlPane = ({ fileSystem, initialFileSystem, onSelectFile }) => {
             const changes = useMemo(() => {
                 const result =[];
@@ -1353,7 +1453,7 @@ loop();`
             );
         };
 
-        // Snippets Pane (New Feature)
+        // Snippets Pane
         const SnippetsPane = () => {
             const [copied, setCopied] = useState(null);
             const copyToClipboard = (text, id) => {
@@ -1672,7 +1772,7 @@ loop();`
 
         // Lesson Modal
         const LessonModal = ({ isOpen, onClose, onTryCode, lesson, lessons }) => {
-            const lessonList = lessons || (lesson ? [lesson] : LESSONS);
+            const lessonList = lessons || (lesson ?[lesson] : LESSONS);
             const [activeLesson, setActiveLesson] = useState(lesson ? lesson : null);
             const [activeSectionId, setActiveSectionId] = useState(1);
 
@@ -2021,7 +2121,7 @@ loop();`
                   monacoRef.current.editor.defineTheme(theme.id, { base: theme.monaco.base, inherit: theme.monaco.inherit, rules: theme.monaco.rules, colors: theme.monaco.colors });
                   monacoRef.current.editor.setTheme(theme.id);
               }
-          }, [theme]);
+          },[theme]);
 
           useEffect(() => {
             if (editorRef.current) {
@@ -2212,7 +2312,7 @@ loop();`
 
         // App Component
         function useDebounce(value, delay) {
-          const [debouncedValue, setDebouncedValue] = useState(value);
+          const[debouncedValue, setDebouncedValue] = useState(value);
           useEffect(() => { const handler = setTimeout(() => setDebouncedValue(value), delay); return () => clearTimeout(handler); }, [value, delay]);
           return debouncedValue;
         }
@@ -2221,11 +2321,11 @@ loop();`
           const [fileSystem, setFileSystem] = useState(INITIAL_FILE_SYSTEM);
           const [activeFileId, setActiveFileId] = useState('index.html');
           const[openFiles, setOpenFiles] = useState(['index.html']);
-          const [sidebarWidth, setSidebarWidth] = useState(240);
+          const[sidebarWidth, setSidebarWidth] = useState(240);
           const [editorWidth, setEditorWidth] = useState(600);
           const [activeSidebarView, setActiveSidebarView] = useState('explorer');
           const[refreshTrigger, setRefreshTrigger] = useState(0);
-          const [activeMenu, setActiveMenu] = useState(null);
+          const[activeMenu, setActiveMenu] = useState(null);
           const [isLessonModalOpen, setIsLessonModalOpen] = useState(false);
           const[isHelpModalOpen, setIsHelpModalOpen] = useState(false);
           const [isFullscreen, setIsFullscreen] = useState(false);
@@ -2237,12 +2337,47 @@ loop();`
           const [isResizing, setIsResizing] = useState(false);
           const[ghostText, setGhostText] = useState(null);
           
-          const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+          const[settings, setSettings] = useState(DEFAULT_SETTINGS);
           const [currentThemeId, setCurrentThemeId] = useState('vs-dark');
           const fileInputRef = useRef(null);
           const styleRef = useRef(null);
           const splitPaneRef = useRef(null);
           
+          // --- VFS DB Setup inside App ---
+          const urlParams = new URLSearchParams(window.location.search);
+          const repoId = urlParams.get('repo');
+          const [isSavedToDB, setIsSavedToDB] = useState(false);
+          
+          useEffect(() => {
+              if (!repoId) return;
+              
+              const initVFS = async () => {
+                  const repo = await loadProjectFromVFS(repoId);
+                  if (repo && repo.files) {
+                      const flatFs = convertDashboardFsToEditorFs(repo.files, repo.name);
+                      setFileSystem(flatFs);
+                      
+                      const fileItems = Object.values(flatFs).filter(f => f.type === ItemType.FILE);
+                      const indexFile = fileItems.find(f => f.name === 'index.html') || fileItems[0];
+                      
+                      if (indexFile) {
+                          setOpenFiles([indexFile.id]);
+                          setActiveFileId(indexFile.id);
+                      } else {
+                          setOpenFiles([]);
+                          setActiveFileId(null);
+                      }
+                      
+                      // Auto-route preview path if they put everything in root
+                      if (Object.values(flatFs).some(f => f.parentId === 'root' && f.name === 'index.html')) {
+                          setPreviewUrl('/');
+                          setUrlInputValue('/');
+                      }
+                  }
+              };
+              initVFS();
+          }, [repoId]);
+
           const debouncedFileSystem = useDebounce(fileSystem, 800);
 
           const currentTheme = useMemo(() => THEMES.find(t => t.id === currentThemeId) || THEMES[0], [currentThemeId]);
@@ -2277,7 +2412,13 @@ loop();`
             const handleGlobalKeyDown = (e) => {
                 if ((e.ctrlKey || e.metaKey) && e.key === 's') {
                     e.preventDefault();
-                    console.log("Saved!"); 
+                    if (repoId) {
+                        saveToVFS(repoId, fileSystem);
+                        setIsSavedToDB(true);
+                        setTimeout(() => setIsSavedToDB(false), 2000);
+                    } else {
+                        console.log("Saved temporarily!"); 
+                    }
                 }
                 if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'f') {
                     e.preventDefault();
@@ -2294,7 +2435,7 @@ loop();`
             };
             window.addEventListener('keydown', handleGlobalKeyDown);
             return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-          }, [activeFileId, fileSystem]);
+          }, [activeFileId, fileSystem, repoId]);
 
           const startSidebarResizing = useCallback((e) => {
             e.preventDefault();
@@ -2337,7 +2478,7 @@ loop();`
             
             document.addEventListener('mousemove', handleMouseMove);
             document.addEventListener('mouseup', handleMouseUp);
-          }, [activeSidebarView, sidebarWidth]);
+          },[activeSidebarView, sidebarWidth]);
 
           const toggleFullscreen = () => {
               if (!previewContainerRef.current) return;
@@ -2430,7 +2571,7 @@ loop();`
 
               if (type === ItemType.FILE) {
                   setTimeout(() => {
-                      setOpenFiles(prev => prev.includes(id) ? prev : [...prev, id]);
+                      setOpenFiles(prev => prev.includes(id) ? prev :[...prev, id]);
                       setActiveFileId(id);
                   }, 0);
               }
@@ -2529,7 +2670,7 @@ loop();`
           const lineCount = useMemo(() => {
               if (!activeFile || typeof activeFile.content !== 'string') return 0;
               return activeFile.content.split('\n').length;
-          }, [activeFile]);
+          },[activeFile]);
 
           const handleTryCode = (code) => {
               setIsLessonModalOpen(false);
@@ -2665,7 +2806,15 @@ loop();`
                                 items={[
                                     { label: 'New File', action: () => createItem(ItemType.FILE, 'root') },
                                     { label: 'New Folder', action: () => createItem(ItemType.FOLDER, 'root') },
-                                    { label: 'Save', action: () => console.log('Saved'), shortcut: 'Ctrl+S' },
+                                    { label: repoId ? (isSavedToDB ? 'Saved to Dashboard!' : 'Save to DB') : 'Save', action: () => {
+                                        if (repoId) {
+                                            saveToVFS(repoId, fileSystem);
+                                            setIsSavedToDB(true);
+                                            setTimeout(() => setIsSavedToDB(false), 2000);
+                                        } else {
+                                            console.log('Saved Locally');
+                                        }
+                                    }, shortcut: 'Ctrl+S' },
                                     { label: 'Close All', action: handleCloseAllFiles },
                                     { label: 'Import Zip', action: handleImportClick },
                                     { label: 'Download Zip', action: handleExport }
@@ -2705,6 +2854,12 @@ loop();`
                     </div>
                     
                     <div className="flex items-center space-x-3">
+                         {repoId && (
+                            <div className={`text-xs px-2 py-1 rounded border transition-colors ${isSavedToDB ? 'border-green-500 text-green-500' : 'border-neutral-600 text-neutral-400'}`}>
+                                <Database size={12} className="inline mr-1" />
+                                {isSavedToDB ? 'Saved!' : 'Linked'}
+                            </div>
+                         )}
                          <button 
                             onClick={() => setIsLessonModalOpen(true)}
                             className="flex items-center space-x-1 px-3 py-1 bg-purple-600 hover:bg-purple-500 text-white text-xs rounded transition-colors shadow-sm"
@@ -2851,7 +3006,16 @@ loop();`
                                     file={activeFile} settings={settings} theme={currentTheme}
                                     ghostText={(activeFile && ghostText && ghostText.fileId === activeFile.id) ? ghostText.content : null}
                                     onChange={(val) => activeFileId && updateFileContent(activeFileId, val)} 
-                                    onFormat={handleFormat} onSave={() => console.log('Saved!')}
+                                    onFormat={handleFormat} 
+                                    onSave={() => {
+                                        if (repoId) {
+                                            saveToVFS(repoId, fileSystem);
+                                            setIsSavedToDB(true);
+                                            setTimeout(() => setIsSavedToDB(false), 2000);
+                                        } else {
+                                            console.log("Saved Locally!");
+                                        }
+                                    }}
                                 />
                             </div>
                             
