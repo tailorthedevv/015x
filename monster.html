@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Monster Dex - Collector App</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        :root {
+            --m-green: #95d600;
+            --m-dark: #111111;
+            --m-panel: #1e1e1e;
+            --m-text: #ffffff;
+            --m-subtext: #aaaaaa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--m-dark);
+            color: var(--m-text);
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+
+        /* Loading Screen */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--m-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .monster-m-loader {
+            font-size: 8rem;
+            font-weight: 900;
+            font-family: Impact, sans-serif;
+            color: #333;
+            position: relative;
+        }
+
+        .monster-m-loader::after {
+            content: 'M';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            color: var(--m-green);
+            overflow: hidden;
+            height: 0%;
+            animation: fillUp 2s ease-in-out forwards;
+        }
+
+        @keyframes fillUp {
+            100% {
+                height: 100%;
+            }
+        }
+
+        .loader-text {
+            margin-top: 20px;
+            color: var(--m-green);
+            letter-spacing: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            to {
+                opacity: 0.5;
+            }
+        }
+
+        /* App Header */
+        header {
+            padding: 20px;
+            text-align: center;
+            background: var(--m-panel);
+            border-bottom: 2px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        h1 {
+            color: var(--m-green);
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Views */
+        .view {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Bottom Nav Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--m-panel);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 70px;
+            border-top: 1px solid #333;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--m-subtext);
+            font-size: 0.75rem;
+            transition: color 0.2s;
+            cursor: pointer;
+            width: 20%;
+        }
+
+        .nav-btn svg {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            fill: currentColor;
+        }
+
+        .nav-btn.active {
+            color: var(--m-green);
+        }
+
+        /* Center Scan Button */
+        .nav-scan-wrapper {
+            position: relative;
+            width: 20%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-scan-btn {
+            position: absolute;
+            bottom: 10px;
+            width: 65px;
+            height: 65px;
+            background: var(--m-green);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(149, 214, 0, 0.4);
+            cursor: pointer;
+            border: 4px solid var(--m-dark);
+            transition: transform 0.1s;
+        }
+
+        .nav-scan-btn:active {
+            transform: scale(0.95);
+        }
+
+        .nav-scan-btn svg {
+            width: 30px;
+            height: 30px;
+            fill: var(--m-dark);
+        }
+
+        /* Scanner View */
+        #reader-container {
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid var(--m-green);
+            background: #000;
+            margin-bottom: 20px;
+        }
+
+        .manual-entry {
+            background: var(--m-panel);
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .manual-entry input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background: var(--m-dark);
+            color: white;
+        }
+
+        .manual-entry button {
+            background: var(--m-green);
+            color: black;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Scanning Result Popup Overlay */
+        #result-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .result-card {
+            background: var(--m-panel);
+            border: 2px solid var(--m-green);
+            border-radius: 15px;
+            padding: 25px;
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        .result-img {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin: 10px auto;
+            display: block;
+        }
+
+        .btn-collect {
+            background: var(--m-green);
+            color: black;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: var(--m-subtext);
+            border: none;
+            margin-top: 10px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Override / Refine Select */
+        .refine-box {
+            margin-top: 15px;
+            text-align: left;
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .refine-box select {
+            width: 100%;
+            padding: 8px;
+            background: var(--m-dark);
+            color: white;
+            border: 1px solid #444;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        /* Gallery View */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .can-card {
+            background: var(--m-panel);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .can-card img {
+            width: 60px;
+            height: 90px;
+            object-fit: contain;
+            margin-bottom: 8px;
+        }
+
+        .can-title {
+            font-size: 0.75rem;
+            color: var(--m-green);
+            font-weight: bold;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .can-date {
+            font-size: 0.6rem;
+            color: var(--m-subtext);
+            margin-top: 5px;
+        }
+
+        /* Stats & Profile View */
+        .stat-box {
+            background: var(--m-panel);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--m-green);
+        }
+
+        .stat-num {
+            font-size: 2.5rem;
+            color: var(--m-green);
+            font-weight: bold;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            background: #333;
+            border-radius: 50%;
+            border: 2px solid var(--m-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .rank-title {
+            color: var(--m-green);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Leaderboard View */
+        .dev-overlay {
+            text-align: center;
+            padding: 50px 20px;
+            background: repeating-linear-gradient(45deg, #222, #222 10px, #111 10px, #111 20px);
+            border-radius: 10px;
+            border: 2px dashed #ffeaa7;
+        }
+
+        .dev-overlay h2 {
+            color: #ffeaa7;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div class="monster-m-loader">M</div>
+        <div class="loader-text">Loading Dex</div>
+    </div>
+
+    <header>
+        <h1 id="header-title">My Collection</h1>
+    </header>
+
+    <!-- VIEWS -->
+
+    <!-- Gallery View -->
+    <main id="view-gallery" class="view active">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3>Collected Cans</h3>
+            <span id="gallery-count" style="color: var(--m-green); font-weight: bold;">0/∞</span>
+        </div>
+        <div id="gallery-grid" class="gallery-grid">
+            <!-- Cans populated via JS -->
+        </div>
+    </main>
+
+    <!-- Stats View -->
+    <main id="view-stats" class="view">
+        <div class="stat-box">
+            <div class="stat-num" id="stat-total">0</div>
+            <div>Unique Flavors Collected</div>
+        </div>
+        <div class="stat-box" style="border-left-color: #3498db;">
+            <div class="stat-num" id="stat-scans">0</div>
+            <div>Total Scans Performed</div>
+        </div>
+    </main>
+
+    <!-- Scan View -->
+    <main id="view-scan" class="view">
+        <p style="text-align: center; font-size: 0.85rem; color: var(--m-subtext); margin-bottom: 15px;">Align barcode
+            in the center. Bright light required.</p>
+        <div id="reader-container">
+            <div id="reader"></div>
+        </div>
+
+        <div class="manual-entry">
+            <input type="number" id="manual-code" placeholder="Type barcode manually...">
+            <button onclick="processScan(document.getElementById('manual-code').value)">Enter</button>
+        </div>
+    </main>
+
+    <!-- Profile View -->
+    <main id="view-profile" class="view">
+        <div class="profile-header">
+            <div class="avatar">👤</div>
+            <div>
+                <div style="font-size: 0.9rem; color: var(--m-subtext);">Collector Rank</div>
+                <div class="rank-title" id="profile-rank">Novice Drinker</div>
+            </div>
+        </div>
+        <div class="stat-box" style="text-align: left; border-left: none; background: #222;">
+            <p><strong>Member Since:</strong> <span id="profile-date">Today</span></p>
+            <p style="margin-top: 10px;"><strong>Completion:</strong> Still hunting!</p>
+        </div>
+    </main>
+
+    <!-- Leaderboard View -->
+    <main id="view-leaderboard" class="view">
+        <div class="dev-overlay">
+            <h2>🚧 Under Construction 🚧</h2>
+            <p style="color: #aaa; font-size: 0.9rem;">Global leaderboards and friend tracking are being built by the
+                dev team. Keep collecting to climb the ranks before launch!</p>
+        </div>
+    </main>
+
+    <!-- Scan Result Overlay -->
+    <div id="result-overlay">
+        <div class="result-card">
+            <h2 style="color: var(--m-green); margin-bottom: 10px;" id="res-status">Scan Complete!</h2>
+            <img id="res-img" class="result-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%2395d600' viewBox='0 0 24 24'><path d='M12 2L1 21h22L12 2zm0 3.8l7.5 13.2H4.5L12 5.8z'/></svg>">
+            <h3 id="res-name" style="font-size: 1.3rem; margin: 10px 0;">Loading...</h3>
+            <div id="res-barcode" style="color: var(--m-subtext); font-family: monospace; font-size: 0.9rem;"></div>
+
+            <!-- Refine Box for Generic APIs -->
+            <div id="refine-container" class="refine-box" style="display: none;">
+                <label style="font-size: 0.8rem; color: #ccc;">Generic name detected. Which Punch is this?</label>
+                <select id="refine-select">
+                    <option value="Pipeline Punch">Pipeline Punch</option>
+                    <option value="Pacific Punch">Pacific Punch</option>
+                    <option value="Mixxd Punch">Mixxd Punch</option>
+                    <option value="Mango Loco">Mango Loco (Juice)</option>
+                    <option value="Khaotic">Khaotic (Juice)</option>
+                    <option value="Papillon">Papillon (Juice)</option>
+                    <option value="Aussie Lemonade">Aussie Lemonade</option>
+                    <option value="Other">Other / Unknown</option>
+                </select>
+            </div>
+
+            <button class="btn-collect" id="btn-add-collection" onclick="addToCollection()">Add to Collection</button>
+            <button class="btn-cancel" onclick="closeResult()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-btn active" onclick="switchTab('gallery')" id="nav-gallery">
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M4 4h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4z" />
+            </svg>
+            Gallery
+        </div>
+        <div class="nav-btn" onclick="switchTab('stats')" id="nav-stats">
+            <svg viewBox="0 0 24 24">
+                <path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 10h2v7H7zm4-5h2v12h-2zm4 3h2v9h-2z" />
+            </svg>
+            Stats
+        </div>
+        <div class="nav-scan-wrapper">
+            <div class="nav-scan-btn" onclick="switchTab('scan')">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M3 4V1h3v2H5v2H3zm15-3v3h-2V2h2v2h2V1h-2zM3 20v3h3v-2H5v-2H3zm15 3v-3h-2v2h2v-2h2v3h-2zM7 7h10v10H7z" />
+                </svg>
+            </div>
+        </div>
+        <div class="nav-btn" onclick="switchTab('profile')" id="nav-profile">
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z" />
+            </svg>
+            Profile
+        </div>
+        <div class="nav-btn" onclick="switchTab('leaderboard')" id="nav-leaderboard">
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-5h5v5zm0-7H7V5h5v5zm7 7h-5v-7h5v7zm0-9h-5V5h5v5z" />
+            </svg>
+            Ranks
+        </div>
+    </nav>
+
+    <script>
+        /* =========================================
+           1. DATA & STATE MANAGEMENT
+           ========================================= */
+        
+        let collection = JSON.parse(localStorage.getItem('monster_collection')) ||[];
+        let totalScans = parseInt(localStorage.getItem('monster_scans')) || 0;
+        let joinDate = localStorage.getItem('monster_join_date');
+        
+        if (!joinDate) {
+            joinDate = new Date().toLocaleDateString();
+            localStorage.setItem('monster_join_date', joinDate);
+        }
+
+        let html5QrcodeScanner = null;
+        let currentScanData = null; // Holds temporary data before user confirms
+
+        // HIGHLY SPECIFIC HARDCODED DB (Overrides API vagueness immediately)
+        const DEFINITIVE_DB = {
+            "070847811169": { name: "Original (Green)", img: "" },
+            "070847000037": { name: "Zero Sugar", img: "" },
+            "070847012474": { name: "Zero Ultra (White)", img: "" },
+            "070847022909": { name: "Pipeline Punch", img: "" },
+            "070847031918": { name: "Pacific Punch", img: "" },
+            "070847029014": { name: "Mango Loco", img: "" },
+            "070847036944": { name: "Khaotic", img: "" },
+            "070847036920": { name: "Papillon", img: "" },
+            "070847034629": { name: "Ultra Fiesta", img: "" },
+            "070847034643": { name: "Ultra Rosa", img: "" },
+            "070847033080": { name: "Ultra Paradise", img: "" },
+            "070847037989": { name: "Ultra Watermelon", img: "" },
+            "070847038474": { name: "Ultra Peachy Keen", img: "" },
+            "070847040088": { name: "Aussie Lemonade", img: "" },
+            "5060335635228": { name: "Original (EU 500ml)", img: "" }
+        };
+
+        /* =========================================
+           2. INITIALIZATION & UI
+           ========================================= */
+
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+            }, 1800);
+            updateUI();
+        };
+
+        function switchTab(tabId) {
+            // Stop camera if leaving scan view to save battery
+            if (tabId !== 'scan' && html5QrcodeScanner) {
+                html5QrcodeScanner.clear().catch(e => console.log(e));
+                html5QrcodeScanner = null;
+            }
+
+            // Update UI Views
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + tabId).classList.add('active');
+
+            // Update Nav Icons
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            if(tabId !== 'scan') document.getElementById('nav-' + tabId).classList.add('active');
+
+            // Set Header Title
+            const titles = { gallery: 'My Collection', stats: 'My Stats', scan: 'Scan New Flavor', profile: 'Collector Profile', leaderboard: 'Global Ranks' };
+            document.getElementById('header-title').innerText = titles[tabId];
+
+            if (tabId === 'scan') initScanner();
+            if (tabId === 'gallery') updateGallery();
+        }
+
+        function updateUI() {
+            // Gallery count
+            document.getElementById('gallery-count').innerText = `${collection.length} Collected`;
+            
+            // Stats
+            document.getElementById('stat-total').innerText = collection.length;
+            document.getElementById('stat-scans').innerText = totalScans;
+
+            // Profile
+            document.getElementById('profile-date').innerText = joinDate;
+            let rank = "Novice Drinker";
+            if(collection.length >= 5) rank = "Caffeine Initiate";
+            if(collection.length >= 15) rank = "Punch Connoisseur";
+            if(collection.length >= 30) rank = "Monster Master";
+            document.getElementById('profile-rank').innerText = rank;
+
+            updateGallery();
+        }
+
+        function updateGallery() {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = '';
+            
+            if (collection.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; color: #666; text-align:center; margin-top:40px;">No cans yet. Tap the center button to scan!</div>';
+                return;
+            }
+
+            // Sort newest first
+            const sorted = [...collection].reverse();
+
+            sorted.forEach(item => {
+                const imgUrl = item.img || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%23555' viewBox='0 0 24 24'><path d='M12 2L1 21h22L12 2zm0 3.8l7.5 13.2H4.5L12 5.8z'/></svg>";
+                const card = document.createElement('div');
+                card.className = 'can-card';
+                card.innerHTML = `
+                    <img src="${imgUrl}" alt="${item.name}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' fill=\\'%2395d600\\' viewBox=\\'0 0 24 24\\'><path d=\\'M12 2L1 21h22L12 2zm0 3.8l7.5 13.2H4.5L12 5.8z\\'/></svg>'">
+                    <div class="can-title">${item.name}</div>
+                    <div class="can-date">${item.date}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        /* =========================================
+           3. SCANNER & API LOGIC
+           ========================================= */
+
+        function initScanner() {
+            if (html5QrcodeScanner) return; // Prevent duplicate instances
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", {  
+                fps: 15, qrbox: { width: 300, height: 150 }, aspectRatio: 1.33,
+                formatsToSupport:[ Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E, Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8 ]
+            }, false);
+            
+            html5QrcodeScanner.render((text) => {
+                if (html5QrcodeScanner) {
+                    html5QrcodeScanner.pause();
+                    processScan(text);
+                }
+            }, (err) => {});
+        }
+
+        async function processScan(barcode) {
+            barcode = barcode.trim();
+            if (!barcode) return;
+            
+            // Increment total scans stat
+            totalScans++;
+            localStorage.setItem('monster_scans', totalScans);
+            updateUI();
+
+            showResultLoading(barcode);
+
+            // 1. Check strict local DB first
+            let localMatch = checkLocalDB(barcode);
+            if (localMatch) {
+                promptCollection(barcode, localMatch.name, localMatch.img, false);
+                return;
+            }
+
+            // 2. Query Open Food Facts API
+            try {
+                const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+                const data = await response.json();
+                
+                if (data.status === 1 && data.product) {
+                    let name = data.product.product_name || "Unknown Product";
+                    let img = data.product.image_front_url || "";
+                    let brands = data.product.brands || "";
+
+                    if (name.toLowerCase().includes("monster") || brands.toLowerCase().includes("monster")) {
+                        // Intelligent generic fix
+                        let isGenericPunch = checkGenericVagueness(name);
+                        promptCollection(barcode, name, img, isGenericPunch);
+                    } else {
+                        showResultError(barcode, `Not a Monster Can (${name})`);
+                    }
+                } else {
+                    showResultError(barcode, "Barcode not found in any database.");
+                }
+            } catch (err) {
+                showResultError(barcode, "Network error. Try again.");
+            }
+        }
+
+        function checkLocalDB(code) {
+            if (DEFINITIVE_DB[code]) return DEFINITIVE_DB[code];
+            if (code.length === 13 && code.startsWith("0") && DEFINITIVE_DB[code.substring(1)]) return DEFINITIVE_DB[code.substring(1)];
+            if (code.length === 12 && DEFINITIVE_DB["0"+code]) return DEFINITIVE_DB["0"+code];
+            return null;
+        }
+
+        // Detects if the API just spat out "Monster Punch" without specifying the type
+        function checkGenericVagueness(name) {
+            let n = name.toLowerCase();
+            // If it says punch/juice but doesn't name a specific one
+            if (n.includes("punch") && !n.includes("pipeline") && !n.includes("pacific") && !n.includes("mixxd")) return true;
+            if (n.includes("juice") && !n.includes("mango") && !n.includes("khaotic") && !n.includes("papillon")) return true;
+            return false;
+        }
+
+        /* =========================================
+           4. RESULT POPUP & COLLECTION LOGIC
+           ========================================= */
+
+        function showResultLoading(barcode) {
+            document.getElementById('result-overlay').style.display = 'flex';
+            document.getElementById('res-status').innerText = "Analyzing...";
+            document.getElementById('res-status').style.color = "#f39c12";
+            document.getElementById('res-name').innerText = "Fetching Data...";
+            document.getElementById('res-barcode').innerText = barcode;
+            document.getElementById('refine-container').style.display = 'none';
+            document.getElementById('btn-add-collection').style.display = 'none';
+            if (navigator.vibrate) navigator.vibrate(100);
+        }
+
+        function showResultError(barcode, msg) {
+            document.getElementById('res-status').innerText = "Error / Invalid";
+            document.getElementById('res-status').style.color = "#ff4444";
+            document.getElementById('res-name').innerText = msg;
+            document.getElementById('btn-add-collection').style.display = 'none';
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        }
+
+        function promptCollection(barcode, name, img, requiresRefinement) {
+            currentScanData = { barcode, name, img, date: new Date().toLocaleDateString() };
+
+            document.getElementById('res-status').innerText = "Flavor Found!";
+            document.getElementById('res-status').style.color = "var(--m-green)";
+            document.getElementById('res-name').innerText = name;
+            if (img) document.getElementById('res-img').src = img;
+
+            // Check if already collected
+            const alreadyGot = collection.find(c => c.barcode === barcode || c.name.toLowerCase() === name.toLowerCase());
+            
+            const btn = document.getElementById('btn-add-collection');
+            btn.style.display = 'block';
+
+            if (alreadyGot) {
+                btn.innerText = "Already Collected";
+                btn.style.background = "#555";
+                btn.onclick = closeResult; // Just close it
+            } else {
+                btn.innerText = "Add to Collection";
+                btn.style.background = "var(--m-green)";
+                btn.onclick = addToCollection;
+            }
+
+            // Show override dropdown if API was vague
+            if (requiresRefinement && !alreadyGot) {
+                document.getElementById('refine-container').style.display = 'block';
+                document.getElementById('res-name').innerText = "Monster Punch (Unspecified)";
+            }
+
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        }
+
+        function addToCollection() {
+            if (!currentScanData) return;
+
+            // Apply refinement if dropdown is visible
+            const refineBox = document.getElementById('refine-container');
+            if (refineBox.style.display === 'block') {
+                const selected = document.getElementById('refine-select').value;
+                if (selected !== 'Other') {
+                    currentScanData.name = `Monster ${selected}`;
+                }
+            }
+
+            collection.push(currentScanData);
+            localStorage.setItem('monster_collection', JSON.stringify(collection));
+            
+            updateUI();
+            closeResult();
+            
+            // Switch to gallery to show off new item
+            setTimeout(() => switchTab('gallery'), 300);
+        }
+
+        function closeResult() {
+            document.getElementById('result-overlay').style.display = 'none';
+            currentScanData = null;
+            document.getElementById('manual-code').value = '';
+            
+            // Resume scanner if we are still on scan view
+            if (document.getElementById('view-scan').classList.contains('active') && html5QrcodeScanner) {
+                html5QrcodeScanner.resume();
+            }
+        }
+    </script>
+</body>
+
+</html>
