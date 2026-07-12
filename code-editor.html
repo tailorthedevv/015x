@@ -34,9 +34,7 @@
                 warning: '#eab308'
               }
             },
-            fontSize: {
-              xxs: '0.65rem'
-            },
+            fontSize: { xxs: '0.65rem' },
             fontFamily: {
               sans:['"Segoe UI"', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif'],
               mono:['"Fira Code"', '"Consolas"', '"Monaco"', 'monospace']
@@ -101,85 +99,23 @@
 
     <style>
         :root {
-            --vs-bg: #1e1e1e;
-            --vs-sidebar: #252526;
-            --vs-activity-bar: #333333;
-            --vs-active-tab: #1e1e1e;
-            --vs-inactive-tab: #2d2d2d;
-            --vs-border: #454545;
-            --vs-accent: #007acc;
-            --vs-text: #cccccc;
-            --vs-text-hover: #ffffff;
-            --vs-item-hover: #2a2d2e;
-            --vs-item-active: #37373d;
-            --vs-input-bg: #3c3c3c;
+            --vs-bg: #1e1e1e; --vs-sidebar: #252526; --vs-activity-bar: #333333;
+            --vs-active-tab: #1e1e1e; --vs-inactive-tab: #2d2d2d; --vs-border: #454545;
+            --vs-accent: #007acc; --vs-text: #cccccc; --vs-text-hover: #ffffff;
+            --vs-item-hover: #2a2d2e; --vs-item-active: #37373d; --vs-input-bg: #3c3c3c;
         }
 
-        body {
-            background-color: var(--vs-bg);
-            color: var(--vs-text);
-        }
-
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-
-        ::-webkit-scrollbar-corner {
-            background: var(--vs-bg);
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--vs-border);
-            border-radius: 5px;
-            border: 2px solid transparent;
-            background-clip: content-box;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background-color: var(--vs-text);
-        }
-
-        select,
-        input[type="text"],
-        input[type="search"] {
-            background-color: var(--vs-input-bg);
-            color: var(--vs-text);
-            border-color: var(--vs-border);
-            outline: none;
-        }
-
-        select:focus,
-        input:focus {
-            border-color: var(--vs-accent);
-        }
-
-        input[type="range"] {
-            -webkit-appearance: none;
-            background: transparent;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 12px;
-            width: 12px;
-            border-radius: 50%;
-            background: var(--vs-accent);
-            cursor: pointer;
-            margin-top: -4px;
-        }
-
-        input[type="range"]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 4px;
-            cursor: pointer;
-            background: var(--vs-border);
-            border-radius: 2px;
-        }
+        body { background-color: var(--vs-bg); color: var(--vs-text); }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-corner { background: var(--vs-bg); }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--vs-border); border-radius: 5px; border: 2px solid transparent; background-clip: content-box; }
+        ::-webkit-scrollbar-thumb:hover { background-color: var(--vs-text); }
+        select, input[type="text"], input[type="search"] { background-color: var(--vs-input-bg); color: var(--vs-text); border-color: var(--vs-border); outline: none; }
+        select:focus, input:focus { border-color: var(--vs-accent); }
+        input[type="range"] { -webkit-appearance: none; background: transparent; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%; background: var(--vs-accent); cursor: pointer; margin-top: -4px; }
+        input[type="range"]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: var(--vs-border); border-radius: 2px; }
         .xterm-viewport { overflow-y: auto !important; }
     </style>
 </head>
@@ -214,202 +150,215 @@
         import { FitAddon } from 'xterm-addon-fit';
 
         // --- DEFINITIONS ---
-        
-        const FileType = {
-          HTML: 'html',
-          CSS: 'css',
-          JAVASCRIPT: 'javascript',
-          JSON: 'json',
-          MARKDOWN: 'markdown',
-          PNG: 'png',
-          UNKNOWN: 'unknown',
-        };
-
-        const ItemType = {
-          FILE: 'file',
-          FOLDER: 'folder',
-        };
+        const FileType = { HTML: 'html', CSS: 'css', JAVASCRIPT: 'javascript', JSON: 'json', MARKDOWN: 'markdown', PNG: 'png', UNKNOWN: 'unknown' };
+        const ItemType = { FILE: 'file', FOLDER: 'folder' };
 
         // --- CONSTANTS ---
-
         const INITIAL_FILE_SYSTEM = {
           'root': { id: 'root', name: 'project', parentId: null, type: ItemType.FOLDER, isOpen: true },
           'package.json': {
-            id: 'package.json',
-            name: 'package.json',
-            parentId: 'root',
-            type: ItemType.FILE,
-            language: FileType.JSON,
+            id: 'package.json', name: 'package.json', parentId: 'root', type: ItemType.FILE, language: FileType.JSON,
             content: JSON.stringify({
-              name: "browser-os-app",
-              type: "module",
-              scripts: { start: "node --watch index.js" },
-              dependencies: { express: "^4.18.2" }
+              name: "browser-os-app", type: "module", scripts: { start: "node --watch index.js" }, dependencies: { express: "^4.18.2" }
             }, null, 2)
           },
           'index.js': {
-            id: 'index.js',
-            name: 'index.js',
-            parentId: 'root',
-            type: ItemType.FILE,
-            language: FileType.JAVASCRIPT,
+            id: 'index.js', name: 'index.js', parentId: 'root', type: ItemType.FILE, language: FileType.JAVASCRIPT,
             content: `import express from 'express';\n\nconst app = express();\nconst port = 3111;\n\napp.get('/', (req, res) => {\n  res.send(\`\n    <div style="font-family: system-ui; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #0d1117;">\n      <h1 style="color: #58a6ff; font-size: 3rem; margin: 0 0 10px 0;">🚀 Live OS Server</h1>\n      <p style="color: #8b949e; font-size: 1.2rem;">Running entirely in the browser WebContainer.</p>\n      <div style="margin-top: 20px; padding: 15px 25px; background: #161b22; border-radius: 8px; border: 1px solid #30363d;">\n        <p style="margin: 0; color: #c9d1d9;">Edit <b>index.js</b> and watch it auto-restart instantly!</p>\n      </div>\n    </div>\n  \`);\n});\n\napp.listen(port, () => {\n  console.log(\`Server running locally on port \${port}\`);\n});\n`
           }
         };
 
         const DEFAULT_SETTINGS = {
-          fontSize: 14,
-          wordWrap: 'on',
-          minimap: true,
-          tabSize: 2,
-          lineNumbers: 'on',
-          cursorStyle: 'line',
-          fontLigatures: true,
-          cursorBlinking: 'smooth',
-          smoothScrolling: true,
-          cursorSmoothCaretAnimation: 'on'
+          fontSize: 14, wordWrap: 'on', minimap: true, tabSize: 2, lineNumbers: 'on',
+          cursorStyle: 'line', fontLigatures: true, cursorBlinking: 'smooth', smoothScrolling: true, cursorSmoothCaretAnimation: 'on'
         };
 
         const THEMES =[
           {
-            id: 'vs-dark',
-            name: 'Visual Studio Dark',
-            type: 'dark',
-            colors: {
-              bg: '#1e1e1e',
-              sidebar: '#252526',
-              activityBar: '#333333',
-              activeTab: '#1e1e1e',
-              inactiveTab: '#2d2d2d',
-              border: '#454545',
-              accent: '#007acc',
-              text: '#cccccc',
-              textHover: '#ffffff',
-              itemHover: '#2a2d2e',
-              itemActive: '#37373d',
-              inputBg: '#3c3c3c',
-            },
-            monaco: { 
-                base: 'vs-dark', 
-                inherit: true, 
-                rules: [], 
-                colors: { 'editor.background': '#1e1e1e' } 
+            id: 'vs-dark', name: 'Visual Studio Dark', type: 'dark',
+            colors: { bg: '#1e1e1e', sidebar: '#252526', activityBar: '#333333', activeTab: '#1e1e1e', inactiveTab: '#2d2d2d', border: '#454545', accent: '#007acc', text: '#cccccc', textHover: '#ffffff', itemHover: '#2a2d2e', itemActive: '#37373d', inputBg: '#3c3c3c' },
+            monaco: { base: 'vs-dark', inherit: true, rules: [], colors: { 'editor.background': '#1e1e1e' } }
+          },
+          {
+            id: 'vs-light', name: 'Visual Studio Light', type: 'light',
+            colors: { bg: '#ffffff', sidebar: '#f3f3f3', activityBar: '#e8e8e8', activeTab: '#ffffff', inactiveTab: '#f3f3f3', border: '#d4d4d4', accent: '#007acc', text: '#333333', textHover: '#000000', itemHover: '#e4e6f1', itemActive: '#ffffff', inputBg: '#ffffff' },
+            monaco: { base: 'vs', inherit: true, rules:[], colors: { 'editor.background': '#ffffff' } }
+          },
+          {
+            id: 'github-dark', name: 'GitHub Dark', type: 'dark',
+            colors: { bg: '#0d1117', sidebar: '#010409', activityBar: '#161b22', activeTab: '#0d1117', inactiveTab: '#010409', border: '#30363d', accent: '#58a6ff', text: '#c9d1d9', textHover: '#58a6ff', itemHover: '#21262d', itemActive: '#0d1117', inputBg: '#0d1117' },
+            monaco: {
+              base: 'vs-dark', inherit: true,
+              rules:[
+                  { token: 'comment', foreground: '8b949e', fontStyle: 'italic' },
+                  { token: 'keyword', foreground: 'ff7b72' }, { token: 'string', foreground: 'a5d6ff' },
+                  { token: 'number', foreground: '79c0ff' }, { token: 'type', foreground: 'ffa657' },
+                  { token: 'class', foreground: 'ffa657' }, { token: 'function', foreground: 'd2a8ff' },
+                  { token: 'variable', foreground: 'c9d1d9' }, { token: 'delimiter', foreground: 'c9d1d9' }
+              ],
+              colors: { 'editor.background': '#0d1117', 'editor.foreground': '#c9d1d9', 'editorCursor.foreground': '#58a6ff', 'editor.lineHighlightBackground': '#161b22' }
             }
           },
           {
-            id: 'github-dark',
-            name: 'GitHub Dark',
-            type: 'dark',
-            colors: {
-              bg: '#0d1117',
-              sidebar: '#010409',
-              activityBar: '#161b22',
-              activeTab: '#0d1117',
-              inactiveTab: '#010409',
-              border: '#30363d',
-              accent: '#58a6ff',
-              text: '#c9d1d9',
-              textHover: '#58a6ff',
-              itemHover: '#21262d',
-              itemActive: '#0d1117',
-              inputBg: '#0d1117',
-            },
+            id: 'monokai', name: 'Monokai', type: 'dark',
+            colors: { bg: '#272822', sidebar: '#1e1f1c', activityBar: '#171814', activeTab: '#272822', inactiveTab: '#1e1f1c', border: '#3e3d32', accent: '#a6e22e', text: '#f8f8f2', textHover: '#ffffff', itemHover: '#3e3d32', itemActive: '#272822', inputBg: '#272822' },
             monaco: {
-              base: 'vs-dark',
-              inherit: true,
+              base: 'vs-dark', inherit: true,
               rules:[
-                  { token: 'comment', foreground: '8b949e', fontStyle: 'italic' },
-                  { token: 'keyword', foreground: 'ff7b72' },
-                  { token: 'string', foreground: 'a5d6ff' },
-                  { token: 'number', foreground: '79c0ff' },
-                  { token: 'type', foreground: 'ffa657' },
-                  { token: 'class', foreground: 'ffa657' },
-                  { token: 'function', foreground: 'd2a8ff' },
-                  { token: 'variable', foreground: 'c9d1d9' },
-                  { token: 'delimiter', foreground: 'c9d1d9' }
+                  { token: 'comment', foreground: '75715e' }, { token: 'keyword', foreground: 'f92672' },
+                  { token: 'string', foreground: 'e6db74' }, { token: 'number', foreground: 'ae81ff' },
+                  { token: 'type', foreground: '66d9ef', fontStyle: 'italic' }, { token: 'class', foreground: 'a6e22e' },
+                  { token: 'function', foreground: 'a6e22e' }, { token: 'variable', foreground: 'f8f8f2' }
               ],
-              colors: {
-                'editor.background': '#0d1117',
-                'editor.foreground': '#c9d1d9',
-                'editorCursor.foreground': '#58a6ff',
-                'editor.lineHighlightBackground': '#161b22'
-              }
+              colors: { 'editor.background': '#272822', 'editor.foreground': '#f8f8f2', 'editorCursor.foreground': '#f8f8f0', 'editor.selectionBackground': '#49483e' }
             }
           },
-          // Keeping it concise, but all themes from your original code are fully supported.
+          {
+            id: 'dracula', name: 'Dracula', type: 'dark',
+            colors: { bg: '#282a36', sidebar: '#21222c', activityBar: '#191a21', activeTab: '#282a36', inactiveTab: '#21222c', border: '#44475a', accent: '#bd93f9', text: '#f8f8f2', textHover: '#ffffff', itemHover: '#44475a', itemActive: '#282a36', inputBg: '#282a36' },
+            monaco: {
+              base: 'vs-dark', inherit: true,
+              rules:[
+                  { token: 'comment', foreground: '6272a4' }, { token: 'keyword', foreground: 'ff79c6' },
+                  { token: 'string', foreground: 'f1fa8c' }, { token: 'number', foreground: 'bd93f9' },
+                  { token: 'type', foreground: '8be9fd', fontStyle: 'italic' }, { token: 'class', foreground: '50fa7b' },
+                  { token: 'function', foreground: '50fa7b' }, { token: 'variable', foreground: 'f8f8f2' },
+                  { token: 'operator', foreground: 'ff79c6' }
+              ],
+              colors: { 'editor.background': '#282a36', 'editor.foreground': '#f8f8f2', 'editorCursor.foreground': '#f8f8f0', 'editor.selectionBackground': '#44475a', 'editor.lineHighlightBackground': '#44475a' }
+            }
+          },
+          {
+            id: 'nord', name: 'Nord', type: 'dark',
+            colors: { bg: '#2e3440', sidebar: '#2e3440', activityBar: '#3b4252', activeTab: '#3b4252', inactiveTab: '#2e3440', border: '#434c5e', accent: '#88c0d0', text: '#d8dee9', textHover: '#eceff4', itemHover: '#434c5e', itemActive: '#3b4252', inputBg: '#3b4252' },
+            monaco: {
+              base: 'vs-dark', inherit: true,
+              rules:[
+                  { token: 'comment', foreground: '616e88' }, { token: 'keyword', foreground: '81a1c1' },
+                  { token: 'string', foreground: 'a3be8c' }, { token: 'number', foreground: 'b48ead' },
+                  { token: 'type', foreground: '8fbcbb' }, { token: 'class', foreground: '8fbcbb' },
+                  { token: 'function', foreground: '88c0d0' }, { token: 'variable', foreground: 'd8dee9' }
+              ],
+              colors: { 'editor.background': '#2e3440', 'editor.foreground': '#d8dee9', 'editorCursor.foreground': '#d8dee9', 'editor.lineHighlightBackground': '#3b4252' }
+            }
+          },
+          {
+              id: 'solarized-dark', name: 'Solarized Dark', type: 'dark',
+              colors: { bg: '#002b36', sidebar: '#073642', activityBar: '#002b36', activeTab: '#002b36', inactiveTab: '#073642', border: '#586e75', accent: '#268bd2', text: '#839496', textHover: '#93a1a1', itemHover: '#586e75', itemActive: '#002b36', inputBg: '#073642' },
+              monaco: {
+                  base: 'vs-dark', inherit: true,
+                  rules:[
+                      { token: 'comment', foreground: '586e75', fontStyle: 'italic' }, { token: 'keyword', foreground: '859900' },
+                      { token: 'string', foreground: '2aa198' }, { token: 'number', foreground: 'd33682' },
+                      { token: 'type', foreground: 'b58900' }, { token: 'class', foreground: 'b58900' },
+                      { token: 'function', foreground: '268bd2' }, { token: 'variable', foreground: '839496' }
+                  ],
+                  colors: { 'editor.background': '#002b36', 'editor.foreground': '#839496', 'editorCursor.foreground': '#d33682', 'editor.lineHighlightBackground': '#073642' }
+              }
+          },
+          {
+              id: 'solarized-light', name: 'Solarized Light', type: 'light',
+              colors: { bg: '#fdf6e3', sidebar: '#eee8d5', activityBar: '#fdf6e3', activeTab: '#fdf6e3', inactiveTab: '#eee8d5', border: '#93a1a1', accent: '#268bd2', text: '#657b83', textHover: '#586e75', itemHover: '#d33682', itemActive: '#fdf6e3', inputBg: '#eee8d5' },
+              monaco: {
+                  base: 'vs', inherit: true,
+                  rules:[
+                      { token: 'comment', foreground: '93a1a1', fontStyle: 'italic' }, { token: 'keyword', foreground: '859900' },
+                      { token: 'string', foreground: '2aa198' }, { token: 'number', foreground: 'd33682' },
+                      { token: 'type', foreground: 'b58900' }, { token: 'function', foreground: '268bd2' },
+                      { token: 'variable', foreground: '657b83' }
+                  ],
+                  colors: { 'editor.background': '#fdf6e3', 'editor.foreground': '#657b83', 'editorCursor.foreground': '#657b83', 'editor.lineHighlightBackground': '#eee8d5' }
+              }
+          },
+          {
+              id: 'night-owl', name: 'Night Owl', type: 'dark',
+              colors: { bg: '#011627', sidebar: '#011627', activityBar: '#011627', activeTab: '#0b2942', inactiveTab: '#01111d', border: '#5f7e97', accent: '#82aaff', text: '#d6deeb', textHover: '#ffffff', itemHover: '#0b253a', itemActive: '#0b2942', inputBg: '#0b253a' },
+              monaco: {
+                  base: 'vs-dark', inherit: true,
+                  rules:[
+                      { token: 'comment', foreground: '637777', fontStyle: 'italic' }, { token: 'keyword', foreground: 'c792ea', fontStyle: 'italic' },
+                      { token: 'string', foreground: 'ecc48d' }, { token: 'number', foreground: 'f78c6c' },
+                      { token: 'type', foreground: 'addb67' }, { token: 'function', foreground: '82aaff' },
+                      { token: 'variable', foreground: 'd6deeb' }, { token: 'tag', foreground: '7fdbca' }
+                  ],
+                  colors: { 'editor.background': '#011627', 'editor.foreground': '#d6deeb', 'editorCursor.foreground': '#80a4c2', 'editor.selectionBackground': '#1d3b53', 'editor.lineHighlightBackground': '#01111d' }
+              }
+          },
+          {
+              id: 'one-dark-pro', name: 'One Dark Pro', type: 'dark',
+              colors: { bg: '#282c34', sidebar: '#21252b', activityBar: '#21252b', activeTab: '#282c34', inactiveTab: '#21252b', border: '#181a1f', accent: '#61afef', text: '#abb2bf', textHover: '#ffffff', itemHover: '#2c313a', itemActive: '#282c34', inputBg: '#181a1f' },
+              monaco: {
+                  base: 'vs-dark', inherit: true,
+                  rules:[
+                      { token: 'comment', foreground: '5c6370', fontStyle: 'italic' }, { token: 'keyword', foreground: 'c678dd' },
+                      { token: 'string', foreground: '98c379' }, { token: 'number', foreground: 'd19a66' },
+                      { token: 'type', foreground: 'e5c07b' }, { token: 'class', foreground: 'e5c07b' },
+                      { token: 'function', foreground: '61afef' }, { token: 'variable', foreground: 'abb2bf' },
+                      { token: 'tag', foreground: 'e06c75' }
+                  ],
+                  colors: { 'editor.background': '#282c34', 'editor.foreground': '#abb2bf', 'editorCursor.foreground': '#528bff', 'editor.selectionBackground': '#3e4451', 'editor.lineHighlightBackground': '#2c313a' }
+              }
+          },
+          {
+              id: 'synthwave-84', name: 'SynthWave \'84', type: 'dark',
+              colors: { bg: '#262335', sidebar: '#241b2f', activityBar: '#1f1627', activeTab: '#262335', inactiveTab: '#241b2f', border: '#34294f', accent: '#ff7edb', text: '#ffffff', textHover: '#ff7edb', itemHover: '#37294d', itemActive: '#262335', inputBg: '#241b2f' },
+              monaco: {
+                  base: 'vs-dark', inherit: true,
+                  rules:[
+                      { token: 'comment', foreground: '848bbd', fontStyle: 'italic' }, { token: 'keyword', foreground: 'fede5d' },
+                      { token: 'string', foreground: 'ff8b39' }, { token: 'number', foreground: 'f97e72' },
+                      { token: 'type', foreground: 'ff7edb' }, { token: 'function', foreground: '36f9f6' },
+                      { token: 'variable', foreground: 'ffffff' }, { token: 'tag', foreground: 'fe4450' }
+                  ],
+                  colors: { 'editor.background': '#262335', 'editor.foreground': '#ffffff', 'editorCursor.foreground': '#f97e72', 'editor.selectionBackground': '#5f4c72', 'editor.lineHighlightBackground': '#2b213a' }
+              }
+          }
         ];
 
         const LESSONS =[
             {
-                id: 'todo-app',
-                title: "Build a To-Do App",
-                description: "Learn essential DOM manipulation, event listeners, and array state management in Vanilla JS.",
-                level: "Beginner",
-                total_sections: 1,
-                tags:['JS', 'DOM', 'HTML'],
+                id: 'todo-app', title: "Build a To-Do App", description: "Learn essential DOM manipulation, event listeners, and array state management in Vanilla JS.",
+                level: "Beginner", total_sections: 3, tags:['JS', 'DOM', 'HTML'],
                 sections:[
-                    {
-                        section_id: 1,
-                        title: "Basic UI Structure",
-                        objective: "Create the input field and a list container.",
-                        theory: "Every interactive app starts with standard semantic HTML.",
-                        steps:["Add an <input> with id 'taskInput'"],
-                        code_snippet: `<!DOCTYPE html>\n<html>\n<body>\n    <h2>My Tasks</h2>\n</body>\n</html>`
-                    }
+                    { section_id: 1, title: "Basic UI Structure", objective: "Create the input field and a list container.", theory: "Every interactive app starts with standard semantic HTML. We need an input box, a button, and a UL element.", steps:["Add an <input> with id 'taskInput'", "Add a <button> to add tasks", "Add a <ul> with id 'taskList'"], code_snippet: `<!DOCTYPE html>\n<html>\n<body>\n    <h2>My Tasks</h2>\n    <input type="text" id="taskInput" placeholder="New Task..." />\n    <button id="addBtn">Add</button>\n    <ul id="taskList"></ul>\n</body>\n</html>` },
+                    { section_id: 2, title: "Reading Input", objective: "Capture the text typed into the input field.", theory: "We attach a click event listener to the button. When clicked, we read the input's .value property.", steps:["Select elements using document.getElementById", "Add an Event Listener to the button", "Log the input value"], code_snippet: `const input = document.getElementById('taskInput');\nconst btn = document.getElementById('addBtn');\n\nbtn.addEventListener('click', () => {\n    const taskText = input.value;\n    if (taskText.trim() === '') return;\n    console.log("New Task:", taskText);\n    input.value = '';\n});` },
+                    { section_id: 3, title: "Modifying the DOM", objective: "Add new items into the unordered list dynamically.", theory: "Using document.createElement we construct a new <li> element, assign its text, and append it to the list.", steps:["Create an <li> element", "Set the textContent", "Append to the <ul>"], code_snippet: `const input = document.getElementById('taskInput');\nconst btn = document.getElementById('addBtn');\nconst list = document.getElementById('taskList');\n\nbtn.addEventListener('click', () => {\n    const taskText = input.value;\n    if (taskText.trim() === '') return;\n    const li = document.createElement('li');\n    li.textContent = taskText;\n    li.addEventListener('click', () => li.remove());\n    list.appendChild(li);\n    input.value = '';\n});` }
+                ]
+            },
+            {
+                id: 'css-grid', title: "CSS Grid Gallery", description: "Master modern CSS Grid layout by building a responsive image gallery system.",
+                level: "Intermediate", total_sections: 2, tags:['CSS', 'Grid', 'Layout'],
+                sections:[
+                    { section_id: 1, title: "Defining the Grid", objective: "Setup a responsive grid container.", theory: "display: grid turns the element into a grid container. grid-template-columns defines the columns dynamically.", steps:["Create a container div", "Apply display: grid", "Use repeat() and minmax() for responsiveness"], code_snippet: `.gallery {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));\n    gap: 1rem;\n    padding: 1rem;\n}\n.item {\n    background: #3498db;\n    height: 150px;\n    border-radius: 8px;\n}` },
+                    { section_id: 2, title: "Adding HTML & Spanning", objective: "Apply the grid and span items across multiple columns.", theory: "grid-column allows a child item to span multiple columns or rows, creating dynamic masonry-like layouts.", steps:["Add div.gallery and div.item", "Create a .wide class", "Set grid-column: span 2"], code_snippet: `<!DOCTYPE html>\n<html>\n<head>\n    <style>\n        .gallery {\n            display: grid;\n            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));\n            gap: 10px;\n        }\n        .item { background: #e74c3c; height: 100px; }\n        .wide { grid-column: span 2; background: #9b59b6; }\n    </style>\n</head>\n<body>\n    <div class="gallery">\n        <div class="item"></div>\n        <div class="item wide"></div>\n        <div class="item"></div>\n        <div class="item"></div>\n    </div>\n</body>\n</html>` }
+                ]
+            },
+            {
+                id: 'game-dev', title: "Intro to Game Dev", description: "Build a simple game loop and bouncing box physics using HTML5 Canvas.",
+                level: "Beginner", total_sections: 2, tags:['Canvas', 'JS', 'Graphics'],
+                sections:[
+                    { section_id: 1, title: "Setup Canvas", objective: "Get the drawing context from the HTML element.", theory: "We select the <canvas> element and get its '2d' context, granting tools to draw.", steps:["Select canvas by ID", "Get 2d context", "Set width/height"], code_snippet: `const canvas = document.getElementById('gameCanvas');\nconst ctx = canvas.getContext('2d');\ncanvas.width = window.innerWidth;\ncanvas.height = window.innerHeight;\nctx.fillStyle = 'cyan';\nctx.fillRect(100, 100, 50, 50);` },
+                    { section_id: 2, title: "Bouncing Logic", objective: "Make the box bounce off walls using a game loop.", theory: "A game loop constantly clears the screen and recalculates position based on speed.", steps:["Create requestAnimationFrame loop", "Check boundary collisions", "Reverse velocity on hit"], code_snippet: `let x = 100;\nlet speed = 5;\n\nfunction loop() {\n  ctx.clearRect(0, 0, canvas.width, canvas.height);\n  if (x > canvas.width || x < 0) speed = -speed;\n  x += speed;\n  ctx.fillStyle = 'cyan';\n  ctx.fillRect(x, 100, 50, 50);\n  requestAnimationFrame(loop);\n}\nloop();` }
                 ]
             }
         ];
 
         // --- UTILS ---
-
         const getPath = (itemId, fs) => {
-          let path = '';
-          let currentItem = fs[itemId];
-          while (currentItem && currentItem.parentId) {
-            path = `/${currentItem.name}${path}`;
-            currentItem = fs[currentItem.parentId];
-          }
-          return path || '/'; // Return / for root
+          let path = ''; let currentItem = fs[itemId];
+          while (currentItem && currentItem.parentId) { path = `/${currentItem.name}${path}`; currentItem = fs[currentItem.parentId]; }
+          return path || '/';
         };
 
         const getWcTree = (fs, parentId = 'root') => {
             const tree = {};
             Object.values(fs).forEach(item => {
                 if (item.parentId === parentId) {
-                    if (item.type === ItemType.FOLDER) {
-                        tree[item.name] = { directory: getWcTree(fs, item.id) };
-                    } else {
-                        tree[item.name] = { file: { contents: item.content || '' } };
-                    }
+                    if (item.type === ItemType.FOLDER) tree[item.name] = { directory: getWcTree(fs, item.id) };
+                    else tree[item.name] = { file: { contents: item.content || '' } };
                 }
             });
             return tree;
-        };
-
-        const findItemByPath = (path, currentDir, fs) => {
-          path = path.replace(/\\/g, '/');
-          let absolutePath = '';
-          if (path.startsWith('/')) {
-              absolutePath = path;
-          } else {
-              const dirParts = currentDir === '/' ?[] : currentDir.split('/').filter(Boolean);
-              const pathParts = path.split('/').filter(Boolean);
-              for (const part of pathParts) {
-                  if (part === '.') continue;
-                  if (part === '..') {
-                      dirParts.pop();
-                  } else {
-                      dirParts.push(part);
-                  }
-              }
-              absolutePath = '/' + dirParts.join('/');
-          }
-          for (const key in fs) {
-              if (getPath(key, fs) === absolutePath) {
-                  return fs[key];
-              }
-          }
-          return null;
         };
 
         const resolveLanguage = (fileName) => {
@@ -417,10 +366,7 @@
           switch (ext) {
             case 'html': return FileType.HTML;
             case 'css': return FileType.CSS;
-            case 'js':
-            case 'jsx':
-            case 'ts':
-            case 'tsx': return FileType.JAVASCRIPT;
+            case 'js': case 'jsx': case 'ts': case 'tsx': return FileType.JAVASCRIPT;
             case 'json': return FileType.JSON;
             case 'md': return FileType.MARKDOWN;
             case 'png': return FileType.PNG;
@@ -430,37 +376,15 @@
 
         const formatCode = async (code, language) => {
           try {
-            let parser = '';
-            let plugins =[];
+            let parser = ''; let plugins =[];
             switch (language) {
-              case FileType.HTML:
-                parser = 'html';
-                plugins =[parserHtml, parserPostcss, parserBabel];
-                break;
-              case FileType.CSS:
-                parser = 'css';
-                plugins = [parserPostcss];
-                break;
-              case FileType.JAVASCRIPT:
-              case FileType.JSON:
-                parser = 'babel';
-                plugins =[parserBabel, pluginEstree];
-                break;
-              default:
-                return code;
+              case FileType.HTML: parser = 'html'; plugins =[parserHtml, parserPostcss, parserBabel]; break;
+              case FileType.CSS: parser = 'css'; plugins = [parserPostcss]; break;
+              case FileType.JAVASCRIPT: case FileType.JSON: parser = 'babel'; plugins =[parserBabel, pluginEstree]; break;
+              default: return code;
             }
-            return await format(code, {
-              parser,
-              plugins,
-              printWidth: 80,
-              tabWidth: 2,
-              semi: true,
-              singleQuote: true,
-            });
-          } catch (e) {
-            console.error('Formatting failed', e);
-            return code;
-          }
+            return await format(code, { parser, plugins, printWidth: 80, tabWidth: 2, semi: true, singleQuote: true });
+          } catch (e) { return code; }
         };
 
         const exportProjectToZip = async (fs) => {
@@ -469,24 +393,17 @@
             if (item.type === ItemType.FILE && item.content !== undefined) {
               const path = getPath(item.id, fs);
               const zipPath = path.startsWith('/') ? path.slice(1) : path;
-              if (item.language === FileType.PNG) {
-                 zip.file(zipPath, item.content, { base64: true });
-              } else {
-                 zip.file(zipPath, item.content);
-              }
+              if (item.language === FileType.PNG) zip.file(zipPath, item.content, { base64: true });
+              else zip.file(zipPath, item.content);
             }
           });
           const content = await zip.generateAsync({ type: 'blob' });
           const url = window.URL.createObjectURL(content);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'project.zip';
-          a.click();
+          const a = document.createElement('a'); a.href = url; a.download = 'project.zip'; a.click();
           window.URL.revokeObjectURL(url);
         };
 
         // --- COMPONENTS ---
-
         const getFileIcon = (type, className) => {
           const props = { className: className || "w-4 h-4" };
           switch (type) {
@@ -500,10 +417,10 @@
           }
         };
 
-        const ExplorerItem = ({ item, level, activeFileId, onSelectFile, onToggleFolder, onCreateItem, onDeleteItem, onRenameItem, onMoveItem }) => {
+        const ExplorerItem = ({ item, level, activeFileId, onSelectFile, onToggleFolder, onCreateItem, onDeleteItem, onRenameItem }) => {
           const [isEditing, setIsEditing] = useState(false);
           const [name, setName] = useState(item.name);
-          const[isHovered, setIsHovered] = useState(false);
+          const [isHovered, setIsHovered] = useState(false);
 
           const handleRename = () => {
             if (name.trim() && name !== item.name) onRenameItem(item.id, name.trim());
@@ -572,14 +489,308 @@
           );
         };
 
+        const SourceControlPane = ({ fileSystem, initialFileSystem, onSelectFile }) => {
+            const changes = useMemo(() => {
+                const result =[];
+                const currentItems = Object.values(fileSystem);
+                const initialItems = Object.values(initialFileSystem || INITIAL_FILE_SYSTEM);
+
+                currentItems.forEach(item => {
+                    if (item.type !== ItemType.FILE) return;
+                    const initItem = initialItems.find(i => i.id === item.id);
+                    if (!initItem) result.push({ ...item, status: 'U' }); 
+                    else if (initItem.content !== item.content) result.push({ ...item, status: 'M' }); 
+                });
+
+                initialItems.forEach(initItem => {
+                    if (initItem.type !== ItemType.FILE) return;
+                    if (!currentItems.find(i => i.id === initItem.id)) result.push({ ...initItem, status: 'D' }); 
+                });
+                return result;
+            },[fileSystem, initialFileSystem]);
+
+            return (
+                <div className="h-full flex flex-col bg-vs-sidebar text-vs-text border-r border-vs-border">
+                    <div className="h-9 px-3 flex items-center justify-between text-xs font-bold tracking-wide uppercase text-neutral-400 shrink-0 border-b border-vs-border">
+                        <span>Source Control</span>
+                        <span className="bg-vs-activityBar text-[10px] px-2 py-0.5 rounded-full text-white">{changes.length}</span>
+                    </div>
+                    <div className="flex-1 overflow-y-auto custom-scrollbar py-2">
+                        {changes.length === 0 ? (
+                            <div className="text-xs text-neutral-500 text-center mt-4 px-4">No active changes</div>
+                        ) : (
+                            changes.map(file => (
+                                <div key={file.id} className="flex items-center px-3 py-1 cursor-pointer hover:bg-vs-itemHover text-xs group" onClick={() => file.status !== 'D' && onSelectFile(file.id)}>
+                                    <div className="mr-2 opacity-80">{getFileIcon(file.language)}</div>
+                                    <span className={`truncate flex-1 ${file.status === 'D' ? 'line-through text-neutral-500' : 'text-neutral-300 group-hover:text-white'}`}>{file.name}</span>
+                                    <span className={`ml-2 font-bold ${file.status === 'M' ? 'text-yellow-500' : file.status === 'U' ? 'text-green-500' : 'text-red-500'}`}>{file.status}</span>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const SnippetsPane = () => {
+            const [copied, setCopied] = useState(null);
+            const copyToClipboard = (text, id) => {
+                navigator.clipboard.writeText(text); setCopied(id); setTimeout(() => setCopied(null), 2000);
+            };
+
+            const snippets =[
+                { id: 'html-boiler', name: 'HTML5 Boilerplate', lang: 'HTML', code: `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <title>Document</title>\n</head>\n<body>\n</body>\n</html>` },
+                { id: 'css-reset', name: 'CSS Universal Reset', lang: 'CSS', code: `* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}` },
+                { id: 'js-fetch', name: 'Fetch API Promise', lang: 'JS', code: `fetch('https://jsonplaceholder.typicode.com/todos/1')\n  .then(res => res.json())\n  .then(json => console.log(json));` }
+            ];
+
+            return (
+                <div className="h-full flex flex-col bg-vs-sidebar text-vs-text border-r border-vs-border">
+                    <div className="h-9 px-3 flex items-center text-xs font-bold tracking-wide uppercase text-neutral-400 shrink-0 border-b border-vs-border"><span>Snippets Library</span></div>
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
+                        {snippets.map(s => (
+                            <div key={s.id} className="bg-vs-activityBar border border-vs-border rounded p-2 group hover:border-vs-accent transition-colors">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs font-bold text-neutral-300">{s.name}</span>
+                                    <span className="text-[10px] text-neutral-500 bg-vs-bg px-1 rounded">{s.lang}</span>
+                                </div>
+                                <div className="relative">
+                                    <pre className="text-[10px] bg-vs-bg p-2 rounded text-neutral-400 overflow-x-auto max-h-24 custom-scrollbar"><code>{s.code}</code></pre>
+                                    <button onClick={() => copyToClipboard(s.code, s.id)} className="absolute top-1 right-1 p-1 bg-vs-sidebar border border-vs-border rounded text-neutral-400 hover:text-white hover:border-vs-accent opacity-0 group-hover:opacity-100 transition-all">
+                                        {copied === s.id ? <Check size={12} className="text-green-500" /> : <Clipboard size={12} />}
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const SearchPane = ({ fileSystem, onSelectFile }) => {
+          const [query, setQuery] = useState('');
+
+          const results = useMemo(() => {
+            if (!query.trim()) return [];
+            const results =[];
+            const lowerQuery = query.toLowerCase();
+
+            Object.values(fileSystem).forEach(item => {
+                if (item.type === ItemType.FILE && item.content) {
+                    const matches =[];
+                    const lines = item.content.split('\n');
+                    lines.forEach((line, index) => {
+                        if (line.toLowerCase().includes(lowerQuery)) matches.push({ line: index + 1, text: line.trim() });
+                    });
+                    if (matches.length > 0 || item.name.toLowerCase().includes(lowerQuery)) {
+                        results.push({ fileId: item.id, fileName: item.name, language: item.language, matches });
+                    }
+                }
+            });
+            return results;
+          }, [fileSystem, query]);
+
+          return (
+            <div className="h-full flex flex-col bg-vs-sidebar text-vs-text border-r border-vs-border">
+              <div className="h-9 px-3 flex items-center text-xs font-bold tracking-wide uppercase text-neutral-400 shrink-0"><span>Search</span></div>
+              <div className="px-3 pb-2">
+                 <div className="relative">
+                    <input type="text" placeholder="Search files" value={query} onChange={e => setQuery(e.target.value)} className="w-full bg-vs-activityBar border border-vs-border text-white text-xs px-2 py-1 focus:border-vs-accent outline-none" autoFocus />
+                    <Search size={14} className="absolute right-2 top-1.5 text-neutral-500" />
+                 </div>
+              </div>
+              <div className="flex-1 overflow-y-auto custom-scrollbar">
+                 {query && results.length === 0 && <div className="text-xs text-neutral-500 text-center mt-4">No results found</div>}
+                 {results.map(res => (
+                     <div key={res.fileId} className="mb-1">
+                         <div onClick={() => onSelectFile(res.fileId)} className="flex items-center px-3 py-1 cursor-pointer hover:bg-vs-itemHover bg-vs-activityBar/30 sticky top-0">
+                            <div className="mr-2">{getFileIcon(res.language)}</div>
+                            <span className="text-xs font-bold text-neutral-300">{res.fileName}</span>
+                            <span className="ml-auto text-[10px] bg-vs-accent px-1.5 rounded-full text-white">{res.matches.length}</span>
+                         </div>
+                         <div>
+                            {res.matches.map((match, idx) => (
+                                <div key={idx} onClick={() => onSelectFile(res.fileId)} className="px-3 py-1 cursor-pointer hover:bg-vs-itemHover text-xs flex group">
+                                    <span className="text-neutral-500 w-6 shrink-0 text-right mr-2 font-mono group-hover:text-vs-text">{match.line}</span>
+                                    <span className="truncate text-neutral-400 group-hover:text-white font-mono">{match.text}</span>
+                                </div>
+                            ))}
+                         </div>
+                     </div>
+                 ))}
+              </div>
+            </div>
+          );
+        };
+
+        const SettingsPane = ({ settings, currentThemeId, onUpdateSettings, onUpdateTheme }) => {
+          return (
+            <div className="h-full flex flex-col bg-vs-sidebar text-vs-text border-r border-vs-border animate-slide-in">
+              <div className="h-9 px-3 flex items-center text-xs font-bold tracking-wide uppercase text-neutral-400 shrink-0 border-b border-vs-border"><span>Settings</span></div>
+              <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
+                <section>
+                  <div className="flex items-center space-x-2 text-xs font-bold uppercase text-vs-accent mb-3"><Palette size={14} /><span>Appearance</span></div>
+                  <div className="space-y-3 bg-vs-activityBar/30 p-3 rounded border border-vs-border">
+                     <div>
+                        <label className="block text-xs mb-1 text-neutral-400">Color Theme</label>
+                        <select value={currentThemeId} onChange={(e) => onUpdateTheme(e.target.value)} className="w-full rounded-sm p-1.5 text-xs border">
+                          {THEMES.map(theme => <option key={theme.id} value={theme.id}>{theme.name}</option>)}
+                        </select>
+                     </div>
+                     <div className="flex items-center justify-between">
+                        <label className="text-xs text-neutral-400">Font Ligatures</label>
+                        <input type="checkbox" checked={settings.fontLigatures} onChange={(e) => onUpdateSettings({ fontLigatures: e.target.checked })} className="accent-vs-accent" />
+                     </div>
+                  </div>
+                </section>
+                <section>
+                  <div className="flex items-center space-x-2 text-xs font-bold uppercase text-vs-accent mb-3"><Code size={14} /><span>Editor</span></div>
+                  <div className="space-y-3 bg-vs-activityBar/30 p-3 rounded border border-vs-border">
+                     <div>
+                        <label className="block text-xs mb-1 text-neutral-400">Font Size: {settings.fontSize}px</label>
+                        <input type="range" min="10" max="24" value={settings.fontSize} onChange={(e) => onUpdateSettings({ fontSize: parseInt(e.target.value) })} className="w-full" />
+                     </div>
+                     <div className="grid grid-cols-2 gap-3">
+                         <div>
+                            <label className="block text-xs mb-1 text-neutral-400">Tab Size</label>
+                            <select value={settings.tabSize} onChange={(e) => onUpdateSettings({ tabSize: parseInt(e.target.value) })} className="w-full rounded-sm p-1.5 text-xs border">
+                              <option value={2}>2 Spaces</option><option value={4}>4 Spaces</option><option value={8}>8 Spaces</option>
+                            </select>
+                         </div>
+                         <div>
+                            <label className="block text-xs mb-1 text-neutral-400">Word Wrap</label>
+                            <select value={settings.wordWrap} onChange={(e) => onUpdateSettings({ wordWrap: e.target.value })} className="w-full rounded-sm p-1.5 text-xs border">
+                              <option value="on">On</option><option value="off">Off</option>
+                            </select>
+                         </div>
+                     </div>
+                     <div className="grid grid-cols-2 gap-3">
+                         <div>
+                            <label className="block text-xs mb-1 text-neutral-400">Cursor Style</label>
+                            <select value={settings.cursorStyle} onChange={(e) => onUpdateSettings({ cursorStyle: e.target.value })} className="w-full rounded-sm p-1.5 text-xs border">
+                              <option value="line">Line</option><option value="block">Block</option><option value="underline">Underline</option>
+                            </select>
+                         </div>
+                         <div>
+                            <label className="block text-xs mb-1 text-neutral-400">Line Numbers</label>
+                            <select value={settings.lineNumbers} onChange={(e) => onUpdateSettings({ lineNumbers: e.target.value })} className="w-full rounded-sm p-1.5 text-xs border">
+                              <option value="on">On</option><option value="off">Off</option><option value="relative">Relative</option>
+                            </select>
+                         </div>
+                     </div>
+                     <div className="flex items-center justify-between pt-2">
+                        <label className="text-xs text-neutral-400">Minimap</label>
+                        <input type="checkbox" checked={settings.minimap} onChange={(e) => onUpdateSettings({ minimap: e.target.checked })} className="accent-vs-accent" />
+                     </div>
+                  </div>
+                </section>
+                <section>
+                  <div className="flex items-center space-x-2 text-xs font-bold uppercase text-vs-accent mb-3"><Zap size={14} /><span>Advanced</span></div>
+                  <div className="space-y-3 bg-vs-activityBar/30 p-3 rounded border border-vs-border">
+                     <div>
+                        <label className="block text-xs mb-1 text-neutral-400">Cursor Blinking</label>
+                        <select value={settings.cursorBlinking} onChange={(e) => onUpdateSettings({ cursorBlinking: e.target.value })} className="w-full rounded-sm p-1.5 text-xs border">
+                            <option value="blink">Blink</option><option value="smooth">Smooth</option><option value="phase">Phase</option><option value="expand">Expand</option><option value="solid">Solid</option>
+                        </select>
+                     </div>
+                     <div className="flex items-center justify-between">
+                        <label className="text-xs text-neutral-400">Smooth Scrolling</label>
+                        <input type="checkbox" checked={settings.smoothScrolling} onChange={(e) => onUpdateSettings({ smoothScrolling: e.target.checked })} className="accent-vs-accent" />
+                     </div>
+                     <div className="flex items-center justify-between">
+                        <label className="text-xs text-neutral-400">Smooth Caret</label>
+                        <input type="checkbox" checked={settings.cursorSmoothCaretAnimation === 'on'} onChange={(e) => onUpdateSettings({ cursorSmoothCaretAnimation: e.target.checked ? 'on' : 'off' })} className="accent-vs-accent" />
+                     </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          );
+        };
+
+        const HelpModal = ({ isOpen, onClose }) => {
+          const [activeTab, setActiveTab] = useState('shortcuts');
+          if (!isOpen) return null;
+          return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in p-4" onClick={onClose}>
+              <div className="bg-vs-bg border border-vs-border w-full max-w-2xl max-h-[80vh] rounded-lg shadow-2xl flex flex-col overflow-hidden animate-slide-in" onClick={e => e.stopPropagation()}>
+                <div className="bg-vs-activityBar border-b border-vs-border px-6 py-4 flex items-center justify-between shrink-0">
+                  <h2 className="text-lg font-bold text-white flex items-center"><Info className="mr-3 text-vs-accent" size={20} />Help & Documentation</h2>
+                  <button onClick={onClose} className="p-1 hover:bg-white/10 rounded-full transition-colors text-neutral-400 hover:text-white"><X size={20} /></button>
+                </div>
+                <div className="flex border-b border-vs-border bg-vs-sidebar">
+                     <button onClick={() => setActiveTab('shortcuts')} className={`px-6 py-3 text-sm font-medium transition-colors ${activeTab === 'shortcuts' ? 'text-vs-accent border-b-2 border-vs-accent bg-vs-bg' : 'text-neutral-400 hover:text-white'}`}>Keyboard Shortcuts</button>
+                     <button onClick={() => setActiveTab('about')} className={`px-6 py-3 text-sm font-medium transition-colors ${activeTab === 'about' ? 'text-vs-accent border-b-2 border-vs-accent bg-vs-bg' : 'text-neutral-400 hover:text-white'}`}>About</button>
+                </div>
+                <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-vs-bg">
+                    {activeTab === 'shortcuts' && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-4">
+                                <h3 className="text-xs font-bold uppercase text-neutral-500 mb-2">General</h3>
+                                <div className="flex items-center justify-between"><span className="text-sm text-neutral-300">Save File</span><span className="px-2 py-1 bg-vs-activityBar border border-vs-border rounded text-xs font-mono text-neutral-400">Ctrl S</span></div>
+                                <div className="flex items-center justify-between"><span className="text-sm text-neutral-300">Toggle Sidebar</span><span className="px-2 py-1 bg-vs-activityBar border border-vs-border rounded text-xs font-mono text-neutral-400">Ctrl B</span></div>
+                            </div>
+                        </div>
+                    )}
+                    {activeTab === 'about' && (
+                        <div className="space-y-6 text-neutral-300 text-center">
+                            <h1 className="text-xl font-bold text-white mb-2">015x.dev OS</h1>
+                            <p className="text-sm text-neutral-400 bg-vs-activityBar p-4 rounded border border-vs-border">A powerful WebAssembly powered IDE.</p>
+                        </div>
+                    )}
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        const LessonModal = ({ isOpen, onClose, onTryCode, lessons }) => {
+            const [activeLesson, setActiveLesson] = useState(null);
+            if (!isOpen) return null;
+            if (!activeLesson) {
+                return (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in p-4" onClick={onClose}>
+                        <div className="bg-vs-bg border border-vs-border w-full max-w-5xl rounded-lg shadow-2xl flex flex-col overflow-hidden animate-slide-in" onClick={e => e.stopPropagation()}>
+                            <div className="bg-vs-activityBar border-b border-vs-border px-6 py-6 flex items-center justify-between">
+                                <div><h2 className="text-2xl font-bold text-vs-text"><GraduationCap className="inline mr-3 text-vs-accent" size={28} />Learning Library</h2></div>
+                                <button onClick={onClose} className="p-2 hover:bg-vs-itemHover rounded-full text-neutral-400 hover:text-vs-text"><X size={24} /></button>
+                            </div>
+                            <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-vs-bg">
+                                {lessons.map(l => (
+                                    <div key={l.id} onClick={() => setActiveLesson(l)} className="bg-vs-sidebar border border-vs-border rounded-lg p-5 cursor-pointer hover:border-vs-accent transition-all flex flex-col">
+                                        <h3 className="text-lg font-bold text-vs-text mb-2">{l.title}</h3>
+                                        <p className="text-sm text-neutral-400 mb-6">{l.description}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in p-4" onClick={onClose}>
+                    <div className="bg-vs-bg border border-vs-border w-full max-w-4xl rounded-lg shadow-2xl flex flex-col overflow-hidden animate-slide-in" onClick={e => e.stopPropagation()}>
+                        <div className="bg-vs-activityBar border-b border-vs-border px-6 py-4 flex items-center justify-between">
+                            <h2 className="text-lg font-bold text-vs-text">{activeLesson.title}</h2>
+                            <button onClick={() => setActiveLesson(null)} className="p-1 text-neutral-400 hover:text-white"><ArrowLeft size={20} /></button>
+                        </div>
+                        <div className="p-8 overflow-y-auto bg-vs-bg">
+                            <h3 className="text-xl font-bold text-vs-text mb-4">{activeLesson.sections[0].title}</h3>
+                            <pre className="bg-vs-inputBg p-4 rounded text-sm text-vs-text overflow-x-auto"><code>{activeLesson.sections[0].code_snippet}</code></pre>
+                            <button onClick={() => onTryCode(activeLesson.sections[0].code_snippet)} className="mt-4 bg-vs-accent text-white px-4 py-2 rounded">Try Code</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         const CodeEditor = ({ file, settings, theme, ghostText, onChange, onFormat, onSave }) => {
           const editorRef = React.useRef(null);
           const monacoRef = React.useRef(null);
           const [contentLeft, setContentLeft] = useState(62);
 
           const handleEditorDidMount = (editor, monaco) => {
-            editorRef.current = editor;
-            monacoRef.current = monaco;
+            editorRef.current = editor; monacoRef.current = monaco;
             monaco.editor.defineTheme(theme.id, { base: theme.monaco.base, inherit: theme.monaco.inherit, rules: theme.monaco.rules, colors: theme.monaco.colors });
             monaco.editor.setTheme(theme.id);
             editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, () => { if (onFormat) onFormat(); });
@@ -595,28 +806,17 @@
               }
           },[theme]);
 
-          useEffect(() => {
-            if (editorRef.current) editorRef.current.layout();
-          }, [settings.fontSize, settings.minimap, settings.wordWrap]);
+          useEffect(() => { if (editorRef.current) editorRef.current.layout(); }, [settings.fontSize, settings.minimap, settings.wordWrap]);
 
           if (!file) return (
              <div className="h-full w-full bg-vs-bg flex flex-col items-center justify-center text-vs-text select-none relative overflow-hidden">
                 <div className="absolute opacity-[0.02] pointer-events-none transform -rotate-12 scale-150"><LayoutTemplate size={400} /></div>
-                <div className="z-10 flex flex-col items-center max-w-md w-full px-6">
-                    <div className="p-4 bg-vs-activityBar rounded-full mb-4 shadow-lg border border-vs-border"><Lightbulb size={32} className="text-vs-accent" /></div>
-                    <h2 className="text-2xl font-bold tracking-tight text-vs-text mb-2">Ready to create?</h2>
-                </div>
+                <div className="z-10 flex flex-col items-center max-w-md w-full px-6"><Lightbulb size={32} className="text-vs-accent mb-4" /><h2 className="text-2xl font-bold tracking-tight text-vs-text">Ready to create?</h2></div>
               </div>
           );
 
-          const overlayStyle = {
-              fontFamily: "'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace", fontSize: `${settings.fontSize}px`, lineHeight: '21px', paddingTop: '16px', paddingLeft: `${contentLeft}px`, 
-              tabSize: settings.tabSize, whiteSpace: settings.wordWrap === 'on' ? 'pre-wrap' : 'pre', width: '100%', boxSizing: 'border-box'
-          };
-
           return (
             <div className="h-full w-full bg-vs-bg relative group overflow-hidden">
-              {ghostText && <div className="absolute inset-0 z-10 pointer-events-none text-vs-text opacity-40 select-none overflow-hidden" style={overlayStyle}>{ghostText}</div>}
               <Editor
                 height="100%" language={file.language || 'plaintext'} value={file.content || ''}
                 onChange={(value) => onChange(value || '')} onMount={handleEditorDidMount}
@@ -625,7 +825,7 @@
                   fontFamily: "'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace", fontLigatures: settings.fontLigatures,
                   wordWrap: settings.wordWrap, tabSize: settings.tabSize, lineNumbers: settings.lineNumbers,
                   cursorStyle: settings.cursorStyle, cursorBlinking: settings.cursorBlinking, smoothScrolling: settings.smoothScrolling,
-                  padding: { top: 16 }, formatOnPaste: true, formatOnType: true,
+                  cursorSmoothCaretAnimation: settings.cursorSmoothCaretAnimation, padding: { top: 16 }, formatOnPaste: true, formatOnType: true,
                 }}
               />
             </div>
@@ -634,22 +834,15 @@
 
         const Preview = ({ previewUrl, refreshTrigger }) => {
           const iframeRef = useRef(null);
-
-          useEffect(() => {
-              if (iframeRef.current && previewUrl) iframeRef.current.src = iframeRef.current.src;
-          }, [refreshTrigger, previewUrl]);
-
+          useEffect(() => { if (iframeRef.current && previewUrl) iframeRef.current.src = iframeRef.current.src; }, [refreshTrigger, previewUrl]);
           return (
             <div className="h-full w-full flex flex-col bg-white relative group">
               {!previewUrl ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-neutral-400 bg-vs-bg">
                       <Loader2 className="w-8 h-8 animate-spin mb-4 text-vs-accent" />
                       <p className="text-sm font-medium text-vs-text">Awaiting Server Start...</p>
-                      <p className="text-xs mt-2 opacity-70">The iframe will map to your localhost automatically.</p>
                   </div>
-              ) : (
-                  <iframe ref={iframeRef} src={previewUrl} title="preview" className="flex-1 w-full h-full border-none bg-white" allow="cross-origin-isolated" />
-              )}
+              ) : <iframe ref={iframeRef} src={previewUrl} title="preview" className="flex-1 w-full h-full border-none bg-white" allow="cross-origin-isolated" />}
             </div>
           );
         };
@@ -668,8 +861,6 @@
           const terminalRef = useRef(null);
 
           const [fileSystem, setFileSystem] = useState(INITIAL_FILE_SYSTEM);
-          const [vfsLoaded, setVfsLoaded] = useState(true); // Simplified for integration
-          
           const [activeFileId, setActiveFileId] = useState('index.js');
           const [openFiles, setOpenFiles] = useState(['package.json', 'index.js']);
           const [sidebarWidth, setSidebarWidth] = useState(240);
@@ -677,99 +868,66 @@
           const [activeSidebarView, setActiveSidebarView] = useState('explorer');
           const [refreshTrigger, setRefreshTrigger] = useState(0);
           const [activeMenu, setActiveMenu] = useState(null);
+          const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+          const [isLessonModalOpen, setIsLessonModalOpen] = useState(false);
           
-          const [urlInputValue, setUrlInputValue] = useState('/');
-          const previewContainerRef = useRef(null);
           const [isResizing, setIsResizing] = useState(false);
           const [settings, setSettings] = useState(DEFAULT_SETTINGS);
           const [currentThemeId, setCurrentThemeId] = useState('vs-dark');
           const styleRef = useRef(null);
           const writeTimer = useRef(null);
 
-          useEffect(() => {
-                if (!window.crossOriginIsolated || !vfsLoaded) return;
-                let mounted = true;
+          const updateSettings = (newSettings) => setSettings(prev => ({ ...prev, ...newSettings }));
 
+          useEffect(() => {
+                if (!window.crossOriginIsolated) return;
+                let mounted = true;
                 async function bootOS() {
                     try {
                         if (!window.__wcPromise) window.__wcPromise = WebContainer.boot();
                         const container = await window.__wcPromise;
                         if (!mounted) return;
-
                         setWc(container);
                         await container.mount(getWcTree(fileSystem));
-                        
-                        container.on('server-ready', (port, url) => {
-                            setPreviewUrl(url);
-                            setServerReady(true);
-                        });
-
+                        container.on('server-ready', (port, url) => { setPreviewUrl(url); setServerReady(true); });
                         setIsBooting(false);
                         startShell(container);
-                    } catch (error) {
-                        console.error("OS Boot Error:", error);
-                    }
+                    } catch (error) { console.error("OS Boot Error:", error); }
                 }
                 bootOS();
                 return () => { mounted = false; };
-          }, [vfsLoaded]);
+          }, []);
 
           const startShell = async (container) => {
                 if (!terminalRef.current || window.__shellStarted) return;
                 window.__shellStarted = true;
-
-                const term = new Terminal({
-                    convertEol: true, 
-                    theme: { background: '#1e1e1e', foreground: '#cccccc' },
-                    fontFamily: '"Fira Code", Consolas, monospace', 
-                    fontSize: 13
-                });
-                
+                const term = new Terminal({ convertEol: true, theme: { background: '#1e1e1e', foreground: '#cccccc' }, fontFamily: '"Fira Code", Consolas, monospace', fontSize: 13 });
                 const fitAddon = new FitAddon();
-                term.loadAddon(fitAddon);
-                term.open(terminalRef.current);
-                
+                term.loadAddon(fitAddon); term.open(terminalRef.current);
                 const resizeObserver = new ResizeObserver(() => fitAddon.fit());
                 resizeObserver.observe(terminalRef.current);
                 setTimeout(() => fitAddon.fit(), 100);
-
                 term.writeln('\x1b[1;34m[SYSTEM]\x1b[0m \x1b[1mWebAssembly Engine Initialized.\x1b[0m');
-
-                const shellProcess = await container.spawn('jsh', {
-                    terminal: { cols: term.cols, rows: term.rows }
-                });
-
+                const shellProcess = await container.spawn('jsh', { terminal: { cols: term.cols, rows: term.rows } });
                 shellProcess.output.pipeTo(new WritableStream({ write(data) { term.write(data); } }));
                 const input = shellProcess.input.getWriter();
                 term.onData((data) => input.write(data));
-
                 await input.write('npm install && npm start\r');
           };
 
-          const debouncedFileSystem = useDebounce(fileSystem, 800);
           const currentTheme = useMemo(() => THEMES.find(t => t.id === currentThemeId) || THEMES[0], [currentThemeId]);
 
           useEffect(() => {
             const root = document.documentElement;
             const colors = currentTheme.colors;
             if (!colors) return;
-            root.style.setProperty('--vs-bg', colors.bg);
-            root.style.setProperty('--vs-sidebar', colors.sidebar);
-            root.style.setProperty('--vs-activity-bar', colors.activityBar);
-            root.style.setProperty('--vs-active-tab', colors.activeTab);
-            root.style.setProperty('--vs-inactive-tab', colors.inactiveTab);
-            root.style.setProperty('--vs-border', colors.border);
-            root.style.setProperty('--vs-accent', colors.accent);
-            root.style.setProperty('--vs-text', colors.text);
-            root.style.setProperty('--vs-text-hover', colors.textHover);
-            root.style.setProperty('--vs-item-hover', colors.itemHover);
-            root.style.setProperty('--vs-item-active', colors.itemActive);
-            root.style.setProperty('--vs-input-bg', colors.inputBg || colors.activityBar); 
-            
-            if (!styleRef.current) {
-                styleRef.current = document.createElement('style');
-                document.head.appendChild(styleRef.current);
-            }
+            root.style.setProperty('--vs-bg', colors.bg); root.style.setProperty('--vs-sidebar', colors.sidebar);
+            root.style.setProperty('--vs-activity-bar', colors.activityBar); root.style.setProperty('--vs-active-tab', colors.activeTab);
+            root.style.setProperty('--vs-inactive-tab', colors.inactiveTab); root.style.setProperty('--vs-border', colors.border);
+            root.style.setProperty('--vs-accent', colors.accent); root.style.setProperty('--vs-text', colors.text);
+            root.style.setProperty('--vs-text-hover', colors.textHover); root.style.setProperty('--vs-item-hover', colors.itemHover);
+            root.style.setProperty('--vs-item-active', colors.itemActive); root.style.setProperty('--vs-input-bg', colors.inputBg || colors.activityBar); 
+            if (!styleRef.current) { styleRef.current = document.createElement('style'); document.head.appendChild(styleRef.current); }
             styleRef.current.innerHTML = currentTheme.customCss || '';
           }, [currentTheme]);
 
@@ -787,10 +945,7 @@
             document.addEventListener('mousemove', handleMouseMove); document.addEventListener('mouseup', handleMouseUp);
           },[activeSidebarView, sidebarWidth]);
 
-          const handleSelectFile = (id) => {
-            if (!openFiles.includes(id)) setOpenFiles(prev => [...prev, id]);
-            setActiveFileId(id);
-          };
+          const handleSelectFile = (id) => { if (!openFiles.includes(id)) setOpenFiles(prev => [...prev, id]); setActiveFileId(id); };
 
           const handleCloseFile = (e, id) => {
               e.stopPropagation();
@@ -815,6 +970,19 @@
             });
           };
 
+          const handleTryCode = (code) => {
+              setIsLessonModalOpen(false);
+              const timestamp = Date.now();
+              const id = `file_${timestamp}`;
+              const name = `lesson-${timestamp.toString().slice(-4)}.js`;
+              setFileSystem(prev => {
+                  const next = { ...prev, [id]: { id, name, parentId: 'root', type: ItemType.FILE, language: FileType.JAVASCRIPT, content: code } };
+                  if (wc) wc.fs.writeFile(`/${name}`, code).catch(console.error);
+                  return next;
+              });
+              setTimeout(() => { setOpenFiles(prev => [...prev, id]); setActiveFileId(id); }, 0);
+          };
+
           const toggleFolder = (id) => setFileSystem(prev => ({ ...prev, [id]: { ...prev[id], isOpen: !prev[id].isOpen } }));
 
           const createItem = useCallback((type, parentId) => {
@@ -825,18 +993,13 @@
                   let language = FileType.UNKNOWN;
                   if (type === ItemType.FILE) {
                       const ext = name.split('.').pop()?.toLowerCase();
-                      if (ext === 'html') language = FileType.HTML;
-                      else if (ext === 'css') language = FileType.CSS;
-                      else if (ext === 'js' || ext === 'ts') language = FileType.JAVASCRIPT;
-                      else if (ext === 'json') language = FileType.JSON;
+                      if (ext === 'html') language = FileType.HTML; else if (ext === 'css') language = FileType.CSS; else if (ext === 'js' || ext === 'ts') language = FileType.JAVASCRIPT; else if (ext === 'json') language = FileType.JSON;
                   }
                   const newItem = { id, name, parentId, type, content: type === ItemType.FILE ? '' : undefined, language, isOpen: type === ItemType.FOLDER ? true : undefined };
                   const newFS = { ...prev, [id]: newItem };
-                  
                   if (wc) {
                       const path = getPath(id, newFS);
-                      if (type === ItemType.FOLDER) wc.fs.mkdir(path).catch(console.error);
-                      else wc.fs.writeFile(path, '').catch(console.error);
+                      if (type === ItemType.FOLDER) wc.fs.mkdir(path).catch(console.error); else wc.fs.writeFile(path, '').catch(console.error);
                   }
                   return newFS;
               });
@@ -848,9 +1011,7 @@
               let pathToDelete = '';
               setFileSystem(prev => {
                   pathToDelete = getPath(id, prev);
-                  const newFS = { ...prev };
-                  delete newFS[id];
-                  return newFS;
+                  const newFS = { ...prev }; delete newFS[id]; return newFS;
               });
               if (wc && pathToDelete) wc.fs.rm(pathToDelete, { recursive: true }).catch(console.error);
               setOpenFiles(prev => prev.filter(fid => fid !== id));
@@ -870,41 +1031,65 @@
           }
 
           return (
-            <div className="flex flex-col h-screen bg-vs-bg text-vs-text overflow-hidden font-sans transition-colors duration-300" onClick={() => setActiveMenu(null)}>
+            <div className="flex flex-col h-screen bg-vs-bg text-vs-text overflow-hidden font-sans transition-colors duration-300">
                 {isResizing && <div className="fixed inset-0 z-50 cursor-col-resize bg-transparent"></div>}
                 
+                <HelpModal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} />
+                <LessonModal isOpen={isLessonModalOpen} onClose={() => setIsLessonModalOpen(false)} onTryCode={handleTryCode} lessons={LESSONS} />
+
                 {/* Header */}
                 <div className="h-10 bg-vs-activityBar flex items-center justify-between px-4 border-b border-vs-border z-30 shrink-0">
                     <div className="flex items-center space-x-4">
                         <div className="font-bold text-vs-accent flex items-center mr-4">
                             <LayoutTemplate size={18} className="mr-2" />
-                            015x.dev IDE
+                            015x.dev OS
                         </div>
                     </div>
-                    <div className="flex items-center space-x-3 text-xs font-bold uppercase tracking-widest">
-                        {isBooting ? <span className="text-yellow-500 flex items-center"><Loader2 className="w-3 h-3 mr-2 animate-spin"/> Booting OS...</span> 
-                        : serverReady ? <span className="text-green-500 flex items-center"><div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></div> Node.js Active</span> 
-                        : <span className="text-blue-400 flex items-center"><Loader2 className="w-3 h-3 mr-2 animate-spin"/> Starting Server...</span>}
+                    <div className="flex items-center space-x-3">
+                        <div className="flex items-center text-xs font-bold uppercase tracking-widest mr-4">
+                            {isBooting ? <span className="text-yellow-500 flex items-center"><Loader2 className="w-3 h-3 mr-2 animate-spin"/> Booting OS...</span> 
+                            : serverReady ? <span className="text-green-500 flex items-center"><div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></div> Node.js Active</span> 
+                            : <span className="text-blue-400 flex items-center"><Loader2 className="w-3 h-3 mr-2 animate-spin"/> Starting Server...</span>}
+                        </div>
+                        <button onClick={() => setIsLessonModalOpen(true)} className="flex items-center space-x-1 px-3 py-1 bg-purple-600 hover:bg-purple-500 text-white text-xs rounded transition-colors shadow-sm">
+                            <GraduationCap size={14} fill="currentColor" /><span>Learn</span>
+                        </button>
                     </div>
                 </div>
 
                 <div className="flex-1 flex overflow-hidden">
                     {/* Activity Bar */}
                     <div className="w-12 bg-vs-activityBar flex flex-col items-center py-4 space-y-4 shrink-0 border-r border-vs-border z-20">
-                        <div className={`p-2 rounded cursor-pointer relative ${activeSidebarView === 'explorer' ? 'text-vs-text' : 'text-neutral-500'}`} onClick={() => setActiveSidebarView(activeSidebarView === 'explorer' ? 'hidden' : 'explorer')}>
+                        <div className={`p-2 rounded cursor-pointer relative ${activeSidebarView === 'explorer' ? 'text-vs-text' : 'text-neutral-500'}`} onClick={() => setActiveSidebarView(activeSidebarView === 'explorer' ? 'hidden' : 'explorer')} title="Explorer">
                             <FileCode2 size={24} strokeWidth={1.5} color={activeSidebarView === 'explorer' ? 'var(--vs-accent)' : 'currentColor'} />
-                            {activeSidebarView === 'explorer' && <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-vs-accent shadow-[0_0_8px_var(--vs-accent)]"></div>}
+                            {activeSidebarView === 'explorer' && <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-vs-accent"></div>}
+                        </div>
+                        <div className={`p-2 rounded cursor-pointer relative ${activeSidebarView === 'search' ? 'text-vs-text' : 'text-neutral-500'}`} onClick={() => setActiveSidebarView(activeSidebarView === 'search' ? 'hidden' : 'search')} title="Search">
+                            <Search size={24} strokeWidth={1.5} color={activeSidebarView === 'search' ? 'var(--vs-accent)' : 'currentColor'} />
+                            {activeSidebarView === 'search' && <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-vs-accent"></div>}
+                        </div>
+                        <div className={`p-2 rounded cursor-pointer relative ${activeSidebarView === 'source-control' ? 'text-vs-text' : 'text-neutral-500'}`} onClick={() => setActiveSidebarView(activeSidebarView === 'source-control' ? 'hidden' : 'source-control')} title="Source Control">
+                            <GitBranch size={24} strokeWidth={1.5} color={activeSidebarView === 'source-control' ? 'var(--vs-accent)' : 'currentColor'} />
+                            {activeSidebarView === 'source-control' && <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-vs-accent"></div>}
+                        </div>
+                        <div className={`p-2 rounded cursor-pointer relative ${activeSidebarView === 'snippets' ? 'text-vs-text' : 'text-neutral-500'}`} onClick={() => setActiveSidebarView(activeSidebarView === 'snippets' ? 'hidden' : 'snippets')} title="Snippets">
+                            <Blocks size={24} strokeWidth={1.5} color={activeSidebarView === 'snippets' ? 'var(--vs-accent)' : 'currentColor'} />
+                            {activeSidebarView === 'snippets' && <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-vs-accent"></div>}
+                        </div>
+                        <div className={`mt-auto p-2 rounded cursor-pointer relative ${activeSidebarView === 'settings' ? 'text-vs-text' : 'text-neutral-500'}`} onClick={() => setActiveSidebarView(activeSidebarView === 'settings' ? 'hidden' : 'settings')} title="Settings">
+                            <Settings size={24} strokeWidth={1.5} color={activeSidebarView === 'settings' ? 'var(--vs-accent)' : 'currentColor'} />
+                            {activeSidebarView === 'settings' && <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-vs-accent"></div>}
                         </div>
                     </div>
 
-                    {/* Sidebar */}
+                    {/* Sidebar Pane */}
                     {activeSidebarView !== 'hidden' && (
                         <div style={{ width: sidebarWidth }} className="flex flex-col shrink-0 relative border-r border-vs-border bg-vs-sidebar overflow-hidden">
-                            {activeSidebarView === 'explorer' && (
-                                <div className="h-full animate-slide-in">
-                                     <Explorer fileSystem={fileSystem} activeFileId={activeFileId} onSelectFile={handleSelectFile} onToggleFolder={toggleFolder} onCreateItem={createItem} onDeleteItem={deleteItem} onRenameItem={()=>{}} onMoveItem={()=>{}} />
-                                </div>
-                            )}
+                            {activeSidebarView === 'explorer' && <Explorer fileSystem={fileSystem} activeFileId={activeFileId} onSelectFile={handleSelectFile} onToggleFolder={toggleFolder} onCreateItem={createItem} onDeleteItem={deleteItem} onRenameItem={()=>{}} onMoveItem={()=>{}} />}
+                            {activeSidebarView === 'search' && <SearchPane fileSystem={fileSystem} onSelectFile={handleSelectFile} />}
+                            {activeSidebarView === 'source-control' && <SourceControlPane fileSystem={fileSystem} initialFileSystem={INITIAL_FILE_SYSTEM} onSelectFile={handleSelectFile} />}
+                            {activeSidebarView === 'snippets' && <SnippetsPane />}
+                            {activeSidebarView === 'settings' && <SettingsPane settings={settings} currentThemeId={currentThemeId} onUpdateSettings={updateSettings} onUpdateTheme={setCurrentThemeId} />}
                             <div className="absolute top-0 right-0 w-2 h-full cursor-col-resize hover:bg-vs-accent transition-colors z-20 opacity-0 hover:opacity-100" onMouseDown={startSidebarResizing} />
                         </div>
                     )}
@@ -965,7 +1150,7 @@
                             <div className="w-2 -ml-1 h-full cursor-col-resize hover:bg-vs-accent transition-colors z-30 bg-transparent hover:opacity-100" onMouseDown={startEditorResizing} />
 
                             {/* Live Preview Column */}
-                            <div ref={previewContainerRef} className={`flex-1 h-full bg-white relative min-w-0`}>
+                            <div className={`flex-1 h-full bg-white relative min-w-0`}>
                                 <Preview previewUrl={previewUrl} refreshTrigger={refreshTrigger} />
                             </div>
                         </div>
