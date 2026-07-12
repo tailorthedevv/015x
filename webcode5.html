@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Serverless Node.js IDE</title>
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Added crossorigin="anonymous" to prevent COEP blocking -->
+    <script src="https://cdn.tailwindcss.com" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" crossorigin="anonymous" />
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin="anonymous"></script>
 
     <!-- Map our pure ESM browser dependencies -->
     <script type="importmap">
@@ -26,11 +27,15 @@
     </script>
 
     <script>
-        // MAGIC BYPASS: Register the Service Worker to force GitHub Pages to allow WebAssembly Multi-threading
+        // MAGIC BYPASS: Safely registers the Service Worker and reloads once it takes control
         if (typeof window !== 'undefined' && !window.crossOriginIsolated) {
-            navigator.serviceWorker.register('./sw.js').then(reg => {
-                reg.addEventListener("updatefound", () => window.location.reload());
-                if (reg.active && !navigator.serviceWorker.controller) window.location.reload();
+            navigator.serviceWorker.register('./sw.js', { scope: './' }).then(reg => {
+                if (reg.active && !navigator.serviceWorker.controller) {
+                    window.location.reload();
+                }
+            });
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                window.location.reload();
             });
         }
     </script>
@@ -63,14 +68,15 @@
                     contents: JSON.stringify({
                         name: "browser-express",
                         type: "module",
-                        scripts: { start: "nodemon index.js" },
-                        dependencies: { express: "^4.18.2", nodemon: "^3.0.1" }
+                        // Using native node --watch instead of nodemon saves massive memory
+                        scripts: { start: "node --watch index.js" },
+                        dependencies: { express: "^4.18.2" }
                     }, null, 2)
                 }
             },
             'index.js': {
                 file: {
-                    contents: `import express from 'express';\n\nconst app = express();\nconst port = 3111;\n\napp.get('/', (req, res) => {\n  res.send(\`\n    <div style="font-family: system-ui; text-align: center; padding: 50px;">\n      <h1 style="color: #4f46e5;">Server is Live! 🚀</h1>\n      <p>This Express API is running entirely inside your browser tab.</p>\n      <p>Edit <b>index.js</b> and Nodemon will auto-restart!</p>\n    </div>\n  \`);\n});\n\napp.listen(port, () => {\n  console.log(\`Server running locally on port \${port}\`);\n});\n`
+                    contents: `import express from 'express';\n\nconst app = express();\nconst port = 3111;\n\napp.get('/', (req, res) => {\n  res.send(\`\n    <div style="font-family: system-ui; text-align: center; padding: 50px;">\n      <h1 style="color: #4f46e5;">Server is Live! 🚀</h1>\n      <p>This Express API is running entirely inside your browser tab.</p>\n      <p>Edit <b>index.js</b> and it will auto-restart!</p>\n    </div>\n  \`);\n});\n\napp.listen(port, () => {\n  console.log(\`Server running locally on port \${port}\`);\n});\n`
                 }
             }
         };
@@ -88,20 +94,29 @@
                 // Wait for the Service Worker to reload the page with correct headers
                 if (!window.crossOriginIsolated) return;
 
+                let mounted = true;
                 async function bootOS() {
-                    console.log("Booting OS...");
-                    const container = await WebContainer.boot();
-                    setWc(container);
-                    await container.mount(files);
-                    
-                    container.on('server-ready', (port, url) => {
-                        setPreviewUrl(url);
-                    });
+                    try {
+                        console.log("Booting OS...");
+                        const container = await WebContainer.boot();
+                        if (!mounted) return;
 
-                    setIsBooting(false);
-                    startShell(container);
+                        setWc(container);
+                        await container.mount(files);
+                        
+                        container.on('server-ready', (port, url) => {
+                            setPreviewUrl(url);
+                        });
+
+                        setIsBooting(false);
+                        startShell(container);
+                    } catch (error) {
+                        console.error("Failed to boot OS", error);
+                    }
                 }
                 bootOS();
+
+                return () => { mounted = false; };
             }, []);
 
             const startShell = async (container) => {
@@ -115,7 +130,9 @@
                 const fitAddon = new FitAddon();
                 term.loadAddon(fitAddon);
                 term.open(terminalRef.current);
-                fitAddon.fit();
+                
+                // Slight delay to ensure DOM is ready before fitting
+                setTimeout(() => fitAddon.fit(), 100);
                 window.addEventListener('resize', () => fitAddon.fit());
 
                 term.writeln('\x1b[1;32m[OS] WebAssembly Node.js Booted Successfully.\x1b[0m');
@@ -140,34 +157,34 @@
                 updatedFiles[activeFile].file.contents = value;
                 setFiles(updatedFiles);
 
-                // Write file to the virtual hard drive (Triggers Nodemon)
+                // Write file to the virtual hard drive (Triggers node --watch)
                 if (wc) await wc.fs.writeFile(`/${activeFile}`, value);
             };
 
             if (!window.crossOriginIsolated) {
                 return (
-                    <div className="h-screen w-screen flex flex-col items-center justify-center">
-                        <Loader2 className="w-10 h-10 animate-spin text-blue-500 mb-4" />
-                        <h2 className="text-xl font-bold">Injecting Security Headers...</h2>
-                        <p className="text-gray-400 mt-2">Page will automatically reload in a moment.</p>
+                    <div className="h-screen w-screen bg-[#1e1e1e] flex flex-col items-center justify-center text-white">
+                        <Loader2 className="w-12 h-12 animate-spin text-blue-500 mb-4" />
+                        <h2 className="text-2xl font-bold">Initializing OS Sandbox...</h2>
+                        <p className="text-gray-400 mt-2">Injecting security headers. Page will automatically reload in a moment.</p>
                     </div>
                 );
             }
 
             return (
                 <div className="flex flex-col h-screen">
-                    <div className="h-12 bg-[#252526] border-b border-[#3c3c3c] flex items-center px-4">
+                    <div className="h-12 bg-[#252526] border-b border-[#3c3c3c] flex items-center px-4 shrink-0">
                         <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse mr-3"></div>
                         <span className="font-bold">WebContainer / GitHub Pages</span>
                     </div>
 
                     <div className="flex flex-1 overflow-hidden">
                         {/* File Explorer */}
-                        <div className="w-48 bg-[#252526] border-r border-[#3c3c3c] flex flex-col pt-4">
+                        <div className="w-48 bg-[#252526] border-r border-[#3c3c3c] flex flex-col pt-4 shrink-0">
                             <span className="text-xs font-bold text-gray-500 uppercase px-4 mb-2">Explorer</span>
                             {Object.keys(files).map(name => (
                                 <button key={name} onClick={() => setActiveFile(name)}
-                                    className={`flex items-center px-4 py-2 text-sm \${activeFile === name ? 'bg-[#37373d] text-white' : 'text-gray-400 hover:text-white'}`}>
+                                    className={`flex items-center px-4 py-2 text-sm transition-colors ${activeFile === name ? 'bg-[#37373d] text-white' : 'text-gray-400 hover:bg-[#2a2d2e] hover:text-white'}`}>
                                     {name.endsWith('.js') ? <FileCode2 className="w-4 h-4 mr-2 text-yellow-400"/> : <FileJson className="w-4 h-4 mr-2 text-green-400"/>}
                                     {name}
                                 </button>
@@ -176,8 +193,14 @@
 
                         {/* Monaco Editor */}
                         <div className="flex-1 border-r border-[#3c3c3c] flex flex-col">
-                            <div className="h-9 bg-[#1e1e1e] flex items-center px-4 text-sm font-mono border-b border-[#3c3c3c]">{activeFile}</div>
-                            <div className="flex-1">
+                            <div className="h-9 bg-[#1e1e1e] flex items-center px-4 text-sm font-mono border-b border-[#3c3c3c] shrink-0">{activeFile}</div>
+                            <div className="flex-1 relative">
+                                {isBooting && (
+                                    <div className="absolute inset-0 z-10 bg-[#1e1e1e]/90 backdrop-blur flex flex-col items-center justify-center">
+                                        <Loader2 className="w-8 h-8 animate-spin text-blue-500 mb-4" />
+                                        <span>Downloading WebAssembly Engine...</span>
+                                    </div>
+                                )}
                                 <Editor height="100%" theme="vs-dark"
                                     language={activeFile.endsWith('.js') ? 'javascript' : 'json'}
                                     value={files[activeFile].file.contents}
@@ -191,24 +214,28 @@
                         <div className="flex-1 flex flex-col min-w-[400px]">
                             {/* Browser iframe */}
                             <div className="flex-1 flex flex-col bg-white">
-                                <div className="h-9 bg-[#252526] flex items-center px-2 space-x-2">
-                                    <button onClick={() => document.getElementById('preview').src += ''} className="text-gray-400 hover:text-white"><RotateCcw className="w-4 h-4" /></button>
-                                    <div className="flex-1 bg-[#3c3c3c] rounded px-3 py-1 text-xs text-gray-300 font-mono truncate">
+                                <div className="h-9 bg-[#252526] flex items-center px-2 space-x-2 shrink-0 border-b border-[#3c3c3c]">
+                                    <button onClick={() => {
+                                        const iframe = document.getElementById('preview');
+                                        if (iframe) iframe.src = iframe.src;
+                                    }} className="text-gray-400 hover:text-white p-1"><RotateCcw className="w-4 h-4" /></button>
+                                    <div className="flex-1 bg-[#3c3c3c] rounded px-3 py-1 text-xs text-gray-300 font-mono truncate flex items-center">
                                         <Globe className="inline w-3 h-3 mr-2"/> {previewUrl || 'Waiting for localhost...'}
                                     </div>
                                 </div>
-                                <div className="flex-1 relative bg-white">
+                                <div className="flex-1 relative bg-[#f5f5f5]">
                                     {!previewUrl ? (
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
-                                            <Loader2 className="w-8 h-8 animate-spin mb-4" /> Waiting for Server...
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
+                                            <Loader2 className="w-8 h-8 animate-spin mb-4" /> 
+                                            <p>Waiting for Node.js to open port 3111...</p>
                                         </div>
                                     ) : <iframe id="preview" src={previewUrl} className="w-full h-full border-none" allow="cross-origin-isolated" />}
                                 </div>
                             </div>
 
                             {/* Terminal */}
-                            <div className="h-64 flex flex-col bg-[#1e1e1e] border-t border-[#3c3c3c]">
-                                <div className="h-8 bg-[#252526] flex items-center px-4 text-xs font-bold uppercase text-gray-400 border-b border-[#3c3c3c]">
+                            <div className="h-64 flex flex-col bg-[#1e1e1e] border-t border-[#3c3c3c] shrink-0">
+                                <div className="h-8 bg-[#252526] flex items-center px-4 text-xs font-bold uppercase text-gray-400 border-b border-[#3c3c3c] shrink-0">
                                     <TerminalIcon className="w-3 h-3 mr-2" /> Terminal
                                 </div>
                                 <div className="flex-1 overflow-hidden" ref={terminalRef}></div>
