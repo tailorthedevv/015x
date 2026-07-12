@@ -1,48 +1,64 @@
 // sw.js
 self.addEventListener("install", () => self.skipWaiting());
-self.addEventListener("activate", e => e.waitUntil(self.clients.claim()));
+self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
 
-self.addEventListener("fetch", e => {
-    // Only intercept same-origin requests (like the HTML document itself).
-    // Let the browser handle cross-origin requests natively to prevent CORS errors!
-    if (!e.request.url.startsWith(self.location.origin)) {
-        return;
-    }
+self.addEventListener("fetch", (e) => {
+    // Ignore non-HTTP requests (like chrome-extension://)
+    if (!e.request.url.startsWith('http')) return;
 
     e.respondWith(
-        fetch(e.request).then(response => {
-            // Bypass opaque/error responses directly
-            if (response.status === 0 || response.type === 'opaque') {
-                return response;
+        (async () => {
+            try {
+                // Try to fetch normally
+                let response = await fetch(e.request);
+
+                // If it's an opaque response (no-cors), fetch again in CORS mode.
+                // This allows us to read and modify the headers of 3rd party CDNs!
+                if (response.type === 'opaque') {
+                    try {
+                        const corsRequest = new Request(e.request, { mode: 'cors' });
+                        const corsResponse = await fetch(corsRequest);
+                        response = corsResponse;
+                    } catch (err) {
+                        // Fallback to original if CORS fails
+                    }
+                }
+
+                // Clone response to modify headers
+                const newHeaders = new Headers(response.headers);
+                
+                // 1. Mandatory WebContainer Headers
+                newHeaders.set("Cross-Origin-Embedder-Policy", "require-corp");
+                newHeaders.set("Cross-Origin-Opener-Policy", "same-origin");
+                
+                // 2. CRITICAL FIX: Allow 3rd-party CDNs (Tailwind, Monaco) to load under COEP!
+                newHeaders.set("Cross-Origin-Resource-Policy", "cross-origin");
+
+                // Prevent infinite reload loops by skipping cache on main page
+                if (e.request.mode === 'navigate') {
+                    newHeaders.set("Cache-Control", "no-store, max-age=0");
+                }
+
+                // Safely handle empty responses
+                const emptyStatuses = [204, 205, 304];
+                if (emptyStatuses.includes(response.status) || e.request.method === 'HEAD') {
+                    return new Response(null, {
+                        status: response.status,
+                        statusText: response.statusText,
+                        headers: newHeaders
+                    });
+                }
+
+                return new Response(response.body, {
+                    status: response.status,
+                    statusText: response.statusText,
+                    headers: newHeaders
+                });
+
+            } catch (error) {
+                console.warn("SW Proxy Error for:", e.request.url, error);
+                throw error;
             }
-
-            const newHeaders = new Headers(response.headers);
-            // Mandatory headers to activate SharedArrayBuffer & WebContainers
-            newHeaders.set("Cross-Origin-Embedder-Policy", "require-corp");
-            newHeaders.set("Cross-Origin-Opener-Policy", "same-origin");
-            
-            // Prevent caching on the HTML navigation request to avoid reload loops
-            if (e.request.mode === 'navigate') {
-                newHeaders.set("Cache-Control", "no-cache, no-store, must-revalidate");
-            }
-
-            const init = {
-                status: response.status,
-                statusText: response.statusText,
-                headers: newHeaders
-            };
-
-            // Fix for "TypeError: Failed to convert value to 'Response'"
-            // Responses with 204, 205, 304 cannot be instantiated with a body
-            const emptyStatuses = [204, 205, 304];
-            if (emptyStatuses.includes(response.status) || e.request.method === 'HEAD') {
-                return new Response(null, init);
-            }
-
-            return new Response(response.body, init);
-        }).catch(err => {
-            console.error("SW Fetch Error:", err);
-            throw err;
-        })
+        })()
     );
 });
